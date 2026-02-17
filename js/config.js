@@ -96,8 +96,12 @@ export const ZAPPER_GAP_MIN = 90;   // smallest flyable gap (turkey is 30px tall
 export const ZAPPER_GAP_MAX = 150;  // most generous gap
 export const ZAPPER_GAP_MARGIN = 30; // min distance from ceiling/ground for gap edges
 
+// Bottom-open zappers (chunk 12C) -- top bar only, open below
+export const ZAPPER_BOTTOM_OPEN_MIN_HEIGHT = 100;  // minimum bar height hanging from ceiling
+export const ZAPPER_BOTTOM_OPEN_MAX_HEIGHT = 280;  // maximum (leaves 120px clear above ground)
+
 // Food collectibles
-export const FOOD_SIZE = 16;
+export const FOOD_SIZE = 24;            // render size (native art is 32x32)
 export const FOOD_HITBOX_PADDING = 8;   // generous collection radius
 export const FOOD_COLOR = '#FFD700';    // gold fallback rectangle
 
@@ -112,11 +116,17 @@ export const FOOD_RISE_PER_ITEM = 18;   // vertical step for rise/fall formation
 export const FOOD_Y_MIN = 20;           // top margin for food placement
 export const FOOD_Y_BOTTOM_MARGIN = 30; // margin above GROUND_Y for food placement
 
-// Birds (homing hazard)
-export const BIRD_WIDTH = 30;
-export const BIRD_HEIGHT = 20;
-export const BIRD_SPEED = 220;              // px/s toward player
-export const BIRD_TURN_RATE = 2.5;         // radians/s max steering (limited so dodging works)
+// Birds (homing missiles -- Jetpack Joyride style, chunk 12B x-speed fix)
+// Original angle-based steering with limited turn rate. The only change from
+// chunk 8 is that horizontal speed is pinned to BIRD_X_SPEED so arrival time
+// is deterministic: (CANVAS_WIDTH - PLAYER_START_X) / BIRD_X_SPEED.
+// Y-movement still comes from the angle/turn-rate system (sin(angle) * BIRD_SPEED).
+export const BIRD_WIDTH = 40;               // slightly wider for 64x48 art
+export const BIRD_HEIGHT = 30;              // slightly taller for 64x48 art
+export const BIRD_SPEED = 400;              // px/s -- used for y-component of movement
+export const BIRD_X_SPEED = 380;            // px/s -- constant horizontal speed (overrides cos component)
+export const BIRD_TURN_RATE = 0.6;          // radians/s max steering (very limited, JJ-style)
+export const BIRD_TRACKING_DURATION = 2.0;  // seconds of homing after entering, then fly straight
 export const BIRD_WARNING_DURATION = 1.0;   // seconds of flashing indicator before bird enters
 export const BIRD_SPAWN_MIN_DISTANCE = 400; // meters before birds begin spawning
 export const BIRD_SPAWN_BASE_INTERVAL = 8.0;// seconds between spawns at min distance

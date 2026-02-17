@@ -9,6 +9,7 @@ let clickX = -1;
 let clickY = -1;
 let hasClick = false;
 let debugBiomeKey = 0; // 1-5 when a debug biome key was pressed, 0 otherwise
+let escapeJustPressed = false;
 
 export function initInput(canvas) {
     canvasRef = canvas;
@@ -101,11 +102,23 @@ export function consumeDebugBiome() {
     return val;
 }
 
+// Returns true once if Escape was pressed since last call.
+export function consumeEscapePressed() {
+    if (escapeJustPressed) {
+        escapeJustPressed = false;
+        return true;
+    }
+    return false;
+}
+
 function onKeyDown(e) {
     if (e.code === 'Space') {
         e.preventDefault();
         pressed = true;
         justPressedFlag = true;
+    }
+    if (e.code === 'Escape') {
+        escapeJustPressed = true;
     }
     // Debug: keys 1-5 force a biome
     if (e.code >= 'Digit1' && e.code <= 'Digit5') {

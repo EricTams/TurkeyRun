@@ -1,16 +1,63 @@
-// AIDEV-NOTE: Game state constants and screen rendering (chunk 10).
-// Manages SLOT_SELECT, PLAYING, and DEAD states with full UI for the
-// slot-selection screen and the post-death run summary overlay.
+// AIDEV-NOTE: Game state constants and screen rendering (chunks 10, 12).
+// Manages all game states with full UI for loading, slot selection, main
+// menu, pause overlay, and the post-death run summary.
 
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './config.js';
 import { getProgressPercent } from './save.js';
 
 // ---------------------------------------------------------------------------
+// Logo image (loaded early so it appears on the loading screen)
+// ---------------------------------------------------------------------------
+let logoImg = null;
+
+export function loadLogo() {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            logoImg = img;
+            resolve();
+        };
+        img.onerror = () => {
+            console.warn('Failed to load logo image');
+            resolve();
+        };
+        img.src = 'assets/sprites/Logo/Logo-Logo.png';
+        if (img.complete && img.naturalWidth > 0) {
+            logoImg = img;
+            resolve();
+        }
+    });
+}
+
+/** Draw the logo centered horizontally at (centerX, topY) with given width. */
+function drawLogo(ctx, centerX, topY, width) {
+    const height = width / 2; // Logo is 256x128 (2:1 aspect)
+    if (logoImg) {
+        const prevSmoothing = ctx.imageSmoothingEnabled;
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(logoImg, centerX - width / 2, topY, width, height);
+        ctx.imageSmoothingEnabled = prevSmoothing;
+    } else {
+        // Fallback text while image loads
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = 'bold 42px monospace';
+        ctx.fillStyle = '#000000';
+        ctx.fillText('THE GOBBLER', centerX + 2, topY + height / 2 + 2);
+        ctx.fillStyle = TITLE_COLOR;
+        ctx.fillText('THE GOBBLER', centerX, topY + height / 2);
+    }
+}
+
+// ---------------------------------------------------------------------------
 // State constants
 // ---------------------------------------------------------------------------
+export const LOADING = 'LOADING';
 export const SLOT_SELECT = 'SLOT_SELECT';
+export const MENU = 'MENU';
 export const HATCHING = 'HATCHING';
 export const PLAYING = 'PLAYING';
+export const PAUSED = 'PAUSED';
 export const DYING = 'DYING';
 export const DEAD = 'DEAD';
 
@@ -19,7 +66,7 @@ export const DEAD = 'DEAD';
 // ---------------------------------------------------------------------------
 const PANEL_W = 200;
 const PANEL_H = 270;
-const PANEL_Y = 110;
+const PANEL_Y = 135;
 const PANEL_GAP = (CANVAS_WIDTH - 3 * PANEL_W) / 4; // 50
 
 const DELETE_BTN_W = 80;
@@ -91,17 +138,13 @@ export function renderSlotSelectScreen(ctx, slots) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Title with drop shadow
-    ctx.font = 'bold 42px monospace';
-    ctx.fillStyle = '#000000';
-    ctx.fillText('TURKEY RUNNER', CANVAS_WIDTH / 2 + 2, 42);
-    ctx.fillStyle = TITLE_COLOR;
-    ctx.fillText('TURKEY RUNNER', CANVAS_WIDTH / 2, 40);
+    // Logo
+    drawLogo(ctx, CANVAS_WIDTH / 2, 4, 200);
 
     // Subtitle
     ctx.font = '18px monospace';
     ctx.fillStyle = SUBTITLE_COLOR;
-    ctx.fillText('Select a Save Slot', CANVAS_WIDTH / 2, 78);
+    ctx.fillText('Select a Save Slot', CANVAS_WIDTH / 2, 116);
 
     // Three slot panels
     for (let i = 0; i < 3; i++) {
@@ -164,7 +207,7 @@ function renderUsedSlot(ctx, index, slot, centerX) {
     // "Select" hint
     ctx.font = '13px monospace';
     ctx.fillStyle = CREATE_COLOR;
-    ctx.fillText('Tap to Play', centerX, PANEL_Y + 205);
+    ctx.fillText('Tap to Select', centerX, PANEL_Y + 205);
 
     // Delete button
     const del = getDeleteBtnRect(index);
@@ -197,24 +240,204 @@ function renderEmptySlot(ctx, centerX) {
 }
 
 // ---------------------------------------------------------------------------
+// Loading screen
+// ---------------------------------------------------------------------------
+const LOAD_BG = '#0a0a1e';
+const LOAD_BAR_W = 400;
+const LOAD_BAR_H = 24;
+const LOAD_BAR_X = (CANVAS_WIDTH - LOAD_BAR_W) / 2;
+const LOAD_BAR_Y = 300;
+const LOAD_BAR_BG = '#1a1a3e';
+const LOAD_BAR_BORDER = '#3a3a6a';
+const LOAD_BAR_FILL = '#FFD700';
+const LOAD_BAR_FILL_GLOW = '#FFF0A0';
+
+export function renderLoadingScreen(ctx, progress) {
+    ctx.fillStyle = LOAD_BG;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Logo (large, centered)
+    drawLogo(ctx, CANVAS_WIDTH / 2, 50, 460);
+
+    // Progress bar background
+    ctx.fillStyle = LOAD_BAR_BG;
+    ctx.fillRect(LOAD_BAR_X, LOAD_BAR_Y, LOAD_BAR_W, LOAD_BAR_H);
+
+    // Progress bar fill
+    const fillW = Math.max(0, Math.min(1, progress)) * LOAD_BAR_W;
+    if (fillW > 0) {
+        ctx.fillStyle = LOAD_BAR_FILL;
+        ctx.fillRect(LOAD_BAR_X, LOAD_BAR_Y, fillW, LOAD_BAR_H);
+
+        // Subtle glow highlight on top half of bar
+        ctx.fillStyle = LOAD_BAR_FILL_GLOW;
+        ctx.globalAlpha = 0.3;
+        ctx.fillRect(LOAD_BAR_X, LOAD_BAR_Y, fillW, LOAD_BAR_H / 2);
+        ctx.globalAlpha = 1;
+    }
+
+    // Progress bar border
+    ctx.strokeStyle = LOAD_BAR_BORDER;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(LOAD_BAR_X, LOAD_BAR_Y, LOAD_BAR_W, LOAD_BAR_H);
+
+    // Percentage text
+    const pct = Math.floor(progress * 100);
+    ctx.font = '16px monospace';
+    ctx.fillStyle = SUBTITLE_COLOR;
+    ctx.fillText(`Loading... ${pct}%`, CANVAS_WIDTH / 2, LOAD_BAR_Y + LOAD_BAR_H + 26);
+}
+
+// ---------------------------------------------------------------------------
+// Main menu screen
+// ---------------------------------------------------------------------------
+const MENU_BG = '#1a1a2e';
+const MENU_BTN_W = 240;
+const MENU_BTN_H = 48;
+const MENU_BTN_X = (CANVAS_WIDTH - MENU_BTN_W) / 2;
+
+const PLAY_BTN_Y = 220;
+const SHOP_BTN_Y = 285;
+const CHANGE_SLOT_BTN_Y = 350;
+
+const BTN_BG = '#2a5a2a';
+const BTN_BORDER = '#3a8a3a';
+const BTN_TEXT_COLOR = '#FFFFFF';
+const BTN_DISABLED_BG = '#2a2a3e';
+const BTN_DISABLED_BORDER = '#3a3a5a';
+const BTN_DISABLED_TEXT = '#666688';
+const CHANGE_SLOT_BG = '#2a2a5a';
+const CHANGE_SLOT_BORDER = '#4a4a8a';
+
+const MENU_PLAY_BTN = { x: MENU_BTN_X, y: PLAY_BTN_Y, w: MENU_BTN_W, h: MENU_BTN_H };
+const MENU_SHOP_BTN = { x: MENU_BTN_X, y: SHOP_BTN_Y, w: MENU_BTN_W, h: MENU_BTN_H };
+const MENU_CHANGE_SLOT_BTN = { x: MENU_BTN_X, y: CHANGE_SLOT_BTN_Y, w: MENU_BTN_W, h: MENU_BTN_H };
+
+export function renderMenuScreen(ctx, playerName) {
+    ctx.fillStyle = MENU_BG;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Logo
+    drawLogo(ctx, CANVAS_WIDTH / 2, 15, 280);
+
+    // Player name
+    ctx.font = '18px monospace';
+    ctx.fillStyle = SUBTITLE_COLOR;
+    ctx.fillText(`Playing as: ${playerName}`, CANVAS_WIDTH / 2, 170);
+
+    // Decorative divider
+    ctx.strokeStyle = '#3a3a5a';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(CANVAS_WIDTH / 2 - 120, 195);
+    ctx.lineTo(CANVAS_WIDTH / 2 + 120, 195);
+    ctx.stroke();
+
+    // "Play" button
+    drawButton(ctx, MENU_PLAY_BTN, 'PLAY', BTN_BG, BTN_BORDER, BTN_TEXT_COLOR, 'bold 24px monospace');
+
+    // "Shop" button (disabled)
+    drawButton(ctx, MENU_SHOP_BTN, 'SHOP', BTN_DISABLED_BG, BTN_DISABLED_BORDER, BTN_DISABLED_TEXT, 'bold 22px monospace');
+    ctx.font = '11px monospace';
+    ctx.fillStyle = BTN_DISABLED_TEXT;
+    ctx.fillText('Coming Soon', CANVAS_WIDTH / 2, SHOP_BTN_Y + MENU_BTN_H + 14);
+
+    // "Change Slot" button
+    drawButton(ctx, MENU_CHANGE_SLOT_BTN, 'CHANGE SLOT', CHANGE_SLOT_BG, CHANGE_SLOT_BORDER, SUBTITLE_COLOR, 'bold 18px monospace');
+}
+
+/** Returns 'play' | 'shop' | 'changeSlot' | null based on click position. */
+export function getMenuAction(cx, cy) {
+    if (pointInRect(cx, cy, MENU_PLAY_BTN)) return 'play';
+    // Shop is disabled for now -- don't return an action
+    if (pointInRect(cx, cy, MENU_CHANGE_SLOT_BTN)) return 'changeSlot';
+    return null;
+}
+
+// ---------------------------------------------------------------------------
+// Pause overlay
+// ---------------------------------------------------------------------------
+const PAUSE_OVERLAY_BG = 'rgba(0, 0, 0, 0.65)';
+const PAUSE_BTN_W = 220;
+const PAUSE_BTN_H = 48;
+const PAUSE_BTN_X = (CANVAS_WIDTH - PAUSE_BTN_W) / 2;
+const RESUME_BTN_Y = 215;
+const QUIT_BTN_Y = 280;
+
+const RESUME_BTN = { x: PAUSE_BTN_X, y: RESUME_BTN_Y, w: PAUSE_BTN_W, h: PAUSE_BTN_H };
+const QUIT_BTN = { x: PAUSE_BTN_X, y: QUIT_BTN_Y, w: PAUSE_BTN_W, h: PAUSE_BTN_H };
+
+export function renderPauseOverlay(ctx) {
+    ctx.fillStyle = PAUSE_OVERLAY_BG;
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // "PAUSED" with drop shadow
+    ctx.font = 'bold 44px monospace';
+    ctx.fillStyle = '#000000';
+    ctx.fillText('PAUSED', CANVAS_WIDTH / 2 + 2, 132);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText('PAUSED', CANVAS_WIDTH / 2, 130);
+
+    // Decorative divider
+    ctx.strokeStyle = '#5a5a8a';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(CANVAS_WIDTH / 2 - 100, 170);
+    ctx.lineTo(CANVAS_WIDTH / 2 + 100, 170);
+    ctx.stroke();
+
+    // "Resume" button
+    drawButton(ctx, RESUME_BTN, 'RESUME', BTN_BG, BTN_BORDER, BTN_TEXT_COLOR, 'bold 22px monospace');
+
+    // "Quit" button
+    drawButton(ctx, QUIT_BTN, 'QUIT TO MENU', '#5a2a2a', '#8a3a3a', '#FFFFFF', 'bold 18px monospace');
+}
+
+/** Returns 'resume' | 'quit' | null based on click position. */
+export function getPauseAction(cx, cy) {
+    if (pointInRect(cx, cy, RESUME_BTN)) return 'resume';
+    if (pointInRect(cx, cy, QUIT_BTN)) return 'quit';
+    return null;
+}
+
+// ---------------------------------------------------------------------------
 // Run summary (dead) screen
 // ---------------------------------------------------------------------------
 const OVERLAY_BG = 'rgba(0, 0, 0, 0.7)';
 const GAME_OVER_COLOR = '#FF4444';
 const NEW_BEST_COLOR = '#FFD700';
-const PLAY_AGAIN_BG = '#2a7a2a';
-const PLAY_AGAIN_BORDER = '#3a9a3a';
-const PLAY_AGAIN_TEXT = '#FFFFFF';
+
+const DEAD_BTN_W = 180;
+const DEAD_BTN_H = 48;
+const DEAD_BTN_GAP = 20;
+const DEAD_BTN_TOTAL_W = DEAD_BTN_W * 2 + DEAD_BTN_GAP;
+const DEAD_BTN_START_X = (CANVAS_WIDTH - DEAD_BTN_TOTAL_W) / 2;
+const DEAD_BTN_Y = 345;
 
 const PLAY_AGAIN_BTN = {
-    x: (CANVAS_WIDTH - 200) / 2,
-    y: 345,
-    w: 200,
-    h: 48
+    x: DEAD_BTN_START_X,
+    y: DEAD_BTN_Y,
+    w: DEAD_BTN_W,
+    h: DEAD_BTN_H
+};
+
+const DEAD_MENU_BTN = {
+    x: DEAD_BTN_START_X + DEAD_BTN_W + DEAD_BTN_GAP,
+    y: DEAD_BTN_Y,
+    w: DEAD_BTN_W,
+    h: DEAD_BTN_H
 };
 
 export function renderRunSummary(ctx, distance, coinsEarned, totalCoins, bestDistance, isNewBest) {
-    // Dark overlay
     ctx.fillStyle = OVERLAY_BG;
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -259,14 +482,32 @@ export function renderRunSummary(ctx, distance, coinsEarned, totalCoins, bestDis
     ctx.fillText(`Best Distance: ${bestDistance}m`, sx, statsY + lineH * 3);
 
     // "Play Again" button
-    const btn = PLAY_AGAIN_BTN;
-    ctx.fillStyle = PLAY_AGAIN_BG;
-    ctx.fillRect(btn.x, btn.y, btn.w, btn.h);
-    ctx.strokeStyle = PLAY_AGAIN_BORDER;
-    ctx.lineWidth = 2;
-    ctx.strokeRect(btn.x, btn.y, btn.w, btn.h);
+    drawButton(ctx, PLAY_AGAIN_BTN, 'Play Again', '#2a7a2a', '#3a9a3a', '#FFFFFF', 'bold 20px monospace');
 
-    ctx.font = 'bold 22px monospace';
-    ctx.fillStyle = PLAY_AGAIN_TEXT;
-    ctx.fillText('Play Again', btn.x + btn.w / 2, btn.y + btn.h / 2);
+    // "Menu" button
+    drawButton(ctx, DEAD_MENU_BTN, 'Menu', CHANGE_SLOT_BG, CHANGE_SLOT_BORDER, SUBTITLE_COLOR, 'bold 20px monospace');
+}
+
+/** Returns 'playAgain' | 'menu' | null based on click position on the dead screen. */
+export function getDeadScreenAction(cx, cy) {
+    if (pointInRect(cx, cy, PLAY_AGAIN_BTN)) return 'playAgain';
+    if (pointInRect(cx, cy, DEAD_MENU_BTN)) return 'menu';
+    return null;
+}
+
+// ---------------------------------------------------------------------------
+// Shared button drawing helper
+// ---------------------------------------------------------------------------
+function drawButton(ctx, rect, label, bgColor, borderColor, textColor, font) {
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+    ctx.strokeStyle = borderColor;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = font;
+    ctx.fillStyle = textColor;
+    ctx.fillText(label, rect.x + rect.w / 2, rect.y + rect.h / 2);
 }

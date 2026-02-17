@@ -1,10 +1,15 @@
-// AIDEV-NOTE: Food collectible system (chunk 7). Manages food items, coin
-// counting, and formation spawning. Food items scroll left with the world
-// and are collected on overlap with a generous hitbox.
+// AIDEV-NOTE: Food collectible system (chunk 7, updated for biome food art).
+// Manages food items, coin counting, and formation spawning. Food items scroll
+// left with the world and are collected on overlap with a generous hitbox.
+// Each food item renders as an animated sprite matching the current biome's
+// food types (2 per biome).
 
 import { AUTO_RUN_SPEED, FOOD_SIZE, FOOD_HITBOX_PADDING, FOOD_COLOR } from './config.js';
-import { drawSprite } from './sprites.js';
+import { createAnimator, setAnimation, updateAnimator, drawAnimator, hasAnimation } from './animation.js';
 import { rectsOverlap } from './collision.js';
+import { getDistanceMeters } from './world.js';
+import { getBiomeFoodTypes } from './biome.js';
+import { playSfx } from './audio.js';
 
 let foods = [];
 let coins = 0;
@@ -23,6 +28,15 @@ export function getCoins() {
 }
 
 // ---------------------------------------------------------------------------
+// Food type selection based on current biome
+// ---------------------------------------------------------------------------
+
+function pickFoodType() {
+    const types = getBiomeFoodTypes(getDistanceMeters());
+    return types[Math.floor(Math.random() * types.length)];
+}
+
+// ---------------------------------------------------------------------------
 // Update & render
 // ---------------------------------------------------------------------------
 
@@ -38,9 +52,16 @@ export function updateCollectibles(dt, turkeyRect) {
 
     for (const food of foods) {
         food.x -= AUTO_RUN_SPEED * dt;
+
+        // Advance the food's idle animation
+        if (food.animator) {
+            updateAnimator(food.animator, dt);
+        }
+
         if (!food.collected && rectsOverlap(collectRect, food)) {
             food.collected = true;
             coins++;
+            playSfx('crunch');
         }
     }
 
@@ -49,8 +70,14 @@ export function updateCollectibles(dt, turkeyRect) {
 
 export function renderAllFood(ctx) {
     for (const food of foods) {
-        if (!food.collected) {
-            drawSprite(ctx, 'food', food.x, food.y, food.w, food.h, FOOD_COLOR);
+        if (food.collected) continue;
+
+        if (food.animator && hasAnimation(food.foodType)) {
+            drawAnimator(ctx, food.animator, food.x, food.y, food.w, food.h);
+        } else {
+            // Fallback: gold rectangle if animation not loaded
+            ctx.fillStyle = FOOD_COLOR;
+            ctx.fillRect(food.x, food.y, food.w, food.h);
         }
     }
 }
@@ -61,7 +88,19 @@ export function renderAllFood(ctx) {
 // Each creates food items at calculated positions and adds them to the array.
 
 function addFood(x, y) {
-    foods.push({ x, y, w: FOOD_SIZE, h: FOOD_SIZE, collected: false });
+    const foodType = pickFoodType();
+    const animator = createAnimator();
+    setAnimation(animator, foodType);
+    // Stagger the animation start so items don't all pulse in sync
+    animator.elapsed = Math.random() * 0.2;
+
+    foods.push({
+        x, y,
+        w: FOOD_SIZE, h: FOOD_SIZE,
+        collected: false,
+        foodType,
+        animator
+    });
 }
 
 export function spawnLine(originX, y, count, spacing) {

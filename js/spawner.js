@@ -21,7 +21,7 @@ import {
     createGroundHazard, updateGroundHazard, isOffScreen
 } from './hazards/groundHazard.js';
 import {
-    createZapperAt, updateZapper, isZapperOffScreen
+    createZapperAt, createBottomOpenZapper, updateZapper, isZapperOffScreen
 } from './hazards/zapper.js';
 import {
     createBird, updateBird, isBirdOffScreen
@@ -147,6 +147,10 @@ function spawnElement(elem, groundArr, zapperArr, laserArr) {
     if (elem.type === 'zapper') {
         const gapY = resolveGapY(elem.gapCenter, elem.gapH);
         zapperArr.push(createZapperAt(CANVAS_WIDTH + elem.offsetX, gapY, elem.gapH));
+        return;
+    }
+    if (elem.type === 'zapperBottomOpen') {
+        zapperArr.push(createBottomOpenZapper(CANVAS_WIDTH + elem.offsetX, elem.barHeight));
         return;
     }
     if (elem.type === 'laserStatic') {

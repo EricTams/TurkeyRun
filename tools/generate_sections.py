@@ -34,6 +34,9 @@ ZAPPER_GAP_MAX = 150
 ZAPPER_GAP_MARGIN = 30
 ZAPPER_WIDTH = 30
 
+ZAPPER_BOTTOM_OPEN_MIN_HEIGHT = 100
+ZAPPER_BOTTOM_OPEN_MAX_HEIGHT = 280
+
 POOL_NOODLE_WIDTH = 15
 POOL_NOODLE_HEIGHT = 60
 SAND_CASTLE_WIDTH = 50
@@ -43,7 +46,9 @@ LASER_BEAM_THICKNESS = 16
 LASER_STATIC_WIDTH = 300
 LASER_SWEEP_ARC = math.pi * 0.5
 
-PLAYER_HEIGHT = 30
+PLAYER_HEIGHT = 40  # matches js/config.js PLAYER_HEIGHT
+PLAYER_START_X = 100
+BIRD_X_SPEED = 380  # constant horizontal speed (must match config.js)
 
 # ---------------------------------------------------------------------------
 # Tier parameters -- tweak these and re-run
@@ -73,8 +78,9 @@ TIER_PARAMS = {
         "section_length_min": 300,
         "section_length_max": 550,
         "obstacle_count_min": 2,
-        "obstacle_count_max": 4,
-        "obstacle_types": ["ground", "zapper", "laserStatic"],
+        "obstacle_count_max": 5,
+        # Zapper density increased ~50%: duplicated 'zapper' + added 'zapperBottomOpen'
+        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen", "laserStatic"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.3,
     },
@@ -87,8 +93,10 @@ TIER_PARAMS = {
         "section_length_min": 350,
         "section_length_max": 600,
         "obstacle_count_min": 3,
-        "obstacle_count_max": 6,
-        "obstacle_types": ["ground", "zapper", "laserStatic", "laserSweep"],
+        "obstacle_count_max": 7,
+        # Zapper density increased ~50%: duplicated 'zapper' + added 'zapperBottomOpen'
+        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen",
+                           "laserStatic", "laserStatic", "laserSweep"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.5,
     },
@@ -101,13 +109,18 @@ TIER_PARAMS = {
         "section_length_min": 400,
         "section_length_max": 650,
         "obstacle_count_min": 4,
-        "obstacle_count_max": 7,
-        "obstacle_types": ["ground", "zapper", "laserStatic", "laserSweep"],
+        "obstacle_count_max": 8,
+        # Zapper density increased ~50%: duplicated 'zapper' + added 'zapperBottomOpen'
+        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen",
+                           "laserStatic", "laserStatic", "laserSweep"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.7,
     },
 }
 
+# Bird arrival time is deterministic: (CANVAS_WIDTH - PLAYER_START_X) / BIRD_X_SPEED
+BIRD_ARRIVAL_TIME = (CANVAS_WIDTH - PLAYER_START_X) / BIRD_X_SPEED
+# Corridor must be wide enough around the bird encounter for the player to dodge
 BIRD_DODGE_WIDTH = 180  # corridor width override around bird spawn points
 
 
@@ -336,9 +349,48 @@ def place_sweep_laser(path, params, occupied_xs):
     return None
 
 
+def place_bottom_open_zapper(path, params, occupied_xs):
+    """Place a bottom-open zapper (top bar only, open below).
+
+    The corridor must pass below the bar, so the bar height must be less than
+    the corridor's upper edge at that x.
+    """
+    section_end = path[-1]["x"]
+
+    for _ in range(40):
+        offset_x = random.randint(30, max(30, int(section_end) - ZAPPER_WIDTH))
+
+        if any(abs(offset_x - ox) < 80 for ox in occupied_xs):
+            continue
+
+        # Get path center at this x -- corridor must pass below the bar
+        center_y, corridor_w = interpolate_path(path, offset_x)
+        corridor_top = center_y - corridor_w / 2
+
+        # Bar must end above the corridor (with 10px buffer)
+        max_bar = corridor_top - 10
+        if max_bar < ZAPPER_BOTTOM_OPEN_MIN_HEIGHT:
+            continue
+
+        bar_height = random.randint(
+            ZAPPER_BOTTOM_OPEN_MIN_HEIGHT,
+            min(ZAPPER_BOTTOM_OPEN_MAX_HEIGHT, int(max_bar))
+        )
+
+        occupied_xs.append(offset_x)
+        return {
+            "type": "zapperBottomOpen",
+            "offsetX": offset_x,
+            "barHeight": bar_height,
+        }
+
+    return None
+
+
 OBSTACLE_PLACERS = {
     "ground": place_ground_hazard,
     "zapper": place_zapper,
+    "zapperBottomOpen": place_bottom_open_zapper,
     "laserStatic": place_static_laser,
     "laserSweep": place_sweep_laser,
 }
@@ -368,7 +420,12 @@ def place_obstacles(path, params):
 # ---------------------------------------------------------------------------
 
 def place_birds(path, params):
-    """Optionally place bird spawn points with dodge width."""
+    """Optionally place bird spawn points with dodge width.
+
+    Bird arrival time is deterministic (constant x-speed). The dodgeWidth
+    widens the corridor at the bird's offsetX so the player has room to
+    dodge vertically when the bird arrives.
+    """
     if random.random() >= params["bird_chance"]:
         return []
 
@@ -384,6 +441,7 @@ def place_birds(path, params):
         birds.append({
             "offsetX": offset_x,
             "dodgeWidth": BIRD_DODGE_WIDTH,
+            "arrivalTimeSec": round(BIRD_ARRIVAL_TIME, 3),
         })
 
     return birds
@@ -399,14 +457,24 @@ def generate_pattern(params):
     elements = place_obstacles(path, params)
     birds = place_birds(path, params)
 
-    # Widen the path around bird spawn points
+    # Widen the path around bird spawn points so the player has room to dodge.
+    # Also remove any obstacles that fall within the dodge zone.
     if birds:
         for bird in birds:
             bx = bird["offsetX"]
+            dodge_half = bird["dodgeWidth"] / 2
+
+            # Widen corridor waypoints near the bird encounter
             for wp in path:
                 dist = abs(wp["x"] - bx)
-                if dist < 100:
+                if dist < 120:
                     wp["width"] = max(wp["width"], bird["dodgeWidth"])
+
+            # Remove obstacles that overlap the bird's clear zone
+            elements = [
+                e for e in elements
+                if abs(e["offsetX"] - bx) > dodge_half + 30
+            ]
 
     return {
         "path": path,
@@ -463,6 +531,17 @@ def validate_patterns(patterns):
                         print(f"  WARNING: {tier}[{i}] ground hazard at x={elem['offsetX']} "
                               f"overlaps corridor (bottom={center_y + w/2:.0f}, "
                               f"hazard_top={hazard_top})")
+                        issues += 1
+
+                # Check bottom-open zappers don't overlap corridor
+                if elem["type"] == "zapperBottomOpen":
+                    bar_h = elem["barHeight"]
+                    center_y, w = interpolate_path(path, elem["offsetX"])
+                    corridor_top = center_y - w / 2
+                    if bar_h >= corridor_top:
+                        print(f"  WARNING: {tier}[{i}] bottomOpen zapper at x={elem['offsetX']} "
+                              f"bar extends into corridor (barH={bar_h}, "
+                              f"corridor_top={corridor_top:.0f})")
                         issues += 1
 
     if issues == 0:

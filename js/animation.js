@@ -107,6 +107,13 @@ export function updateAnimator(animator, dt) {
 }
 
 /**
+ * Check if a named animation is loaded and ready to draw.
+ */
+export function hasAnimation(name) {
+    return animations.has(name);
+}
+
+/**
  * Draw the current animation frame.
  * x, y, w, h define the destination rectangle on screen.
  */
@@ -128,17 +135,71 @@ export function drawAnimator(ctx, animator, x, y, w, h) {
 
 /**
  * Load all 8 turkey animations. Returns a promise.
+ * Optional onItemLoaded callback is called once per animation as it finishes.
  */
-export function loadTurkeyAnimations() {
+export function loadTurkeyAnimations(onItemLoaded) {
     const base = 'assets/sprites/Turkey/';
-    return Promise.all([
-        loadAnimation('egg',       base + 'Turkey-Egg.json',        base + 'Turkey-Egg.png'),
-        loadAnimation('hatch',     base + 'Turkey-Hatch.json',      base + 'Turkey-Hatch.png'),
-        loadAnimation('run',       base + 'Turkey-Run.json',        base + 'Turkey-Run.png'),
-        loadAnimation('jumpStart', base + 'Turkey-Jump Start.json', base + 'Turkey-Jump Start.png'),
-        loadAnimation('jumpUp',    base + 'Turkey-Jump Up.json',    base + 'Turkey-Jump Up.png'),
-        loadAnimation('fallDown',  base + 'Turkey-Fall Down.json',  base + 'Turkey-Fall Down.png'),
-        loadAnimation('die',       base + 'Turkey-Die.json',        base + 'Turkey-Die.png'),
-        loadAnimation('dead',      base + 'Turkey-Dead.json',       base + 'Turkey-Dead.png')
-    ]);
+    const anims = [
+        ['egg',       'Turkey-Egg'],
+        ['hatch',     'Turkey-Hatch'],
+        ['run',       'Turkey-Run'],
+        ['jumpStart', 'Turkey-Jump Start'],
+        ['jumpUp',    'Turkey-Jump Up'],
+        ['fallDown',  'Turkey-Fall Down'],
+        ['die',       'Turkey-Die'],
+        ['dead',      'Turkey-Dead']
+    ];
+    return Promise.all(anims.map(([name, file]) =>
+        loadAnimation(name, base + file + '.json', base + file + '.png')
+            .then(() => { if (onItemLoaded) onItemLoaded(); })
+    ));
 }
+
+/** Number of individual animation assets loaded by loadTurkeyAnimations. */
+export const TURKEY_ANIM_COUNT = 8;
+
+/**
+ * Load bird (Grackle) animations. Returns a promise.
+ * Optional onItemLoaded callback is called once per animation as it finishes.
+ */
+export function loadBirdAnimations(onItemLoaded) {
+    const base = 'assets/sprites/Birds/';
+    const anims = [
+        ['birdStart', 'Grackle-Start'],
+        ['birdFly',   'Grackle-Fly']
+    ];
+    return Promise.all(anims.map(([name, file]) =>
+        loadAnimation(name, base + file + '.json', base + file + '.png')
+            .then(() => { if (onItemLoaded) onItemLoaded(); })
+    ));
+}
+
+/** Number of individual animation assets loaded by loadBirdAnimations. */
+export const BIRD_ANIM_COUNT = 2;
+
+/**
+ * Load all food animations. Returns a promise.
+ * Optional onItemLoaded callback is called once per animation as it finishes.
+ */
+export function loadFoodAnimations(onItemLoaded) {
+    const base = 'assets/sprites/Food/';
+    const anims = [
+        ['foodChickenLeg', 'Food-Chicken Leg'],
+        ['foodChurro',     'Food-Churro'],
+        ['foodCoconut',    'Food-Coconut'],
+        ['foodCookie',     'Food-Cookie'],
+        ['foodDonut',      'Food-Donut'],
+        ['foodIceCream',   'Food-Ice Cream'],
+        ['foodPepper',     'Food-Pepper'],
+        ['foodPotato',     'Food-Potato'],
+        ['foodShrimp',     'Food-Shrimp'],
+        ['foodTaco',       'Food-Taco']
+    ];
+    return Promise.all(anims.map(([name, file]) =>
+        loadAnimation(name, base + file + '.json', base + file + '.png')
+            .then(() => { if (onItemLoaded) onItemLoaded(); })
+    ));
+}
+
+/** Number of individual animation assets loaded by loadFoodAnimations. */
+export const FOOD_ANIM_COUNT = 10;

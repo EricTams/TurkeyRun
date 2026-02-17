@@ -77,10 +77,8 @@ export function updateTurkeyAnimation(turkey, dt, pressing) {
             });
         }
     } else if (state === 'jumpStart') {
-        if (!onGround && turkey.vy < 0) {
-            turkey.animState = 'jumpUp';
-            setAnimation(turkey.animator, 'jumpUp');
-        }
+        // Let the one-shot animation play through fully.
+        // The onComplete callback transitions to jumpUp.
     } else if (state === 'jumpUp') {
         if (turkey.vy > 0) {
             turkey.animState = 'fallDown';

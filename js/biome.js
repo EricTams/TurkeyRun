@@ -22,6 +22,7 @@ const BIOMES = [
         ground: '#C2B280',
         groundStripe: '#B0A06A',
         groundHazards: ['poolNoodle', 'sandCastle'],
+        foodTypes: ['foodCoconut', 'foodShrimp'],
     },
     {
         name: 'grass',
@@ -32,6 +33,7 @@ const BIOMES = [
         ground: '#6AAF4E',
         groundStripe: '#528A3C',
         groundHazards: ['rock', 'bush'],
+        foodTypes: ['foodChickenLeg', 'foodCookie'],
     },
     {
         name: 'mountain',
@@ -42,6 +44,7 @@ const BIOMES = [
         ground: '#8B7D6B',
         groundStripe: '#736B5C',
         groundHazards: ['boulder', 'icePatch'],
+        foodTypes: ['foodPotato', 'foodChurro'],
     },
     {
         name: 'moon',
@@ -52,6 +55,7 @@ const BIOMES = [
         ground: '#9A9A9A',
         groundStripe: '#7A7A7A',
         groundHazards: ['crater', 'alienRock'],
+        foodTypes: ['foodIceCream', 'foodDonut'],
     },
     {
         name: 'spiritual',
@@ -62,6 +66,7 @@ const BIOMES = [
         ground: '#3A0060',
         groundStripe: '#5A0085',
         groundHazards: ['voidCrystal', 'weirdPillar'],
+        foodTypes: ['foodPepper', 'foodTaco'],
         shifting: true,
     },
 ];
@@ -188,6 +193,11 @@ export function getBiomeGroundHazards(distanceMeters) {
 export function getCurrentBiomeName(distanceMeters) {
     const idx = getBiomeIndex(distanceMeters);
     return BIOMES[idx].name;
+}
+
+export function getBiomeFoodTypes(distanceMeters) {
+    const idx = getBiomeIndex(distanceMeters);
+    return BIOMES[idx].foodTypes;
 }
 
 export function isSpiritualRealm(distanceMeters) {

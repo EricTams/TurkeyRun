@@ -308,6 +308,45 @@ We do NOT move to the next chunk until you've confirmed the current one is good.
 
 ---
 
+## Chunk 12b: Bird Movement Rework -- Constant X-Speed + Clear Zones
+
+**Goal:** Make bird arrival timing deterministic so the spawner can guarantee a clear area where the player dodges them.
+
+**Design:**
+- Birds move at a **constant x-speed** independent of their y-tracking. This means a bird always takes the same amount of time to travel from spawn to the player's x-position, regardless of vertical distance.
+- Y-tracking is separate: the bird homes toward the player's y-position at a configurable rate, but this never affects the bird's horizontal speed.
+- Because x-speed is constant, arrival time is `(CANVAS_WIDTH - PLAYER_START_X) / BIRD_X_SPEED` -- fully predictable.
+- The spawner/section system uses this predictable arrival to ensure the area around the player at arrival time is clear of other hazards, giving the player room to dodge vertically.
+
+**Implementation:**
+- `js/hazards/bird.js`: refactor bird update so `bird.x -= BIRD_X_SPEED * dt` is constant. Vertical movement (`bird.vy`) tracks the player's y at a separate homing rate.
+- `js/config.js`: add `BIRD_X_SPEED` (constant horizontal speed) and `BIRD_Y_HOMING_RATE` (vertical tracking speed, separate from x).
+- Update `tools/generate_sections.py`: adjust bird placement so `dodgeWidth` and corridor widening account for the constant-x-speed arrival window. The section's clear zone at `bird.offsetX` should cover the area where the bird and player intersect. **Re-run `tools/generate_sections.py` after updating.**
+- Update spawner/section integration: when a section's bird spawn point scrolls on-screen, trigger the bird with the known arrival timing. The section's path is already widened at `bird.offsetX` via `dodgeWidth`, which now aligns precisely with where the player will be dodging.
+
+**Test:** Birds approach at a steady horizontal speed. Warning indicator appears. Bird tracks your y-position as it approaches but always arrives at the same time. The area around bird encounters is visibly less cluttered than surrounding sections. Dodge vertically to evade. Multiple birds in volleys still feel fair because the clear zone accommodates them.
+
+---
+
+## Chunk 12c: Bottom-Open Zappers + More Zapper Variety
+
+**Goal:** Add zappers that are open at the bottom (forcing the player to stay on the ground) and increase overall zapper density by ~50%.
+
+**Design:**
+- Current zappers have a gap in the middle (top bar + bottom bar with a flyable opening). New **bottom-open zappers** have only a top bar that extends partway down, leaving the space near the ground clear. The player must stay low / run on the ground to survive.
+- This creates a counterpoint to ground hazards: ground hazards force you into the air, bottom-open zappers force you onto the ground. Combining them in sequences creates interesting commit-or-dodge decisions.
+- Increase the number of zapper placements across all tiers by ~50% so zappers appear more frequently relative to ground hazards.
+
+**Implementation:**
+- `js/hazards/zapper.js`: add a `variant` field to zapper objects: `'gap'` (existing -- top bar, gap, bottom bar) or `'bottomOpen'` (new -- top bar only, open below). Rendering and collision check the variant to determine which bars exist.
+- `js/config.js`: add `ZAPPER_BOTTOM_OPEN_MIN_HEIGHT` (minimum height of the top bar for bottom-open zappers) and `ZAPPER_BOTTOM_OPEN_MAX_HEIGHT` (maximum).
+- Update `tools/generate_sections.py`: add `'zapperBottomOpen'` to the obstacle type pools (medium tiers and above). The placer ensures bottom-open zappers don't overlap the safe corridor -- the corridor must pass below the bar. Increase zapper weighting / count across all tiers by ~50%. **Re-run `tools/generate_sections.py` after updating.**
+- Update spawner section integration to handle the new zapper variant when instantiating from pattern data.
+
+**Test:** Bottom-open zappers appear with a solid bar hanging from the ceiling and open space near the ground. Flying into the bar kills you; staying low is safe. Combined with ground hazards, the player must alternate between air and ground. Zappers overall appear more often than before. All patterns remain beatable.
+
+---
+
 ## Chunk 13: Shop + Gadgets
 
 **Goal:** First meta-progression -- a shop to spend coins on passive bonuses that affect gameplay.

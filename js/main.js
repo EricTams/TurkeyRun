@@ -1,5 +1,6 @@
-// AIDEV-NOTE: Main entry point and game loop.
-// Flow: SLOT_SELECT -> HATCHING -> PLAYING -> DYING -> DEAD -> HATCHING ...
+// AIDEV-NOTE: Main entry point and game loop (updated chunk 12).
+// Flow: LOADING -> SLOT_SELECT -> MENU -> HATCHING -> PLAYING <-> PAUSED
+//       PLAYING -> DYING -> DEAD -> HATCHING (play again) or MENU (quit)
 
 import {
     TIMESTEP, MAX_ACCUMULATED_TIME,
@@ -8,17 +9,21 @@ import {
     GROUND_Y
 } from './config.js';
 import { initRenderer, clear, getCtx, getCanvas } from './renderer.js';
-import { initInput, isPressed, consumeJustPressed, consumeClick, consumeDebugBiome } from './input.js';
+import {
+    initInput, isPressed, consumeJustPressed, consumeClick,
+    consumeDebugBiome, consumeEscapePressed
+} from './input.js';
 import {
     createTurkey, resetTurkey, renderTurkey,
     getTurkeyHitbox, updateTurkeyAnimation,
     playDeathAnimation, setEggState, playHatchAnimation
 } from './turkey.js';
-import { updateAnimator, loadTurkeyAnimations } from './animation.js';
+import { updateAnimator, loadTurkeyAnimations, TURKEY_ANIM_COUNT, loadBirdAnimations, BIRD_ANIM_COUNT, loadFoodAnimations, FOOD_ANIM_COUNT } from './animation.js';
 import { applyPhysics } from './physics.js';
 import { loadAll } from './sprites.js';
 import { createWorld, updateWorld, renderWorld, getDistanceMeters, getDistancePixels } from './world.js';
-import { renderHud } from './hud.js';
+import { renderHud, isPauseButtonClick, isMuteButtonClick } from './hud.js';
+import { loadMusic, playMusic, pauseMusic, stopMusic, toggleMute, playSfx, playGobble } from './audio.js';
 import { rectsOverlap } from './collision.js';
 import { renderGroundHazard } from './hazards/groundHazard.js';
 import { renderZapper, checkZapperCollision } from './hazards/zapper.js';
@@ -27,8 +32,12 @@ import { renderLaser, checkLaserCollision } from './hazards/laser.js';
 import { loadPatterns, resetSpawner, updateSpawner, getHazards, getZappers, getBirds, getLasers } from './spawner.js';
 import { resetCollectibles, updateCollectibles, renderAllFood, getCoins } from './collectible.js';
 import {
-    SLOT_SELECT, HATCHING, PLAYING, DYING, DEAD,
-    renderSlotSelectScreen, getSlotSelectAction, renderRunSummary
+    LOADING, SLOT_SELECT, MENU, HATCHING, PLAYING, PAUSED, DYING, DEAD,
+    renderSlotSelectScreen, getSlotSelectAction,
+    renderLoadingScreen, renderMenuScreen, getMenuAction,
+    renderPauseOverlay, getPauseAction,
+    renderRunSummary, getDeadScreenAction,
+    loadLogo
 } from './state.js';
 import {
     loadSlots, getSlots, getActiveSlot,
@@ -39,18 +48,21 @@ import { setDebugBiomeOverride, getDebugBiomeOverride } from './biome.js';
 let lastTime = 0;
 let accumulator = 0;
 let turkey = null;
-let gameState = SLOT_SELECT;
+let gameState = LOADING;
 
 // Run summary data (captured at moment of death)
 let runDistance = 0;
 let runCoins = 0;
 let isNewBest = false;
 
+// Loading progress tracking
+const loadProgress = { loaded: 0, total: 0 };
+
 // Hatching intro state
-const EGG_FALL_GRAVITY = 800;       // slightly slower than gameplay gravity for drama
-const EGG_WOBBLE_DURATION = 0.6;    // seconds of egg wobble after landing
-const HATCH_PAUSE_AFTER = 0.4;      // pause after hatch before gameplay starts
-let hatchPhase = 'falling';         // 'falling' | 'wobble' | 'hatching' | 'pause'
+const EGG_FALL_GRAVITY = 800;
+const EGG_WOBBLE_DURATION = 0.6;
+const HATCH_PAUSE_AFTER = 0.4;
+let hatchPhase = 'falling';
 let hatchTimer = 0;
 let eggVy = 0;
 
@@ -92,7 +104,6 @@ function startHatching() {
     resetSpawner();
     resetCollectibles();
 
-    // Position egg above screen, centered at PLAYER_START_X
     turkey.y = -PLAYER_RENDER_HEIGHT;
     turkey.vy = 0;
     eggVy = 0;
@@ -101,11 +112,10 @@ function startHatching() {
     hatchPhase = 'falling';
     hatchTimer = 0;
     gameState = HATCHING;
+    playMusic();
 }
 
 function startRun() {
-    // Don't reset position -- turkey is already on the ground after hatching.
-    // Just ensure the animation is set to run and clear any residual velocity.
     turkey.vy = 0;
     turkey.animState = 'run';
     gameState = PLAYING;
@@ -113,18 +123,24 @@ function startRun() {
 
 function handleDeath() {
     gameState = DYING;
+    stopMusic();
+    playGobble();
 
-    // Drain pending input so held presses don't trigger restart
     consumeJustPressed();
     consumeClick();
 
     playDeathAnimation(turkey, () => {
-        // Death animation complete -- capture stats and show summary
         runDistance = getDistanceMeters();
         runCoins = getCoins();
         isNewBest = updateActiveSlot(runCoins, runDistance);
         gameState = DEAD;
     });
+}
+
+function goToMenu() {
+    consumeJustPressed();
+    consumeClick();
+    gameState = MENU;
 }
 
 function handleSlotSelectClick(click) {
@@ -141,13 +157,13 @@ function handleSlotSelectClick(click) {
         const slot = slots[action.slotIndex];
         if (slot) {
             setActiveSlotIndex(action.slotIndex);
-            startHatching();
+            goToMenu();
         } else {
             const name = window.prompt('Enter your name:');
             if (name && name.trim()) {
                 createSlot(action.slotIndex, name.trim());
                 setActiveSlotIndex(action.slotIndex);
-                startHatching();
+                goToMenu();
             }
         }
     }
@@ -158,15 +174,59 @@ function handleSlotSelectClick(click) {
 // ---------------------------------------------------------------------------
 
 function update(dt) {
+    if (gameState === LOADING) {
+        // Nothing to update -- rendering handles the progress bar.
+        // Transition happens when loadProgress.loaded >= loadProgress.total.
+        return;
+    }
+
     if (gameState === SLOT_SELECT) {
         const click = consumeClick();
         consumeJustPressed();
         if (click) {
             handleSlotSelectClick(click);
         }
-    } else if (gameState === HATCHING) {
+        return;
+    }
+
+    if (gameState === MENU) {
+        const click = consumeClick();
+        consumeJustPressed();
+        if (click) {
+            const action = getMenuAction(click.x, click.y);
+            if (action === 'play') {
+                startHatching();
+            } else if (action === 'changeSlot') {
+                gameState = SLOT_SELECT;
+            }
+        }
+        return;
+    }
+
+    if (gameState === HATCHING) {
         updateHatching(dt);
-    } else if (gameState === PLAYING) {
+        return;
+    }
+
+    if (gameState === PLAYING) {
+        // Check for pause (Escape key or pause button click)
+        if (consumeEscapePressed()) {
+            consumeClick();
+            pauseMusic();
+            gameState = PAUSED;
+            return;
+        }
+        const click = consumeClick();
+        if (click && isMuteButtonClick(click.x, click.y)) {
+            toggleMute();
+            return;
+        }
+        if (click && isPauseButtonClick(click.x, click.y)) {
+            pauseMusic();
+            gameState = PAUSED;
+            return;
+        }
+
         // Debug: keys 1-5 force a biome
         const dbg = consumeDebugBiome();
         if (dbg > 0) setDebugBiomeOverride(dbg);
@@ -184,14 +244,53 @@ function update(dt) {
         if (checkCollisions()) {
             handleDeath();
         }
-    } else if (gameState === DYING) {
-        // World is frozen, only the death animation plays
-        updateAnimator(turkey.animator, dt);
-    } else if (gameState === DEAD) {
-        consumeClick();
-        if (consumeJustPressed()) {
-            startHatching();
+        return;
+    }
+
+    if (gameState === PAUSED) {
+        // Check for resume via Escape key
+        if (consumeEscapePressed()) {
+            consumeClick();
+            playMusic();
+            gameState = PLAYING;
+            return;
         }
+        const click = consumeClick();
+        consumeJustPressed();
+        if (click) {
+            if (isMuteButtonClick(click.x, click.y)) {
+                toggleMute();
+                return;
+            }
+            const action = getPauseAction(click.x, click.y);
+            if (action === 'resume') {
+                playMusic();
+                gameState = PLAYING;
+            } else if (action === 'quit') {
+                stopMusic();
+                goToMenu();
+            }
+        }
+        return;
+    }
+
+    if (gameState === DYING) {
+        updateAnimator(turkey.animator, dt);
+        return;
+    }
+
+    if (gameState === DEAD) {
+        const click = consumeClick();
+        consumeJustPressed();
+        if (click) {
+            const action = getDeadScreenAction(click.x, click.y);
+            if (action === 'playAgain') {
+                startHatching();
+            } else if (action === 'menu') {
+                goToMenu();
+            }
+        }
+        return;
     }
 }
 
@@ -202,7 +301,6 @@ function updateHatching(dt) {
         eggVy += EGG_FALL_GRAVITY * dt;
         turkey.y += eggVy * dt;
 
-        // Landed on the ground (feet touch GROUND_Y)
         if (turkey.y + feetY >= GROUND_Y) {
             turkey.y = GROUND_Y - feetY;
             eggVy = 0;
@@ -216,6 +314,7 @@ function updateHatching(dt) {
         if (hatchTimer >= EGG_WOBBLE_DURATION) {
             hatchPhase = 'hatching';
             hatchTimer = 0;
+            playSfx('eggCrack');
             playHatchAnimation(turkey, () => {
                 hatchPhase = 'pause';
                 hatchTimer = 0;
@@ -236,15 +335,31 @@ function render() {
     const ctx = getCtx();
     clear();
 
+    if (gameState === LOADING) {
+        const progress = loadProgress.total > 0
+            ? loadProgress.loaded / loadProgress.total
+            : 0;
+        renderLoadingScreen(ctx, progress);
+        return;
+    }
+
     if (gameState === SLOT_SELECT) {
         renderSlotSelectScreen(ctx, getSlots());
         return;
     }
 
-    // All other states show the gameplay scene
+    if (gameState === MENU) {
+        const slot = getActiveSlot();
+        const name = slot ? slot.name : '???';
+        renderMenuScreen(ctx, name);
+        return;
+    }
+
+    // All gameplay states show the world scene
     renderWorld(ctx);
 
-    if (gameState === PLAYING || gameState === DYING || gameState === DEAD) {
+    if (gameState === PLAYING || gameState === PAUSED ||
+        gameState === DYING || gameState === DEAD) {
         for (const hazard of getHazards()) {
             renderGroundHazard(ctx, hazard);
         }
@@ -263,16 +378,50 @@ function render() {
     renderTurkey(ctx, turkey);
 
     if (gameState === PLAYING) {
-        renderHud(ctx, getDistanceMeters(), getCoins());
+        renderHud(ctx, getDistanceMeters(), getCoins(), true);
+    }
+
+    if (gameState === PAUSED) {
+        renderHud(ctx, getDistanceMeters(), getCoins(), false);
+        renderPauseOverlay(ctx);
     }
 
     if (gameState === DEAD) {
-        renderHud(ctx, getDistanceMeters(), getCoins());
+        renderHud(ctx, getDistanceMeters(), getCoins(), false);
         const slot = getActiveSlot();
         const totalCoins = slot ? slot.totalCoins : 0;
         const bestDist = slot ? slot.bestDistance : 0;
         renderRunSummary(ctx, runDistance, runCoins, totalCoins, bestDist, isNewBest);
     }
+}
+
+// ---------------------------------------------------------------------------
+// Auto-pause on visibility change
+// ---------------------------------------------------------------------------
+
+function onVisibilityChange() {
+    if (document.hidden && gameState === PLAYING) {
+        pauseMusic();
+        gameState = PAUSED;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Asset loading with progress tracking
+// ---------------------------------------------------------------------------
+
+function loadWithProgress() {
+    loadProgress.total = TURKEY_ANIM_COUNT + BIRD_ANIM_COUNT + FOOD_ANIM_COUNT + 3;
+    loadProgress.loaded = 0;
+
+    const spritePromise = loadAll().then(() => { loadProgress.loaded++; });
+    const patternPromise = loadPatterns().then(() => { loadProgress.loaded++; });
+    const turkeyAnimPromise = loadTurkeyAnimations(() => { loadProgress.loaded++; });
+    const birdAnimPromise = loadBirdAnimations(() => { loadProgress.loaded++; });
+    const foodAnimPromise = loadFoodAnimations(() => { loadProgress.loaded++; });
+    const musicPromise = loadMusic().then(() => { loadProgress.loaded++; });
+
+    return Promise.all([spritePromise, patternPromise, turkeyAnimPromise, birdAnimPromise, foodAnimPromise, musicPromise]);
 }
 
 // ---------------------------------------------------------------------------
@@ -299,14 +448,24 @@ function start() {
     initRenderer();
     initInput(getCanvas());
     turkey = createTurkey();
-    gameState = SLOT_SELECT;
+    gameState = LOADING;
 
-    Promise.all([loadAll(), loadPatterns(), loadTurkeyAnimations()]).then(() => {
-        requestAnimationFrame((time) => {
-            lastTime = time;
-            gameLoop(time);
-        });
+    // Start the game loop immediately so the loading screen renders
+    requestAnimationFrame((time) => {
+        lastTime = time;
+        gameLoop(time);
     });
+
+    // Load logo first (tiny image, appears on loading screen almost immediately)
+    loadLogo();
+
+    // Load all game assets, tracking progress
+    loadWithProgress().then(() => {
+        gameState = SLOT_SELECT;
+    });
+
+    // Auto-pause when tab/app loses focus
+    document.addEventListener('visibilitychange', onVisibilityChange);
 }
 
 start();
