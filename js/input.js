@@ -8,6 +8,7 @@ let canvasRef = null;
 let clickX = -1;
 let clickY = -1;
 let hasClick = false;
+let debugBiomeKey = 0; // 1-5 when a debug biome key was pressed, 0 otherwise
 
 export function initInput(canvas) {
     canvasRef = canvas;
@@ -93,11 +94,22 @@ function onTouchEnd(e) {
     }
 }
 
+// Returns biome number 1-5 if a debug key was pressed, or 0.
+export function consumeDebugBiome() {
+    const val = debugBiomeKey;
+    debugBiomeKey = 0;
+    return val;
+}
+
 function onKeyDown(e) {
     if (e.code === 'Space') {
         e.preventDefault();
         pressed = true;
         justPressedFlag = true;
+    }
+    // Debug: keys 1-5 force a biome
+    if (e.code >= 'Digit1' && e.code <= 'Digit5') {
+        debugBiomeKey = parseInt(e.code.charAt(5), 10);
     }
 }
 

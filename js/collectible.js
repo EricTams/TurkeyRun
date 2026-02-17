@@ -88,3 +88,15 @@ export function spawnArc(originX, baseY, count, totalWidth, arcHeight) {
         addFood(originX + t * totalWidth, baseY - 4 * arcHeight * t * (1 - t));
     }
 }
+
+// ---------------------------------------------------------------------------
+// Path-based coin placement (Chunk 10A)
+// ---------------------------------------------------------------------------
+// Spawns food items at specific positions (used by spawner with path-generated
+// coordinates). Each position is {x, y} in world-pixel space.
+
+export function spawnCoinsAtPositions(positions) {
+    for (const pos of positions) {
+        addFood(pos.x, pos.y);
+    }
+}

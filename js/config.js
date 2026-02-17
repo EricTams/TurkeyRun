@@ -7,9 +7,23 @@ export const TARGET_FPS = 60;
 export const TIMESTEP = 1000 / TARGET_FPS;
 export const MAX_ACCUMULATED_TIME = TIMESTEP * 5;
 
-// Player
-export const PLAYER_WIDTH = 40;
-export const PLAYER_HEIGHT = 30;
+// Player -- render size matches native art (64x80 Aseprite frames)
+export const PLAYER_RENDER_WIDTH = 64;
+export const PLAYER_RENDER_HEIGHT = 80;
+
+// Transparent padding below the turkey's feet in the sprite frame.
+// The sprite is drawn this many px lower so feet sit on GROUND_Y.
+export const PLAYER_SPRITE_BOTTOM_PAD = 16;
+
+// Hitbox is smaller than the sprite for fair collision
+export const PLAYER_WIDTH = 36;
+export const PLAYER_HEIGHT = 40;
+export const PLAYER_HITBOX_OFFSET_X = 14;  // px from left edge of sprite to hitbox
+export const PLAYER_HITBOX_OFFSET_Y = 16;  // px from top edge of sprite to hitbox
+
+// Set to true to render a wireframe box around the player hitbox
+export const DEBUG_SHOW_HITBOX = true;
+
 export const PLAYER_START_X = 100;
 
 // Physics (pixels per second / pixels per second²)
@@ -43,6 +57,38 @@ export const POOL_NOODLE_WIDTH = 15;
 export const POOL_NOODLE_HEIGHT = 60;
 export const SAND_CASTLE_WIDTH = 50;
 export const SAND_CASTLE_HEIGHT = 35;
+
+// Ground hazards -- grass biome
+export const ROCK_WIDTH = 22;
+export const ROCK_HEIGHT = 28;
+export const BUSH_WIDTH = 48;
+export const BUSH_HEIGHT = 30;
+
+// Ground hazards -- mountain biome
+export const BOULDER_WIDTH = 45;
+export const BOULDER_HEIGHT = 50;
+export const ICE_PATCH_WIDTH = 55;
+export const ICE_PATCH_HEIGHT = 12;
+
+// Ground hazards -- moon biome
+export const CRATER_WIDTH = 50;
+export const CRATER_HEIGHT = 18;
+export const ALIEN_ROCK_WIDTH = 28;
+export const ALIEN_ROCK_HEIGHT = 40;
+
+// Ground hazards -- spiritual realm biome
+export const VOID_CRYSTAL_WIDTH = 30;
+export const VOID_CRYSTAL_HEIGHT = 48;
+export const WEIRD_PILLAR_WIDTH = 18;
+export const WEIRD_PILLAR_HEIGHT = 60;
+
+// Biome progression (distance in meters)
+export const BIOME_BEACH_START = 0;
+export const BIOME_GRASS_START = 500;
+export const BIOME_MOUNTAIN_START = 1200;
+export const BIOME_MOON_START = 2200;
+export const BIOME_SPIRITUAL_START = 3500;
+export const BIOME_TRANSITION_METERS = 150;   // color lerp zone before each boundary
 
 // Zappers
 export const ZAPPER_WIDTH = 30;
@@ -92,12 +138,15 @@ export const LASER_SWEEP_ACTIVE_DURATION = 2.0;     // seconds beam is deadly
 export const LASER_SWEEP_SPEED = 1.0;               // radians per second
 export const LASER_SWEEP_ARC = Math.PI * 0.5;       // total arc in radians (90°)
 
+// Path-based section generation
+export const PATH_COIN_SPACING = 36;          // px between coins along the safe path
+
 // Spawner -- procedural generation
 export const SPAWNER_GRACE_DISTANCE = 600;     // px of travel before first pattern
 export const SPAWNER_BASE_GAP = 700;           // px between patterns at distance 0
 export const SPAWNER_MIN_GAP = 250;            // px minimum gap at high distance
 export const SPAWNER_GAP_SHRINK_RATE = 150;    // px gap reduction per 1000m traveled
-export const SPAWNER_MEDIUM_FROM = 300;        // meters -- medium patterns begin
-export const SPAWNER_EASY_UNTIL = 500;         // meters -- easy becomes minority
+export const SPAWNER_EASY_COUNT = 4;           // first N patterns are always easy
 export const SPAWNER_HARD_FROM = 1000;         // meters -- hard patterns begin
-export const SPAWNER_HARD_DOMINANT = 2000;     // meters -- hard patterns dominate
+export const SPAWNER_EXTREME_FROM = 2000;      // meters -- extreme patterns begin
+export const SPAWNER_EXTREME_DOMINANT = 3500;  // meters -- extreme patterns dominate

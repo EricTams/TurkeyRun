@@ -2,6 +2,7 @@
 // and coin count with icon top-right.
 
 import { CANVAS_WIDTH } from './config.js';
+import { getDebugBiomeOverride, getCurrentBiomeName } from './biome.js';
 
 const HUD_FONT = 'bold 20px monospace';
 const HUD_COLOR = '#FFFFFF';
@@ -49,4 +50,17 @@ export function renderHud(ctx, distanceMeters, coins) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('$', iconX, iconY);
+
+    // Debug biome override indicator
+    const dbgBiome = getDebugBiomeOverride();
+    if (dbgBiome > 0) {
+        const name = getCurrentBiomeName(0); // distance ignored when override active
+        ctx.font = 'bold 14px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = '#000000';
+        ctx.fillText(`[DEBUG] Biome ${dbgBiome}: ${name}`, CANVAS_WIDTH / 2 + 1, HUD_PADDING + 1);
+        ctx.fillStyle = '#FF4444';
+        ctx.fillText(`[DEBUG] Biome ${dbgBiome}: ${name}`, CANVAS_WIDTH / 2, HUD_PADDING);
+    }
 }

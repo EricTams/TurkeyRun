@@ -9,7 +9,9 @@ import { getProgressPercent } from './save.js';
 // State constants
 // ---------------------------------------------------------------------------
 export const SLOT_SELECT = 'SLOT_SELECT';
+export const HATCHING = 'HATCHING';
 export const PLAYING = 'PLAYING';
+export const DYING = 'DYING';
 export const DEAD = 'DEAD';
 
 // ---------------------------------------------------------------------------
