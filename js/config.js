@@ -151,6 +151,12 @@ export const LASER_SWEEP_ARC = Math.PI * 0.5;       // total arc in radians (90Â
 // Path-based section generation
 export const PATH_COIN_SPACING = 36;          // px between coins along the safe path
 
+// Laser pattern debug mode -- cycles through all laser patterns, no other hazards
+export const DEBUG_LASER_TEST = false;
+
+// Laser patterns (screen-space gauntlet sections)
+export const LASER_PATTERN_PAUSE = 3.0;  // seconds between patterns in test mode
+
 // Spawner -- procedural generation
 export const SPAWNER_GRACE_DISTANCE = 600;     // px of travel before first pattern
 export const SPAWNER_BASE_GAP = 700;           // px between patterns at distance 0

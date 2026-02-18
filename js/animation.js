@@ -134,6 +134,30 @@ export function drawAnimator(ctx, animator, x, y, w, h) {
 }
 
 /**
+ * Draw a specific frame from a loaded animation by index.
+ * Index wraps automatically so callers can pass increasing counters.
+ */
+export function drawAnimationFrame(ctx, name, frameIndex, x, y, w, h) {
+    const anim = animations.get(name);
+    if (!anim || anim.frames.length === 0) return;
+    const safeIndex = ((frameIndex % anim.frames.length) + anim.frames.length) % anim.frames.length;
+    const frame = anim.frames[safeIndex];
+    ctx.drawImage(
+        anim.img,
+        frame.x, frame.y, frame.w, frame.h,
+        x, y, w, h
+    );
+}
+
+/**
+ * Return frame count for a loaded animation (0 if missing).
+ */
+export function getAnimationFrameCount(name) {
+    const anim = animations.get(name);
+    return anim ? anim.frames.length : 0;
+}
+
+/**
  * Load all 8 turkey animations. Returns a promise.
  * Optional onItemLoaded callback is called once per animation as it finishes.
  */
@@ -203,3 +227,22 @@ export function loadFoodAnimations(onItemLoaded) {
 
 /** Number of individual animation assets loaded by loadFoodAnimations. */
 export const FOOD_ANIM_COUNT = 10;
+
+/**
+ * Load jellyfish laser endpoint animations. Returns a promise.
+ */
+export function loadLaserAnimations(onItemLoaded) {
+    const base = 'assets/sprites/Lasers/';
+    const anims = [
+        ['laserJellyIdle',         'Jellyfish-Idle'],
+        ['laserJellyIntoElectric', 'Jellyfish-Into Electric'],
+        ['laserJellyElectric',     'Jellyfish-Electric']
+    ];
+    return Promise.all(anims.map(([name, file]) =>
+        loadAnimation(name, base + file + '.json', base + file + '.png')
+            .then(() => { if (onItemLoaded) onItemLoaded(); })
+    ));
+}
+
+/** Number of animation assets loaded by loadLaserAnimations. */
+export const LASER_ANIM_COUNT = 3;

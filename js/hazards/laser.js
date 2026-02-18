@@ -13,6 +13,7 @@ import {
     LASER_SWEEP_SPEED, LASER_SWEEP_ARC
 } from '../config.js';
 import { rectsOverlap } from '../collision.js';
+import { drawAnimationFrame, getAnimationFrameCount } from '../animation.js';
 
 // Phase constants
 const PHASE_WARNING = 'warning';
@@ -20,11 +21,14 @@ const PHASE_ACTIVE = 'active';
 
 // Colors
 const WARNING_COLOR_BASE = [255, 50, 50];
-const ACTIVE_COLOR = '#FF0000';
-const ACTIVE_GLOW_COLOR = 'rgba(255, 80, 0, 0.25)';
+const ACTIVE_COLOR = '#FFFFFF';
+const ACTIVE_GLOW_COLOR = 'rgba(160, 220, 255, 0.35)';
 const ACTIVE_CENTER_COLOR = '#FFFFFF';
 const EMITTER_COLOR = '#FF4500';
 const EMITTER_INNER_COLOR = '#FFAA00';
+const LIGHTNING_SEGMENTS = 16;
+const LIGHTNING_JITTER = 12;
+const JELLY_SIZE = 56;
 
 // -----------------------------------------------------------------------
 // Factory functions
@@ -39,7 +43,8 @@ export function createStaticLaser(x, beamY, beamWidth) {
         phase: PHASE_WARNING,
         timer: LASER_STATIC_WARNING_DURATION,
         warningDuration: LASER_STATIC_WARNING_DURATION,
-        activeDuration: LASER_STATIC_ACTIVE_DURATION
+        activeDuration: LASER_STATIC_ACTIVE_DURATION,
+        age: 0
     };
 }
 
@@ -57,7 +62,8 @@ export function createSweepLaser(pivotX, pivotY, angleMin, angleMax, sweepSpeed)
         phase: PHASE_WARNING,
         timer: LASER_SWEEP_WARNING_DURATION,
         warningDuration: LASER_SWEEP_WARNING_DURATION,
-        activeDuration: LASER_SWEEP_ACTIVE_DURATION
+        activeDuration: LASER_SWEEP_ACTIVE_DURATION,
+        age: 0
     };
 }
 
@@ -66,6 +72,8 @@ export function createSweepLaser(pivotX, pivotY, angleMin, angleMax, sweepSpeed)
 // -----------------------------------------------------------------------
 
 export function updateLaser(laser, dt) {
+    laser.age += dt;
+
     // Scroll with world
     if (laser.type === 'static') {
         laser.x -= AUTO_RUN_SPEED * dt;
@@ -166,7 +174,8 @@ function warningAlpha(timer, warningDuration) {
 }
 
 function renderStaticLaser(ctx, laser) {
-    const { x, beamY, beamWidth, phase, timer, warningDuration } = laser;
+    const { x, beamY, beamWidth, phase, timer, warningDuration, age } = laser;
+    const x2 = x + beamWidth;
 
     if (phase === PHASE_WARNING) {
         const alpha = warningAlpha(timer, warningDuration);
@@ -176,34 +185,19 @@ function renderStaticLaser(ctx, laser) {
         ctx.setLineDash([8, 6]);
         ctx.beginPath();
         ctx.moveTo(x, beamY);
-        ctx.lineTo(x + beamWidth, beamY);
+        ctx.lineTo(x2, beamY);
         ctx.stroke();
         ctx.setLineDash([]);
-
-        // Emitter nodes at beam ends
-        drawEmitterNode(ctx, x, beamY, 4);
-        drawEmitterNode(ctx, x + beamWidth, beamY, 4);
     } else {
-        // Outer glow
-        ctx.fillStyle = ACTIVE_GLOW_COLOR;
-        ctx.fillRect(x, beamY - LASER_BEAM_THICKNESS, beamWidth, LASER_BEAM_THICKNESS * 2);
-
-        // Core beam
-        ctx.fillStyle = ACTIVE_COLOR;
-        ctx.fillRect(x, beamY - LASER_BEAM_THICKNESS / 2, beamWidth, LASER_BEAM_THICKNESS);
-
-        // Bright center line
-        ctx.fillStyle = ACTIVE_CENTER_COLOR;
-        ctx.fillRect(x, beamY - 1, beamWidth, 2);
-
-        // Emitter nodes at beam ends
-        drawEmitterNode(ctx, x, beamY, 6);
-        drawEmitterNode(ctx, x + beamWidth, beamY, 6);
+        drawLightningBeam(ctx, x, beamY, x2, beamY, LASER_BEAM_THICKNESS, age);
     }
+
+    drawJellyEmitter(ctx, x, beamY, x2, beamY, phase, age, 4);
+    drawJellyEmitter(ctx, x2, beamY, x, beamY, phase, age + 0.3, 4);
 }
 
 function renderSweepLaser(ctx, laser) {
-    const { pivotX, pivotY, beamLength, angle, phase, timer, warningDuration } = laser;
+    const { pivotX, pivotY, beamLength, angle, phase, timer, warningDuration, age } = laser;
     const endX = pivotX + Math.cos(angle) * beamLength;
     const endY = pivotY + Math.sin(angle) * beamLength;
 
@@ -219,33 +213,11 @@ function renderSweepLaser(ctx, laser) {
         ctx.stroke();
         ctx.setLineDash([]);
     } else {
-        // Outer glow
-        ctx.strokeStyle = ACTIVE_GLOW_COLOR;
-        ctx.lineWidth = LASER_BEAM_THICKNESS * 3;
-        ctx.beginPath();
-        ctx.moveTo(pivotX, pivotY);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
-
-        // Core beam
-        ctx.strokeStyle = ACTIVE_COLOR;
-        ctx.lineWidth = LASER_BEAM_THICKNESS;
-        ctx.beginPath();
-        ctx.moveTo(pivotX, pivotY);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
-
-        // Bright center line
-        ctx.strokeStyle = ACTIVE_CENTER_COLOR;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(pivotX, pivotY);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
+        drawLightningBeam(ctx, pivotX, pivotY, endX, endY, LASER_BEAM_THICKNESS, age);
     }
 
-    // Emitter node at pivot (always visible)
-    drawEmitterNode(ctx, pivotX, pivotY, 8);
+    drawJellyEmitter(ctx, pivotX, pivotY, endX, endY, phase, age, 6);
+    drawJellyEmitter(ctx, endX, endY, pivotX, pivotY, phase, age + 0.3, 6);
 }
 
 function drawEmitterNode(ctx, x, y, radius) {
@@ -257,4 +229,81 @@ function drawEmitterNode(ctx, x, y, radius) {
     ctx.beginPath();
     ctx.arc(x, y, radius * 0.5, 0, Math.PI * 2);
     ctx.fill();
+}
+
+function drawLightningBeam(ctx, x1, y1, x2, y2, thickness, age) {
+    const points = buildLightningPoints(x1, y1, x2, y2, age);
+
+    // Glow pass
+    ctx.strokeStyle = ACTIVE_GLOW_COLOR;
+    ctx.lineWidth = thickness * 2.2;
+    strokePolyline(ctx, points);
+
+    // Core pass
+    ctx.strokeStyle = ACTIVE_COLOR;
+    ctx.lineWidth = thickness * 0.9;
+    strokePolyline(ctx, points);
+
+    // Hot center pass
+    ctx.strokeStyle = ACTIVE_CENTER_COLOR;
+    ctx.lineWidth = 2;
+    strokePolyline(ctx, points);
+}
+
+function strokePolyline(ctx, points) {
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+    }
+    ctx.stroke();
+}
+
+function buildLightningPoints(x1, y1, x2, y2, age) {
+    const points = [{ x: x1, y: y1 }];
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = -dy / len;
+    const ny = dx / len;
+
+    for (let i = 1; i < LIGHTNING_SEGMENTS; i++) {
+        const t = i / LIGHTNING_SEGMENTS;
+        const baseX = x1 + dx * t;
+        const baseY = y1 + dy * t;
+        const flicker = Math.sin(age * 34 + i * 2.7) + Math.sin(age * 21 - i * 1.9);
+        const offset = (flicker * 0.5) * LIGHTNING_JITTER;
+        points.push({
+            x: baseX + nx * offset,
+            y: baseY + ny * offset
+        });
+    }
+
+    points.push({ x: x2, y: y2 });
+    return points;
+}
+
+function drawJellyEmitter(ctx, x, y, targetX, targetY, phase, age, fallbackRadius) {
+    const animName = getJellyAnimName(phase);
+    const frameCount = getAnimationFrameCount(animName);
+    if (frameCount <= 0) {
+        drawEmitterNode(ctx, x, y, fallbackRadius);
+        return;
+    }
+
+    const fps = animName === 'laserJellyElectric' ? 10 : 8;
+    const frameIndex = Math.floor(age * fps) % frameCount;
+    const angle = Math.atan2(targetY - y, targetX - x) - Math.PI / 2;
+
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    drawAnimationFrame(ctx, animName, frameIndex, -JELLY_SIZE / 2, -JELLY_SIZE / 2, JELLY_SIZE, JELLY_SIZE);
+    ctx.restore();
+}
+
+function getJellyAnimName(phase) {
+    if (phase === PHASE_ACTIVE) return 'laserJellyElectric';
+    if (phase === PHASE_WARNING) return 'laserJellyIntoElectric';
+    return 'laserJellyIdle';
 }

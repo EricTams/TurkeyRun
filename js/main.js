@@ -4,9 +4,11 @@
 
 import {
     TIMESTEP, MAX_ACCUMULATED_TIME,
+    CANVAS_WIDTH,
     PLAYER_WIDTH, PLAYER_HEIGHT,
     PLAYER_RENDER_HEIGHT, PLAYER_SPRITE_BOTTOM_PAD,
-    GROUND_Y
+    GROUND_Y,
+    DEBUG_LASER_TEST, LASER_PATTERN_PAUSE
 } from './config.js';
 import { initRenderer, clear, getCtx, getCanvas } from './renderer.js';
 import {
@@ -18,7 +20,13 @@ import {
     getTurkeyHitbox, updateTurkeyAnimation,
     playDeathAnimation, setEggState, playHatchAnimation
 } from './turkey.js';
-import { updateAnimator, loadTurkeyAnimations, TURKEY_ANIM_COUNT, loadBirdAnimations, BIRD_ANIM_COUNT, loadFoodAnimations, FOOD_ANIM_COUNT } from './animation.js';
+import {
+    updateAnimator,
+    loadTurkeyAnimations, TURKEY_ANIM_COUNT,
+    loadBirdAnimations, BIRD_ANIM_COUNT,
+    loadFoodAnimations, FOOD_ANIM_COUNT,
+    loadLaserAnimations, LASER_ANIM_COUNT
+} from './animation.js';
 import { applyPhysics } from './physics.js';
 import { loadAll } from './sprites.js';
 import { createWorld, updateWorld, renderWorld, getDistanceMeters, getDistancePixels } from './world.js';
@@ -44,6 +52,12 @@ import {
     setActiveSlotIndex, createSlot, deleteSlot, updateActiveSlot
 } from './save.js';
 import { setDebugBiomeOverride, getDebugBiomeOverride } from './biome.js';
+import {
+    startLaserPattern, stopLaserPattern, isLaserPatternActive,
+    updateLaserPattern, checkLaserPatternCollision, renderLaserPattern,
+    getActivePatternName, getActivePatternElapsed, getActivePatternDuration
+} from './laserPattern.js';
+import { LASER_PATTERNS } from './data/laserPatterns.js';
 
 let lastTime = 0;
 let accumulator = 0;
@@ -54,6 +68,10 @@ let gameState = LOADING;
 let runDistance = 0;
 let runCoins = 0;
 let isNewBest = false;
+
+// Laser test mode state
+let laserTestIndex = 0;
+let laserTestPauseTimer = 0;
 
 // Loading progress tracking
 const loadProgress = { loaded: 0, total: 0 };
@@ -91,6 +109,9 @@ function checkCollisions() {
         if (checkLaserCollision(turkeyRect, laser)) {
             return true;
         }
+    }
+    if (checkLaserPatternCollision(turkeyRect)) {
+        return true;
     }
     return false;
 }
@@ -209,6 +230,11 @@ function update(dt) {
     }
 
     if (gameState === PLAYING) {
+        if (DEBUG_LASER_TEST) {
+            updateLaserTestMode(dt);
+            return;
+        }
+
         // Check for pause (Escape key or pause button click)
         if (consumeEscapePressed()) {
             consumeClick();
@@ -331,6 +357,76 @@ function updateHatching(dt) {
     }
 }
 
+// -----------------------------------------------------------------------
+// Laser test mode
+// -----------------------------------------------------------------------
+
+function updateLaserTestMode(dt) {
+    applyPhysics(turkey, dt, isPressed());
+    updateTurkeyAnimation(turkey, dt, isPressed());
+    updateWorld(dt);
+
+    if (isLaserPatternActive()) {
+        const stillActive = updateLaserPattern(dt);
+        if (!stillActive) {
+            laserTestPauseTimer = LASER_PATTERN_PAUSE;
+        }
+    } else {
+        laserTestPauseTimer -= dt;
+        if (laserTestPauseTimer <= 0) {
+            laserTestIndex = (laserTestIndex + 1) % LASER_PATTERNS.length;
+            startLaserPattern(LASER_PATTERNS[laserTestIndex]);
+        }
+    }
+
+    // Collision check (invincible -- just flash, don't die)
+    const hitbox = getTurkeyHitbox(turkey);
+    if (checkLaserPatternCollision(hitbox)) {
+        turkey._laserHitFlash = 0.15;
+    }
+    if (turkey._laserHitFlash > 0) {
+        turkey._laserHitFlash -= dt;
+    }
+}
+
+function renderLaserTestHud(ctx) {
+    const name = getActivePatternName();
+    const elapsed = getActivePatternElapsed();
+    const duration = getActivePatternDuration();
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+
+    if (isLaserPatternActive()) {
+        // Pattern name
+        ctx.font = 'bold 18px monospace';
+        ctx.fillStyle = '#000000';
+        ctx.fillText(name, CANVAS_WIDTH / 2 + 1, 11);
+        ctx.fillStyle = '#FF4444';
+        ctx.fillText(name, CANVAS_WIDTH / 2, 10);
+
+        // Timer bar
+        const barW = 200;
+        const barH = 6;
+        const barX = (CANVAS_WIDTH - barW) / 2;
+        const barY = 34;
+        const frac = Math.min(1, elapsed / duration);
+        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.fillRect(barX, barY, barW, barH);
+        ctx.fillStyle = '#FF6644';
+        ctx.fillRect(barX, barY, barW * frac, barH);
+    } else {
+        const nextIdx = (laserTestIndex + 1) % LASER_PATTERNS.length;
+        const nextName = LASER_PATTERNS[nextIdx].name;
+        const secs = Math.max(0, laserTestPauseTimer).toFixed(1);
+        ctx.font = 'bold 16px monospace';
+        ctx.fillStyle = '#000000';
+        ctx.fillText(`Next: ${nextName} in ${secs}s`, CANVAS_WIDTH / 2 + 1, 11);
+        ctx.fillStyle = '#AAAACC';
+        ctx.fillText(`Next: ${nextName} in ${secs}s`, CANVAS_WIDTH / 2, 10);
+    }
+}
+
 function render() {
     const ctx = getCtx();
     clear();
@@ -375,9 +471,24 @@ function render() {
         renderAllFood(ctx);
     }
 
+    if (gameState === PLAYING && DEBUG_LASER_TEST) {
+        renderLaserPattern(ctx);
+    } else if (isLaserPatternActive()) {
+        renderLaserPattern(ctx);
+    }
+
     renderTurkey(ctx, turkey);
 
-    if (gameState === PLAYING) {
+    // Hit flash overlay in laser test mode (invincible but shows collision)
+    if (DEBUG_LASER_TEST && turkey._laserHitFlash > 0) {
+        const hitbox = getTurkeyHitbox(turkey);
+        ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+        ctx.fillRect(hitbox.x, hitbox.y, hitbox.w, hitbox.h);
+    }
+
+    if (gameState === PLAYING && DEBUG_LASER_TEST) {
+        renderLaserTestHud(ctx);
+    } else if (gameState === PLAYING) {
         renderHud(ctx, getDistanceMeters(), getCoins(), true);
     }
 
@@ -411,7 +522,7 @@ function onVisibilityChange() {
 // ---------------------------------------------------------------------------
 
 function loadWithProgress() {
-    loadProgress.total = TURKEY_ANIM_COUNT + BIRD_ANIM_COUNT + FOOD_ANIM_COUNT + 3;
+    loadProgress.total = TURKEY_ANIM_COUNT + BIRD_ANIM_COUNT + FOOD_ANIM_COUNT + LASER_ANIM_COUNT + 3;
     loadProgress.loaded = 0;
 
     const spritePromise = loadAll().then(() => { loadProgress.loaded++; });
@@ -419,9 +530,18 @@ function loadWithProgress() {
     const turkeyAnimPromise = loadTurkeyAnimations(() => { loadProgress.loaded++; });
     const birdAnimPromise = loadBirdAnimations(() => { loadProgress.loaded++; });
     const foodAnimPromise = loadFoodAnimations(() => { loadProgress.loaded++; });
+    const laserAnimPromise = loadLaserAnimations(() => { loadProgress.loaded++; });
     const musicPromise = loadMusic().then(() => { loadProgress.loaded++; });
 
-    return Promise.all([spritePromise, patternPromise, turkeyAnimPromise, birdAnimPromise, foodAnimPromise, musicPromise]);
+    return Promise.all([
+        spritePromise,
+        patternPromise,
+        turkeyAnimPromise,
+        birdAnimPromise,
+        foodAnimPromise,
+        laserAnimPromise,
+        musicPromise
+    ]);
 }
 
 // ---------------------------------------------------------------------------
@@ -461,7 +581,15 @@ function start() {
 
     // Load all game assets, tracking progress
     loadWithProgress().then(() => {
-        gameState = SLOT_SELECT;
+        if (DEBUG_LASER_TEST) {
+            createWorld();
+            resetTurkey(turkey);
+            laserTestIndex = 0;
+            startLaserPattern(LASER_PATTERNS[0]);
+            gameState = PLAYING;
+        } else {
+            gameState = SLOT_SELECT;
+        }
     });
 
     // Auto-pause when tab/app loses focus

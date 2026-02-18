@@ -7,14 +7,12 @@
 // the current biome's hazard types (chunk 11).
 
 import {
+    AUTO_RUN_SPEED,
     CANVAS_WIDTH, GROUND_Y, PIXELS_PER_METER,
     ZAPPER_GAP_MARGIN,
     SPAWNER_GRACE_DISTANCE, SPAWNER_BASE_GAP, SPAWNER_MIN_GAP,
     SPAWNER_GAP_SHRINK_RATE, SPAWNER_EASY_COUNT,
-    SPAWNER_HARD_FROM, SPAWNER_EXTREME_FROM, SPAWNER_EXTREME_DOMINANT,
-    BIRD_HEIGHT,
-    LASER_BEAM_THICKNESS, LASER_STATIC_WIDTH,
-    LASER_SWEEP_SPEED, LASER_SWEEP_ARC,
+    SPAWNER_HARD_FROM, SPAWNER_EXTREME_FROM, SPAWNER_EXTREME_DOMINANT, BIRD_HEIGHT,
     PATH_COIN_SPACING
 } from './config.js';
 import {
@@ -26,13 +24,11 @@ import {
 import {
     createBird, updateBird, isBirdOffScreen
 } from './hazards/bird.js';
-import {
-    createStaticLaser, createSweepLaser,
-    updateLaser, isLaserOffScreen
-} from './hazards/laser.js';
 import { spawnCoinsAtPositions } from './collectible.js';
 import { generateCoinsOnPath } from './sectionPath.js';
 import { getBiomeGroundHazards } from './biome.js';
+import { updateLaserPattern, isLaserPatternActive, startLaserPattern, stopLaserPattern } from './laserPattern.js';
+import { LASER_PATTERNS_BY_TIER } from './data/laserPatterns.js';
 
 // ---------------------------------------------------------------------------
 // Pattern pool -- loaded from JSON
@@ -69,12 +65,6 @@ function resolveGapY(gapCenter, gapH) {
     return ZAPPER_GAP_MARGIN + available * clamped;
 }
 
-function resolveBeamY(beamCenter) {
-    const margin = LASER_BEAM_THICKNESS + 10;
-    const clamped = Math.max(0, Math.min(1, beamCenter));
-    return margin + (GROUND_Y - 2 * margin) * clamped;
-}
-
 function pickRandom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -82,6 +72,30 @@ function pickRandom(arr) {
 function randomBirdY() {
     const margin = 20;
     return margin + Math.random() * (GROUND_Y - BIRD_HEIGHT - 2 * margin);
+}
+
+function getLaserSectionChance(tier) {
+    if (tier === 'medium') return 0.15;
+    if (tier === 'hard') return 0.28;
+    if (tier === 'extreme') return 0.4;
+    return 0;
+}
+
+function getLaserSectionDistancePx(pattern) {
+    // Screen-space laser patterns are time-based; convert duration to
+    // approximate world distance for pacing between sections.
+    const durationPx = pattern.duration * AUTO_RUN_SPEED;
+    return Math.max(300, durationPx * 0.85);
+}
+
+function maybeSpawnLaserSection(tier) {
+    const pool = LASER_PATTERNS_BY_TIER[tier] || [];
+    if (pool.length === 0) return null;
+    if (isLaserPatternActive()) return null;
+    if (Math.random() >= getLaserSectionChance(tier)) return null;
+    const pattern = pickRandom(pool);
+    startLaserPattern(pattern);
+    return pattern;
 }
 
 // ---------------------------------------------------------------------------
@@ -133,7 +147,7 @@ function getGapForDistance(distanceMeters) {
 // Current distance in meters, updated each frame by updateSpawner()
 let currentDistanceMeters = 0;
 
-function spawnElement(elem, groundArr, zapperArr, laserArr) {
+function spawnElement(elem, groundArr, zapperArr) {
     if (elem.type === 'ground') {
         // Pick a biome-appropriate ground hazard type instead of the
         // pattern's hardcoded subType (which is always beach-biome).
@@ -153,23 +167,10 @@ function spawnElement(elem, groundArr, zapperArr, laserArr) {
         zapperArr.push(createBottomOpenZapper(CANVAS_WIDTH + elem.offsetX, elem.barHeight));
         return;
     }
-    if (elem.type === 'laserStatic') {
-        const beamY = resolveBeamY(elem.beamCenter);
-        const width = elem.beamWidth || LASER_STATIC_WIDTH;
-        laserArr.push(createStaticLaser(CANVAS_WIDTH + elem.offsetX, beamY, width));
+    // Legacy section lasers are intentionally disabled.
+    // We'll re-introduce lasers via dedicated laser sections.
+    if (elem.type === 'laserStatic' || elem.type === 'laserSweep') {
         return;
-    }
-    if (elem.type === 'laserSweep') {
-        const pivotY = elem.pivotSide === 'ceiling' ? 0 : GROUND_Y;
-        const halfArc = LASER_SWEEP_ARC / 2;
-        const centerAngle = elem.pivotSide === 'ceiling' ? Math.PI / 2 : -Math.PI / 2;
-        laserArr.push(createSweepLaser(
-            CANVAS_WIDTH + elem.offsetX,
-            pivotY,
-            centerAngle - halfArc,
-            centerAngle + halfArc,
-            LASER_SWEEP_SPEED
-        ));
     }
 }
 
@@ -180,7 +181,7 @@ function spawnElement(elem, groundArr, zapperArr, laserArr) {
 function spawnPattern(pattern) {
     // Spawn obstacle elements
     for (const elem of pattern.elements) {
-        spawnElement(elem, hazards, zappers, lasers);
+        spawnElement(elem, hazards, zappers);
     }
 
     // Spawn coins along the safe path
@@ -191,7 +192,7 @@ function spawnPattern(pattern) {
 
     // Spawn birds from pattern bird definitions
     if (pattern.birds) {
-        for (const birdDef of pattern.birds) {
+        for (const _birdDef of pattern.birds) {
             birds.push(createBird(randomBirdY()));
         }
     }
@@ -213,7 +214,6 @@ let nextSpawnDistancePx = 0;
 let hazards = [];
 let zappers = [];
 let birds = [];
-let lasers = [];
 let patternCount = 0;
 
 export function resetSpawner() {
@@ -221,9 +221,9 @@ export function resetSpawner() {
     hazards = [];
     zappers = [];
     birds = [];
-    lasers = [];
     patternCount = 0;
     currentDistanceMeters = 0;
+    stopLaserPattern();
 }
 
 export function updateSpawner(dt, distancePx, turkeyCenterX, turkeyCenterY) {
@@ -235,13 +235,20 @@ export function updateSpawner(dt, distancePx, turkeyCenterX, turkeyCenterY) {
     // Spawn next pattern when distance threshold is reached
     if (distancePx >= nextSpawnDistancePx) {
         const tier = selectTier(distanceMeters, patternCount);
-        const pool = POOL_BY_TIER[tier];
-        if (pool.length > 0) {
-            const pattern = pickRandom(pool);
-            spawnPattern(pattern);
+        const laserPattern = maybeSpawnLaserSection(tier);
+        if (laserPattern) {
             patternCount++;
-            const width = getPatternWidth(pattern);
+            const width = getLaserSectionDistancePx(laserPattern);
             nextSpawnDistancePx = distancePx + width + getGapForDistance(distanceMeters);
+        } else {
+            const pool = POOL_BY_TIER[tier];
+            if (pool.length > 0) {
+                const pattern = pickRandom(pool);
+                spawnPattern(pattern);
+                patternCount++;
+                const width = getPatternWidth(pattern);
+                nextSpawnDistancePx = distancePx + width + getGapForDistance(distanceMeters);
+            }
         }
     }
 
@@ -257,11 +264,10 @@ export function updateSpawner(dt, distancePx, turkeyCenterX, turkeyCenterY) {
     }
     zappers = zappers.filter(z => !isZapperOffScreen(z));
 
-    // Update and cull lasers
-    for (const l of lasers) {
-        updateLaser(l, dt);
+    // Update active laser section pattern (if any)
+    if (isLaserPatternActive()) {
+        updateLaserPattern(dt);
     }
-    lasers = lasers.filter(l => !isLaserOffScreen(l));
 
     // Update and cull birds
     for (const b of birds) {
@@ -283,5 +289,5 @@ export function getBirds() {
 }
 
 export function getLasers() {
-    return lasers;
+    return [];
 }

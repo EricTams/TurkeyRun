@@ -79,8 +79,8 @@ TIER_PARAMS = {
         "section_length_max": 550,
         "obstacle_count_min": 2,
         "obstacle_count_max": 5,
-        # Zapper density increased ~50%: duplicated 'zapper' + added 'zapperBottomOpen'
-        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen", "laserStatic"],
+        # Laser obstacles removed; medium uses only ground/zapper variants.
+        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.3,
     },
@@ -94,9 +94,8 @@ TIER_PARAMS = {
         "section_length_max": 600,
         "obstacle_count_min": 3,
         "obstacle_count_max": 7,
-        # Zapper density increased ~50%: duplicated 'zapper' + added 'zapperBottomOpen'
-        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen",
-                           "laserStatic", "laserStatic", "laserSweep"],
+        # Laser obstacles removed; hard uses only ground/zapper variants.
+        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.5,
     },
@@ -110,9 +109,8 @@ TIER_PARAMS = {
         "section_length_max": 650,
         "obstacle_count_min": 4,
         "obstacle_count_max": 8,
-        # Zapper density increased ~50%: duplicated 'zapper' + added 'zapperBottomOpen'
-        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen",
-                           "laserStatic", "laserStatic", "laserSweep"],
+        # Laser obstacles removed; extreme uses only ground/zapper variants.
+        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.7,
     },

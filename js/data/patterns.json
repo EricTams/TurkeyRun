@@ -4,22 +4,22 @@
       "path": [
         {
           "x": 0,
-          "y": 0.397,
+          "y": 0.227,
           "width": 180
         },
         {
-          "x": 118,
-          "y": 0.55,
+          "x": 121,
+          "y": 0.311,
           "width": 180
         },
         {
-          "x": 235,
-          "y": 0.593,
+          "x": 265,
+          "y": 0.475,
           "width": 180
         },
         {
-          "x": 362,
-          "y": 0.518,
+          "x": 325,
+          "y": 0.574,
           "width": 180
         }
       ],
@@ -27,17 +27,12 @@
         {
           "type": "ground",
           "subType": "sandCastle",
-          "offsetX": 77
+          "offsetX": 26
         },
         {
           "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 171
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 307
+          "subType": "poolNoodle",
+          "offsetX": 220
         }
       ],
       "birds": []
@@ -46,45 +41,40 @@
       "path": [
         {
           "x": 0,
-          "y": 0.191,
+          "y": 0.581,
           "width": 180
         },
         {
-          "x": 116,
-          "y": 0.165,
+          "x": 159,
+          "y": 0.555,
           "width": 180
         },
         {
-          "x": 226,
-          "y": 0.086,
+          "x": 279,
+          "y": 0.72,
           "width": 180
         },
         {
-          "x": 360,
-          "y": 0.181,
+          "x": 404,
+          "y": 0.761,
           "width": 180
         },
         {
-          "x": 442,
-          "y": 0.066,
+          "x": 412,
+          "y": 0.647,
           "width": 180
         }
       ],
       "elements": [
         {
           "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 102
+          "subType": "poolNoodle",
+          "offsetX": 37
         },
         {
           "type": "ground",
           "subType": "sandCastle",
-          "offsetX": 184
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 365
+          "offsetX": 127
         }
       ],
       "birds": []
@@ -93,30 +83,93 @@
       "path": [
         {
           "x": 0,
-          "y": 0.341,
+          "y": 0.497,
           "width": 180
         },
         {
-          "x": 171,
-          "y": 0.326,
+          "x": 133,
+          "y": 0.464,
           "width": 180
         },
         {
-          "x": 281,
+          "x": 275,
+          "y": 0.577,
+          "width": 180
+        },
+        {
+          "x": 391,
+          "y": 0.631,
+          "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 125
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.732,
+          "width": 180
+        },
+        {
+          "x": 139,
+          "y": 0.789,
+          "width": 180
+        },
+        {
+          "x": 325,
+          "y": 0.778,
+          "width": 180
+        },
+        {
+          "x": 384,
+          "y": 0.616,
+          "width": 180
+        }
+      ],
+      "elements": [],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.264,
+          "width": 180
+        },
+        {
+          "x": 179,
           "y": 0.235,
           "width": 180
         },
         {
-          "x": 447,
-          "y": 0.075,
+          "x": 331,
+          "y": 0.088,
+          "width": 180
+        },
+        {
+          "x": 350,
+          "y": 0.123,
           "width": 180
         }
       ],
       "elements": [
         {
           "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 130
+        },
+        {
+          "type": "ground",
           "subType": "poolNoodle",
-          "offsetX": 80
+          "offsetX": 214
         }
       ],
       "birds": []
@@ -125,22 +178,43 @@
       "path": [
         {
           "x": 0,
-          "y": 0.292,
+          "y": 0.823,
           "width": 180
         },
         {
-          "x": 183,
-          "y": 0.223,
+          "x": 160,
+          "y": 0.882,
           "width": 180
         },
         {
           "x": 338,
-          "y": 0.237,
+          "y": 0.824,
           "width": 180
         },
         {
-          "x": 413,
-          "y": 0.171,
+          "x": 387,
+          "y": 0.811,
+          "width": 180
+        }
+      ],
+      "elements": [],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.683,
+          "width": 180
+        },
+        {
+          "x": 159,
+          "y": 0.601,
+          "width": 180
+        },
+        {
+          "x": 329,
+          "y": 0.658,
           "width": 180
         }
       ],
@@ -148,7 +222,7 @@
         {
           "type": "ground",
           "subType": "sandCastle",
-          "offsetX": 64
+          "offsetX": 192
         }
       ],
       "birds": []
@@ -157,123 +231,22 @@
       "path": [
         {
           "x": 0,
-          "y": 0.247,
+          "y": 0.45,
           "width": 180
         },
         {
-          "x": 140,
-          "y": 0.337,
+          "x": 157,
+          "y": 0.375,
           "width": 180
         },
         {
-          "x": 310,
-          "y": 0.405,
+          "x": 287,
+          "y": 0.201,
           "width": 180
         },
         {
-          "x": 357,
-          "y": 0.365,
-          "width": 180
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 149
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 221
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.694,
-          "width": 180
-        },
-        {
-          "x": 158,
-          "y": 0.617,
-          "width": 180
-        },
-        {
-          "x": 271,
-          "y": 0.689,
-          "width": 180
-        },
-        {
-          "x": 414,
-          "y": 0.608,
-          "width": 180
-        },
-        {
-          "x": 443,
-          "y": 0.611,
-          "width": 180
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 132
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.32,
-          "width": 180
-        },
-        {
-          "x": 151,
-          "y": 0.452,
-          "width": 180
-        },
-        {
-          "x": 297,
-          "y": 0.504,
-          "width": 180
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 105
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.532,
-          "width": 180
-        },
-        {
-          "x": 151,
-          "y": 0.607,
-          "width": 180
-        },
-        {
-          "x": 294,
-          "y": 0.634,
-          "width": 180
-        },
-        {
-          "x": 320,
-          "y": 0.72,
+          "x": 351,
+          "y": 0.212,
           "width": 180
         }
       ],
@@ -281,12 +254,12 @@
         {
           "type": "ground",
           "subType": "poolNoodle",
-          "offsetX": 57
+          "offsetX": 151
         },
         {
           "type": "ground",
           "subType": "sandCastle",
-          "offsetX": 124
+          "offsetX": 276
         }
       ],
       "birds": []
@@ -297,34 +270,363 @@
       "path": [
         {
           "x": 0,
-          "y": 0.437,
+          "y": 0.373,
           "width": 140
         },
         {
-          "x": 92,
-          "y": 0.288,
+          "x": 116,
+          "y": 0.561,
           "width": 140
         },
         {
-          "x": 259,
-          "y": 0.136,
+          "x": 208,
+          "y": 0.37,
           "width": 140
         },
         {
-          "x": 336,
-          "y": 0.276,
+          "x": 352,
+          "y": 0.371,
+          "width": 140
+        },
+        {
+          "x": 466,
+          "y": 0.579,
+          "width": 140
+        },
+        {
+          "x": 495,
+          "y": 0.516,
           "width": 140
         }
       ],
       "elements": [
         {
+          "type": "zapperBottomOpen",
+          "offsetX": 119,
+          "barHeight": 137
+        },
+        {
           "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 69
+          "subType": "poolNoodle",
+          "offsetX": 223
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 293
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 370
         },
         {
           "type": "zapper",
-          "offsetX": 229,
+          "offsetX": 444,
+          "gapCenter": 0.56,
+          "gapH": 119
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.539,
+          "width": 140
+        },
+        {
+          "x": 122,
+          "y": 0.57,
+          "width": 140
+        },
+        {
+          "x": 289,
+          "y": 0.396,
+          "width": 140
+        },
+        {
+          "x": 409,
+          "y": 0.34,
+          "width": 140
+        },
+        {
+          "x": 501,
+          "y": 0.381,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 68,
+          "barHeight": 108
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 161
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 229
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 299
+        },
+        {
+          "type": "zapper",
+          "offsetX": 401,
+          "gapCenter": 0.26,
+          "gapH": 119
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.727,
+          "width": 140
+        },
+        {
+          "x": 109,
+          "y": 0.574,
+          "width": 140
+        },
+        {
+          "x": 228,
+          "y": 0.676,
+          "width": 140
+        },
+        {
+          "x": 311,
+          "y": 0.407,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 60,
+          "barHeight": 148
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 159
+        },
+        {
+          "type": "zapper",
+          "offsetX": 276,
+          "gapCenter": 0.531,
+          "gapH": 119
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.269,
+          "width": 140
+        },
+        {
+          "x": 143,
+          "y": 0.091,
+          "width": 180
+        },
+        {
+          "x": 276,
+          "y": 0.078,
+          "width": 180
+        },
+        {
+          "x": 301,
+          "y": 0.05,
+          "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 58,
+          "gapCenter": 0.034,
+          "gapH": 119
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 211,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.336,
+          "width": 140
+        },
+        {
+          "x": 139,
+          "y": 0.413,
+          "width": 140
+        },
+        {
+          "x": 275,
+          "y": 0.207,
+          "width": 140
+        },
+        {
+          "x": 351,
+          "y": 0.433,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 122,
+          "gapCenter": 0.352,
+          "gapH": 119
+        },
+        {
+          "type": "zapper",
+          "offsetX": 280,
+          "gapCenter": 0.072,
+          "gapH": 119
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.799,
+          "width": 140
+        },
+        {
+          "x": 167,
+          "y": 0.936,
+          "width": 180
+        },
+        {
+          "x": 329,
+          "y": 0.849,
+          "width": 140
+        },
+        {
+          "x": 459,
+          "y": 0.78,
+          "width": 140
+        },
+        {
+          "x": 504,
+          "y": 0.95,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 423,
+          "barHeight": 131
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 185,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.545,
+          "width": 140
+        },
+        {
+          "x": 138,
+          "y": 0.524,
+          "width": 140
+        },
+        {
+          "x": 272,
+          "y": 0.253,
+          "width": 140
+        },
+        {
+          "x": 307,
+          "y": 0.53,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 76,
+          "barHeight": 102
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 197
+        },
+        {
+          "type": "zapper",
+          "offsetX": 257,
+          "gapCenter": 0.167,
+          "gapH": 119
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.715,
+          "width": 140
+        },
+        {
+          "x": 134,
+          "y": 0.585,
+          "width": 140
+        },
+        {
+          "x": 295,
+          "y": 0.316,
+          "width": 140
+        },
+        {
+          "x": 409,
+          "y": 0.05,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 257,
+          "gapCenter": 0.315,
+          "gapH": 119
+        },
+        {
+          "type": "zapper",
+          "offsetX": 378,
           "gapCenter": 0,
           "gapH": 119
         }
@@ -335,32 +637,212 @@
       "path": [
         {
           "x": 0,
-          "y": 0.5,
+          "y": 0.769,
           "width": 140
         },
         {
-          "x": 101,
-          "y": 0.309,
+          "x": 106,
+          "y": 0.95,
           "width": 140
         },
         {
-          "x": 216,
-          "y": 0.185,
+          "x": 222,
+          "y": 0.95,
+          "width": 180
+        },
+        {
+          "x": 355,
+          "y": 0.95,
+          "width": 180
+        },
+        {
+          "x": 468,
+          "y": 0.673,
           "width": 140
         },
         {
-          "x": 320,
-          "y": 0.062,
+          "x": 507,
+          "y": 0.874,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 59,
+          "gapCenter": 1,
+          "gapH": 119
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 337,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.567,
+          "width": 180
+        },
+        {
+          "x": 121,
+          "y": 0.586,
+          "width": 180
+        },
+        {
+          "x": 249,
+          "y": 0.772,
+          "width": 180
+        },
+        {
+          "x": 349,
+          "y": 0.926,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 309,
+          "gapCenter": 1,
+          "gapH": 119
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 111,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 131,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.538,
           "width": 140
         },
         {
-          "x": 433,
-          "y": 0.05,
+          "x": 138,
+          "y": 0.59,
           "width": 140
         },
         {
-          "x": 512,
-          "y": 0.05,
+          "x": 269,
+          "y": 0.53,
+          "width": 180
+        },
+        {
+          "x": 362,
+          "y": 0.288,
+          "width": 180
+        },
+        {
+          "x": 395,
+          "y": 0.286,
+          "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 104,
+          "barHeight": 143
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 288,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 275,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.415,
+          "width": 140
+        },
+        {
+          "x": 113,
+          "y": 0.221,
+          "width": 140
+        },
+        {
+          "x": 257,
+          "y": 0.37,
+          "width": 140
+        },
+        {
+          "x": 365,
+          "y": 0.562,
+          "width": 140
+        },
+        {
+          "x": 518,
+          "y": 0.347,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 33,
+          "gapCenter": 0.282,
+          "gapH": 119
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 292
+        },
+        {
+          "type": "zapper",
+          "offsetX": 419,
+          "gapCenter": 0.479,
+          "gapH": 119
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.415,
+          "width": 140
+        },
+        {
+          "x": 147,
+          "y": 0.351,
+          "width": 140
+        },
+        {
+          "x": 280,
+          "y": 0.587,
+          "width": 140
+        },
+        {
+          "x": 350,
+          "y": 0.765,
           "width": 140
         }
       ],
@@ -368,25 +850,12 @@
         {
           "type": "ground",
           "subType": "poolNoodle",
-          "offsetX": 140
+          "offsetX": 56
         },
         {
-          "type": "zapper",
-          "offsetX": 219,
-          "gapCenter": 0.01,
-          "gapH": 119
-        },
-        {
-          "type": "zapper",
-          "offsetX": 316,
-          "gapCenter": 0,
-          "gapH": 119
-        },
-        {
-          "type": "zapper",
-          "offsetX": 409,
-          "gapCenter": 0,
-          "gapH": 119
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 127
         }
       ],
       "birds": []
@@ -395,1142 +864,49 @@
       "path": [
         {
           "x": 0,
-          "y": 0.272,
+          "y": 0.625,
           "width": 140
         },
         {
-          "x": 131,
-          "y": 0.249,
+          "x": 133,
+          "y": 0.474,
           "width": 140
         },
         {
-          "x": 287,
-          "y": 0.491,
+          "x": 265,
+          "y": 0.64,
           "width": 140
         },
         {
-          "x": 339,
+          "x": 397,
+          "y": 0.424,
+          "width": 140
+        },
+        {
+          "x": 408,
           "y": 0.48,
           "width": 140
         }
       ],
       "elements": [
         {
-          "type": "zapper",
-          "offsetX": 127,
-          "gapCenter": 0.115,
-          "gapH": 119
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 287,
-          "barHeight": 102
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.788,
-          "width": 180
-        },
-        {
-          "x": 142,
-          "y": 0.699,
-          "width": 180
-        },
-        {
-          "x": 244,
-          "y": 0.899,
-          "width": 180
-        },
-        {
-          "x": 331,
-          "y": 0.729,
-          "width": 180
-        }
-      ],
-      "elements": [],
-      "birds": [
-        {
-          "offsetX": 107,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        },
-        {
-          "offsetX": 222,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.271,
-          "width": 140
-        },
-        {
-          "x": 142,
-          "y": 0.168,
-          "width": 180
-        },
-        {
-          "x": 255,
-          "y": 0.391,
-          "width": 180
-        },
-        {
-          "x": 349,
-          "y": 0.479,
-          "width": 140
-        }
-      ],
-      "elements": [],
-      "birds": [
-        {
-          "offsetX": 165,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        },
-        {
-          "offsetX": 147,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.554,
-          "width": 140
-        },
-        {
-          "x": 121,
-          "y": 0.59,
-          "width": 140
-        },
-        {
-          "x": 272,
-          "y": 0.777,
-          "width": 140
-        },
-        {
-          "x": 311,
-          "y": 0.95,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "laserStatic",
-          "offsetX": 13,
-          "beamCenter": 0.293
-        },
-        {
-          "type": "zapper",
-          "offsetX": 195,
-          "gapCenter": 0.779,
-          "gapH": 119
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.811,
-          "width": 140
-        },
-        {
-          "x": 155,
-          "y": 0.824,
-          "width": 140
-        },
-        {
-          "x": 317,
-          "y": 0.722,
-          "width": 140
-        },
-        {
-          "x": 433,
-          "y": 0.824,
-          "width": 140
-        },
-        {
-          "x": 524,
-          "y": 0.746,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 120,
-          "gapCenter": 0.994,
-          "gapH": 119
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 204,
-          "barHeight": 152
-        },
-        {
-          "type": "zapper",
-          "offsetX": 321,
-          "gapCenter": 0.847,
-          "gapH": 119
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 429,
-          "barHeight": 160
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.484,
-          "width": 140
-        },
-        {
-          "x": 165,
-          "y": 0.628,
-          "width": 140
-        },
-        {
-          "x": 282,
-          "y": 0.759,
-          "width": 140
-        },
-        {
-          "x": 324,
-          "y": 0.536,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
           "type": "ground",
           "subType": "poolNoodle",
-          "offsetX": 67
+          "offsetX": 22
         },
         {
           "type": "ground",
           "subType": "sandCastle",
-          "offsetX": 129
-        },
-        {
-          "type": "laserStatic",
-          "offsetX": 196,
-          "beamCenter": 0.141
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.669,
-          "width": 140
-        },
-        {
-          "x": 139,
-          "y": 0.402,
-          "width": 140
-        },
-        {
-          "x": 268,
-          "y": 0.602,
-          "width": 140
-        },
-        {
-          "x": 410,
-          "y": 0.563,
-          "width": 140
-        },
-        {
-          "x": 534,
-          "y": 0.66,
-          "width": 140
-        },
-        {
-          "x": 542,
-          "y": 0.688,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "laserStatic",
-          "offsetX": 51,
-          "beamCenter": 0.298
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 192,
-          "barHeight": 112
-        },
-        {
-          "type": "laserStatic",
-          "offsetX": 325,
-          "beamCenter": 0.154
-        },
-        {
-          "type": "zapper",
-          "offsetX": 406,
-          "gapCenter": 0.599,
-          "gapH": 119
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.236,
-          "width": 140
-        },
-        {
-          "x": 135,
-          "y": 0.113,
-          "width": 180
-        },
-        {
-          "x": 274,
-          "y": 0.312,
-          "width": 180
-        },
-        {
-          "x": 392,
-          "y": 0.527,
-          "width": 140
-        },
-        {
-          "x": 481,
-          "y": 0.34,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 65
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 407
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 198,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.494,
-          "width": 140
-        },
-        {
-          "x": 158,
-          "y": 0.467,
-          "width": 140
-        },
-        {
-          "x": 309,
-          "y": 0.331,
-          "width": 140
-        },
-        {
-          "x": 455,
-          "y": 0.55,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 91
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 176,
-          "barHeight": 102
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 297
+          "offsetX": 117
         },
         {
           "type": "ground",
           "subType": "poolNoodle",
-          "offsetX": 360
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.612,
-          "width": 140
-        },
-        {
-          "x": 168,
-          "y": 0.384,
-          "width": 140
-        },
-        {
-          "x": 325,
-          "y": 0.164,
-          "width": 140
-        },
-        {
-          "x": 495,
-          "y": 0.05,
-          "width": 140
-        },
-        {
-          "x": 528,
-          "y": 0.05,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 61,
-          "gapCenter": 0.545,
-          "gapH": 119
-        },
-        {
-          "type": "zapper",
-          "offsetX": 145,
-          "gapCenter": 0.37,
-          "gapH": 119
+          "offsetX": 258
         },
         {
           "type": "ground",
           "subType": "sandCastle",
-          "offsetX": 244
-        },
-        {
-          "type": "laserStatic",
-          "offsetX": 403,
-          "beamCenter": 0.868
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.241,
-          "width": 140
-        },
-        {
-          "x": 135,
-          "y": 0.069,
-          "width": 140
-        },
-        {
-          "x": 289,
-          "y": 0.149,
-          "width": 140
-        },
-        {
-          "x": 434,
-          "y": 0.125,
-          "width": 140
-        },
-        {
-          "x": 520,
-          "y": 0.05,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 52,
-          "gapCenter": 0,
-          "gapH": 119
-        },
-        {
-          "type": "zapper",
-          "offsetX": 147,
-          "gapCenter": 0,
-          "gapH": 119
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 288
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 488
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.397,
-          "width": 140
-        },
-        {
-          "x": 151,
-          "y": 0.234,
-          "width": 140
-        },
-        {
-          "x": 305,
-          "y": 0.129,
-          "width": 140
-        },
-        {
-          "x": 405,
-          "y": 0.05,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 93
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 157
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.206,
-          "width": 140
-        },
-        {
-          "x": 158,
-          "y": 0.087,
-          "width": 180
-        },
-        {
-          "x": 269,
-          "y": 0.243,
-          "width": 180
-        },
-        {
-          "x": 424,
-          "y": 0.464,
-          "width": 140
-        },
-        {
-          "x": 437,
-          "y": 0.466,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 24
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 370
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 196,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    }
-  ],
-  "hard": [
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.689,
-          "width": 100
-        },
-        {
-          "x": 115,
-          "y": 0.95,
-          "width": 100
-        },
-        {
-          "x": 208,
-          "y": 0.918,
-          "width": 180
-        },
-        {
-          "x": 303,
-          "y": 0.95,
-          "width": 180
-        },
-        {
-          "x": 446,
-          "y": 0.95,
-          "width": 100
-        },
-        {
-          "x": 559,
-          "y": 0.95,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 103,
-          "gapCenter": 1,
-          "gapH": 90
-        },
-        {
-          "type": "laserSweep",
-          "offsetX": 472,
-          "pivotSide": "ceiling"
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 244,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.237,
-          "width": 100
-        },
-        {
-          "x": 86,
-          "y": 0.345,
-          "width": 100
-        },
-        {
-          "x": 197,
-          "y": 0.445,
-          "width": 180
-        },
-        {
-          "x": 292,
-          "y": 0.611,
-          "width": 180
-        },
-        {
-          "x": 393,
-          "y": 0.913,
-          "width": 100
-        },
-        {
-          "x": 510,
-          "y": 0.729,
-          "width": 100
-        },
-        {
-          "x": 519,
-          "y": 0.367,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "laserStatic",
-          "offsetX": 118,
-          "beamCenter": 0.639
-        },
-        {
-          "type": "laserStatic",
-          "offsetX": 415,
-          "beamCenter": 0.518
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 271,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        },
-        {
-          "offsetX": 251,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.467,
-          "width": 100
-        },
-        {
-          "x": 102,
-          "y": 0.137,
-          "width": 180
-        },
-        {
-          "x": 197,
-          "y": 0.082,
-          "width": 180
-        },
-        {
-          "x": 273,
-          "y": 0.05,
-          "width": 180
-        },
-        {
-          "x": 352,
-          "y": 0.05,
-          "width": 180
-        },
-        {
-          "x": 372,
-          "y": 0.05,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 27
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 203,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        },
-        {
-          "offsetX": 247,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.345,
-          "width": 100
-        },
-        {
-          "x": 131,
-          "y": 0.466,
-          "width": 100
-        },
-        {
-          "x": 214,
-          "y": 0.819,
-          "width": 180
-        },
-        {
-          "x": 305,
-          "y": 0.721,
-          "width": 180
-        },
-        {
-          "x": 425,
-          "y": 0.51,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "laserStatic",
-          "offsetX": 50,
-          "beamCenter": 0.583
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 255,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.328,
-          "width": 100
-        },
-        {
-          "x": 116,
-          "y": 0.285,
-          "width": 100
-        },
-        {
-          "x": 227,
-          "y": 0.075,
-          "width": 100
-        },
-        {
-          "x": 341,
-          "y": 0.192,
-          "width": 180
-        },
-        {
-          "x": 483,
-          "y": 0.05,
-          "width": 100
-        },
-        {
-          "x": 546,
-          "y": 0.182,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 69,
-          "gapCenter": 0.231,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 502,
-          "gapCenter": 0,
-          "gapH": 90
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 355,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.61,
-          "width": 100
-        },
-        {
-          "x": 143,
-          "y": 0.73,
-          "width": 100
-        },
-        {
-          "x": 260,
-          "y": 0.358,
-          "width": 180
-        },
-        {
-          "x": 363,
-          "y": 0.224,
-          "width": 180
-        },
-        {
-          "x": 497,
-          "y": 0.471,
-          "width": 100
-        },
-        {
-          "x": 529,
-          "y": 0.575,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "laserSweep",
-          "offsetX": 75,
-          "pivotSide": "ceiling"
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 167,
-          "barHeight": 126
-        },
-        {
-          "type": "laserSweep",
-          "offsetX": 473,
-          "pivotSide": "ground"
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 323,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        },
-        {
-          "offsetX": 302,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.665,
-          "width": 100
-        },
-        {
-          "x": 92,
-          "y": 0.411,
-          "width": 100
-        },
-        {
-          "x": 214,
-          "y": 0.311,
-          "width": 100
-        },
-        {
-          "x": 304,
-          "y": 0.419,
-          "width": 100
-        },
-        {
-          "x": 399,
-          "y": 0.23,
-          "width": 100
-        },
-        {
-          "x": 412,
-          "y": 0.21,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 87
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 262
-        },
-        {
-          "type": "zapper",
-          "offsetX": 347,
-          "gapCenter": 0.273,
-          "gapH": 90
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.691,
-          "width": 100
-        },
-        {
-          "x": 84,
-          "y": 0.415,
-          "width": 100
-        },
-        {
-          "x": 189,
-          "y": 0.533,
-          "width": 100
-        },
-        {
-          "x": 332,
-          "y": 0.182,
-          "width": 100
-        },
-        {
-          "x": 452,
-          "y": 0.317,
-          "width": 100
-        },
-        {
-          "x": 545,
-          "y": 0.406,
-          "width": 100
-        },
-        {
-          "x": 582,
-          "y": 0.464,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 44,
-          "barHeight": 149
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 200
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 283
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 400
-        },
-        {
-          "type": "laserSweep",
-          "offsetX": 497,
-          "pivotSide": "ground"
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.565,
-          "width": 100
-        },
-        {
-          "x": 76,
-          "y": 0.639,
-          "width": 100
-        },
-        {
-          "x": 190,
-          "y": 0.496,
-          "width": 100
-        },
-        {
-          "x": 337,
-          "y": 0.663,
-          "width": 180
-        },
-        {
-          "x": 433,
-          "y": 0.495,
-          "width": 180
-        },
-        {
-          "x": 543,
-          "y": 0.305,
-          "width": 180
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 159,
-          "barHeight": 118
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 234
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 428,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.835,
-          "width": 100
-        },
-        {
-          "x": 88,
-          "y": 0.706,
-          "width": 100
-        },
-        {
-          "x": 230,
-          "y": 0.382,
-          "width": 100
-        },
-        {
-          "x": 357,
-          "y": 0.343,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 106
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 171
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 256
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
           "offsetX": 321
         }
       ],
@@ -1540,46 +916,91 @@
       "path": [
         {
           "x": 0,
-          "y": 0.254,
-          "width": 100
+          "y": 0.434,
+          "width": 140
         },
         {
-          "x": 105,
-          "y": 0.343,
-          "width": 100
+          "x": 109,
+          "y": 0.687,
+          "width": 140
         },
         {
           "x": 222,
-          "y": 0.473,
-          "width": 100
+          "y": 0.665,
+          "width": 140
         },
         {
-          "x": 316,
-          "y": 0.094,
-          "width": 180
+          "x": 386,
+          "y": 0.92,
+          "width": 140
         },
         {
-          "x": 433,
-          "y": 0.408,
-          "width": 180
-        },
-        {
-          "x": 528,
-          "y": 0.257,
-          "width": 100
+          "x": 446,
+          "y": 0.887,
+          "width": 140
         }
       ],
       "elements": [
         {
           "type": "zapper",
-          "offsetX": 129,
-          "gapCenter": 0.323,
-          "gapH": 90
+          "offsetX": 52,
+          "gapCenter": 0.584,
+          "gapH": 119
+        },
+        {
+          "type": "zapper",
+          "offsetX": 281,
+          "gapCenter": 0.895,
+          "gapH": 119
+        }
+      ],
+      "birds": []
+    }
+  ],
+  "hard": [
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.321,
+          "width": 100
+        },
+        {
+          "x": 93,
+          "y": 0.397,
+          "width": 180
+        },
+        {
+          "x": 234,
+          "y": 0.153,
+          "width": 180
+        },
+        {
+          "x": 325,
+          "y": 0.494,
+          "width": 100
+        },
+        {
+          "x": 355,
+          "y": 0.82,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 22
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 320,
+          "barHeight": 104
         }
       ],
       "birds": [
         {
-          "offsetX": 373,
+          "offsetX": 174,
           "dodgeWidth": 180,
           "arrivalTimeSec": 1.842
         }
@@ -1589,56 +1010,280 @@
       "path": [
         {
           "x": 0,
-          "y": 0.257,
+          "y": 0.354,
           "width": 100
         },
         {
-          "x": 116,
-          "y": 0.182,
-          "width": 180
-        },
-        {
-          "x": 248,
-          "y": 0.145,
-          "width": 180
-        },
-        {
-          "x": 351,
-          "y": 0.461,
+          "x": 86,
+          "y": 0.599,
           "width": 100
         },
         {
-          "x": 481,
+          "x": 208,
+          "y": 0.482,
+          "width": 180
+        },
+        {
+          "x": 346,
+          "y": 0.301,
+          "width": 180
+        },
+        {
+          "x": 467,
+          "y": 0.333,
+          "width": 100
+        },
+        {
+          "x": 567,
+          "y": 0.541,
+          "width": 100
+        },
+        {
+          "x": 599,
+          "y": 0.343,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 68
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 139
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 424
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 493,
+          "barHeight": 101
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 281,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.262,
+          "width": 100
+        },
+        {
+          "x": 144,
+          "y": 0.429,
+          "width": 100
+        },
+        {
+          "x": 284,
+          "y": 0.451,
+          "width": 180
+        },
+        {
+          "x": 394,
+          "y": 0.701,
+          "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 29
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 114
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 307,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.55,
+          "width": 100
+        },
+        {
+          "x": 93,
+          "y": 0.697,
+          "width": 100
+        },
+        {
+          "x": 168,
+          "y": 0.573,
+          "width": 100
+        },
+        {
+          "x": 271,
+          "y": 0.444,
+          "width": 100
+        },
+        {
+          "x": 348,
           "y": 0.56,
           "width": 100
         },
         {
-          "x": 503,
-          "y": 0.206,
+          "x": 395,
+          "y": 0.384,
           "width": 100
         }
       ],
       "elements": [
         {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 26
+          "type": "zapper",
+          "offsetX": 109,
+          "gapCenter": 0.732,
+          "gapH": 90
         },
         {
-          "type": "laserSweep",
-          "offsetX": 340,
-          "pivotSide": "ground"
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 196
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 278
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 343
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.597,
+          "width": 100
+        },
+        {
+          "x": 145,
+          "y": 0.616,
+          "width": 100
+        },
+        {
+          "x": 277,
+          "y": 0.437,
+          "width": 100
+        },
+        {
+          "x": 367,
+          "y": 0.728,
+          "width": 100
+        },
+        {
+          "x": 468,
+          "y": 0.542,
+          "width": 100
+        },
+        {
+          "x": 533,
+          "y": 0.456,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 40,
+          "gapCenter": 0.639,
+          "gapH": 90
         },
         {
           "type": "zapper",
-          "offsetX": 451,
-          "gapCenter": 0.551,
+          "offsetX": 145,
+          "gapCenter": 0.658,
+          "gapH": 90
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 220
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 316,
+          "barHeight": 102
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 476
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.604,
+          "width": 100
+        },
+        {
+          "x": 93,
+          "y": 0.693,
+          "width": 180
+        },
+        {
+          "x": 224,
+          "y": 0.862,
+          "width": 180
+        },
+        {
+          "x": 334,
+          "y": 0.835,
+          "width": 100
+        },
+        {
+          "x": 420,
+          "y": 0.495,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 38,
+          "gapCenter": 0.691,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 342,
+          "gapCenter": 0.913,
           "gapH": 90
         }
       ],
       "birds": [
         {
-          "offsetX": 205,
+          "offsetX": 191,
           "dodgeWidth": 180,
           "arrivalTimeSec": 1.842
         }
@@ -1648,27 +1293,32 @@
       "path": [
         {
           "x": 0,
-          "y": 0.585,
+          "y": 0.558,
           "width": 100
         },
         {
-          "x": 140,
-          "y": 0.729,
+          "x": 143,
+          "y": 0.331,
           "width": 100
         },
         {
-          "x": 269,
-          "y": 0.545,
+          "x": 246,
+          "y": 0.072,
           "width": 100
         },
         {
-          "x": 402,
-          "y": 0.896,
+          "x": 364,
+          "y": 0.129,
           "width": 100
         },
         {
-          "x": 470,
-          "y": 0.95,
+          "x": 439,
+          "y": 0.445,
+          "width": 100
+        },
+        {
+          "x": 560,
+          "y": 0.686,
           "width": 100
         }
       ],
@@ -1676,22 +1326,23 @@
         {
           "type": "ground",
           "subType": "sandCastle",
-          "offsetX": 77
+          "offsetX": 170
+        },
+        {
+          "type": "zapper",
+          "offsetX": 231,
+          "gapCenter": 0,
+          "gapH": 90
         },
         {
           "type": "ground",
           "subType": "sandCastle",
-          "offsetX": 150
-        },
-        {
-          "type": "laserStatic",
-          "offsetX": 293,
-          "beamCenter": 0.081
+          "offsetX": 304
         },
         {
           "type": "zapperBottomOpen",
-          "offsetX": 375,
-          "barHeight": 239
+          "offsetX": 486,
+          "barHeight": 104
         }
       ],
       "birds": []
@@ -1700,100 +1351,420 @@
       "path": [
         {
           "x": 0,
-          "y": 0.734,
+          "y": 0.19,
           "width": 100
         },
         {
-          "x": 78,
-          "y": 0.935,
+          "x": 136,
+          "y": 0.05,
           "width": 100
         },
         {
-          "x": 156,
-          "y": 0.95,
-          "width": 100
-        },
-        {
-          "x": 269,
-          "y": 0.95,
-          "width": 100
-        },
-        {
-          "x": 367,
-          "y": 0.95,
-          "width": 100
-        },
-        {
-          "x": 504,
-          "y": 0.95,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 113,
-          "gapCenter": 1,
-          "gapH": 90
-        },
-        {
-          "type": "laserStatic",
-          "offsetX": 257,
-          "beamCenter": 0.123
-        },
-        {
-          "type": "laserSweep",
-          "offsetX": 381,
-          "pivotSide": "ceiling"
-        },
-        {
-          "type": "zapper",
-          "offsetX": 461,
-          "gapCenter": 1,
-          "gapH": 90
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.197,
-          "width": 100
-        },
-        {
-          "x": 127,
+          "x": 260,
           "y": 0.05,
           "width": 180
         },
         {
-          "x": 244,
+          "x": 387,
           "y": 0.05,
           "width": 180
-        },
-        {
-          "x": 327,
-          "y": 0.365,
-          "width": 100
         },
         {
           "x": 393,
-          "y": 0.574,
+          "y": 0.249,
+          "width": 180
+        }
+      ],
+      "elements": [],
+      "birds": [
+        {
+          "offsetX": 285,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.195,
+          "width": 100
+        },
+        {
+          "x": 85,
+          "y": 0.561,
+          "width": 180
+        },
+        {
+          "x": 230,
+          "y": 0.251,
+          "width": 180
+        },
+        {
+          "x": 374,
+          "y": 0.205,
+          "width": 100
+        },
+        {
+          "x": 414,
+          "y": 0.211,
           "width": 100
         }
       ],
       "elements": [
         {
-          "type": "laserStatic",
-          "offsetX": 278,
-          "beamCenter": 0.783
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 345
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 134,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.81,
+          "width": 100
+        },
+        {
+          "x": 135,
+          "y": 0.764,
+          "width": 100
+        },
+        {
+          "x": 259,
+          "y": 0.709,
+          "width": 100
+        },
+        {
+          "x": 350,
+          "y": 0.95,
+          "width": 100
+        },
+        {
+          "x": 452,
+          "y": 0.634,
+          "width": 100
+        },
+        {
+          "x": 546,
+          "y": 0.92,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 106
         },
         {
           "type": "zapper",
-          "offsetX": 361,
-          "gapCenter": 0.463,
+          "offsetX": 210,
+          "gapCenter": 0.814,
           "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 310,
+          "gapCenter": 0.968,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 410,
+          "gapCenter": 0.859,
+          "gapH": 90
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.376,
+          "width": 100
+        },
+        {
+          "x": 128,
+          "y": 0.169,
+          "width": 100
+        },
+        {
+          "x": 274,
+          "y": 0.486,
+          "width": 180
+        },
+        {
+          "x": 368,
+          "y": 0.43,
+          "width": 180
+        },
+        {
+          "x": 493,
+          "y": 0.237,
+          "width": 100
+        },
+        {
+          "x": 522,
+          "y": 0.611,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 42
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 484
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 351,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.47,
+          "width": 100
+        },
+        {
+          "x": 135,
+          "y": 0.723,
+          "width": 180
+        },
+        {
+          "x": 226,
+          "y": 0.453,
+          "width": 180
+        },
+        {
+          "x": 371,
+          "y": 0.491,
+          "width": 100
+        },
+        {
+          "x": 506,
+          "y": 0.622,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 337,
+          "gapCenter": 0.476,
+          "gapH": 90
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 460,
+          "barHeight": 143
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 169,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.684,
+          "width": 100
+        },
+        {
+          "x": 126,
+          "y": 0.95,
+          "width": 100
+        },
+        {
+          "x": 205,
+          "y": 0.855,
+          "width": 100
+        },
+        {
+          "x": 298,
+          "y": 0.921,
+          "width": 100
+        },
+        {
+          "x": 403,
+          "y": 0.773,
+          "width": 100
+        },
+        {
+          "x": 511,
+          "y": 0.699,
+          "width": 100
+        },
+        {
+          "x": 593,
+          "y": 0.95,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 39,
+          "barHeight": 181
+        },
+        {
+          "type": "zapper",
+          "offsetX": 173,
+          "gapCenter": 1,
+          "gapH": 90
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 255,
+          "barHeight": 181
+        },
+        {
+          "type": "zapper",
+          "offsetX": 348,
+          "gapCenter": 0.977,
+          "gapH": 90
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 460
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.22,
+          "width": 100
+        },
+        {
+          "x": 77,
+          "y": 0.459,
+          "width": 100
+        },
+        {
+          "x": 202,
+          "y": 0.682,
+          "width": 100
+        },
+        {
+          "x": 338,
+          "y": 0.361,
+          "width": 100
+        },
+        {
+          "x": 463,
+          "y": 0.621,
+          "width": 100
+        },
+        {
+          "x": 544,
+          "y": 0.853,
+          "width": 100
+        },
+        {
+          "x": 562,
+          "y": 0.873,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 125,
+          "barHeight": 105
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 287,
+          "barHeight": 107
+        },
+        {
+          "type": "zapper",
+          "offsetX": 385,
+          "gapCenter": 0.444,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 528,
+          "gapCenter": 0.918,
+          "gapH": 90
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.259,
+          "width": 100
+        },
+        {
+          "x": 102,
+          "y": 0.422,
+          "width": 180
+        },
+        {
+          "x": 200,
+          "y": 0.771,
+          "width": 180
+        },
+        {
+          "x": 290,
+          "y": 0.453,
+          "width": 100
+        },
+        {
+          "x": 375,
+          "y": 0.554,
+          "width": 100
+        },
+        {
+          "x": 398,
+          "y": 0.643,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 318,
+          "barHeight": 122
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 378
         }
       ],
       "birds": [
@@ -1810,169 +1781,274 @@
       "path": [
         {
           "x": 0,
-          "y": 0.69,
+          "y": 0.216,
           "width": 70
         },
         {
-          "x": 91,
-          "y": 0.95,
-          "width": 180
-        },
-        {
-          "x": 208,
-          "y": 0.95,
-          "width": 180
-        },
-        {
-          "x": 316,
-          "y": 0.95,
+          "x": 81,
+          "y": 0.05,
           "width": 70
         },
         {
-          "x": 384,
-          "y": 0.868,
+          "x": 144,
+          "y": 0.429,
           "width": 70
         },
         {
-          "x": 485,
-          "y": 0.576,
+          "x": 218,
+          "y": 0.819,
           "width": 70
         },
         {
-          "x": 487,
-          "y": 0.467,
+          "x": 279,
+          "y": 0.54,
+          "width": 70
+        },
+        {
+          "x": 399,
+          "y": 0.286,
+          "width": 70
+        },
+        {
+          "x": 466,
+          "y": 0.231,
+          "width": 70
+        },
+        {
+          "x": 540,
+          "y": 0.167,
+          "width": 70
+        },
+        {
+          "x": 546,
+          "y": 0.05,
           "width": 70
         }
       ],
       "elements": [
         {
           "type": "zapperBottomOpen",
-          "offsetX": 60,
-          "barHeight": 135
+          "offsetX": 136,
+          "barHeight": 110
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 232,
+          "barHeight": 133
         },
         {
           "type": "ground",
           "subType": "sandCastle",
-          "offsetX": 415
+          "offsetX": 396
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 501
         }
       ],
-      "birds": [
-        {
-          "offsetX": 189,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
+      "birds": []
     },
     {
       "path": [
         {
           "x": 0,
-          "y": 0.463,
+          "y": 0.21,
           "width": 70
         },
         {
-          "x": 56,
-          "y": 0.865,
+          "x": 117,
+          "y": 0.441,
           "width": 70
         },
         {
-          "x": 125,
-          "y": 0.95,
+          "x": 196,
+          "y": 0.05,
           "width": 70
         },
         {
-          "x": 187,
-          "y": 0.95,
+          "x": 296,
+          "y": 0.434,
           "width": 70
         },
         {
-          "x": 267,
-          "y": 0.544,
-          "width": 180
+          "x": 361,
+          "y": 0.697,
+          "width": 70
         },
         {
-          "x": 332,
-          "y": 0.361,
-          "width": 180
+          "x": 421,
+          "y": 0.272,
+          "width": 70
         },
         {
-          "x": 448,
-          "y": 0.622,
-          "width": 180
-        },
-        {
-          "x": 499,
-          "y": 0.95,
+          "x": 471,
+          "y": 0.05,
           "width": 70
         }
       ],
       "elements": [
         {
           "type": "zapper",
-          "offsetX": 30,
-          "gapCenter": 0.743,
+          "offsetX": 56,
+          "gapCenter": 0.256,
           "gapH": 90
         },
         {
-          "type": "zapperBottomOpen",
-          "offsetX": 112,
-          "barHeight": 173
+          "type": "zapper",
+          "offsetX": 191,
+          "gapCenter": 0,
+          "gapH": 90
         },
         {
-          "type": "zapperBottomOpen",
-          "offsetX": 203,
-          "barHeight": 172
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 260
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 326
+        },
+        {
+          "type": "zapper",
+          "offsetX": 441,
+          "gapCenter": 0.069,
+          "gapH": 90
         }
       ],
-      "birds": [
-        {
-          "offsetX": 378,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
+      "birds": []
     },
     {
       "path": [
         {
           "x": 0,
-          "y": 0.219,
+          "y": 0.449,
           "width": 70
         },
         {
-          "x": 67,
-          "y": 0.668,
+          "x": 104,
+          "y": 0.05,
           "width": 70
         },
         {
-          "x": 148,
-          "y": 0.513,
-          "width": 180
-        },
-        {
-          "x": 225,
-          "y": 0.472,
-          "width": 180
-        },
-        {
-          "x": 339,
-          "y": 0.605,
-          "width": 180
-        },
-        {
-          "x": 423,
-          "y": 0.95,
-          "width": 180
-        },
-        {
-          "x": 522,
-          "y": 0.553,
+          "x": 166,
+          "y": 0.376,
           "width": 70
         },
         {
-          "x": 583,
-          "y": 0.212,
+          "x": 240,
+          "y": 0.342,
+          "width": 70
+        },
+        {
+          "x": 295,
+          "y": 0.821,
+          "width": 70
+        },
+        {
+          "x": 355,
+          "y": 0.461,
+          "width": 70
+        },
+        {
+          "x": 439,
+          "y": 0.119,
+          "width": 70
+        },
+        {
+          "x": 527,
+          "y": 0.349,
+          "width": 70
+        },
+        {
+          "x": 599,
+          "y": 0.81,
+          "width": 70
+        },
+        {
+          "x": 639,
+          "y": 0.738,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 53
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 121
+        },
+        {
+          "type": "zapper",
+          "offsetX": 213,
+          "gapCenter": 0.302,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 303,
+          "gapCenter": 0.871,
+          "gapH": 90
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 382
+        },
+        {
+          "type": "zapper",
+          "offsetX": 468,
+          "gapCenter": 0.085,
+          "gapH": 90
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 552,
+          "barHeight": 153
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.356,
+          "width": 70
+        },
+        {
+          "x": 82,
+          "y": 0.05,
+          "width": 70
+        },
+        {
+          "x": 179,
+          "y": 0.05,
+          "width": 70
+        },
+        {
+          "x": 291,
+          "y": 0.302,
+          "width": 180
+        },
+        {
+          "x": 346,
+          "y": 0.05,
+          "width": 180
+        },
+        {
+          "x": 408,
+          "y": 0.42,
+          "width": 180
+        },
+        {
+          "x": 504,
+          "y": 0.227,
           "width": 70
         }
       ],
@@ -1980,21 +2056,10 @@
         {
           "type": "ground",
           "subType": "sandCastle",
-          "offsetX": 26
-        },
-        {
-          "type": "zapper",
-          "offsetX": 529,
-          "gapCenter": 0.519,
-          "gapH": 90
+          "offsetX": 66
         }
       ],
       "birds": [
-        {
-          "offsetX": 189,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        },
         {
           "offsetX": 339,
           "dodgeWidth": 180,
@@ -2006,120 +2071,66 @@
       "path": [
         {
           "x": 0,
-          "y": 0.769,
+          "y": 0.509,
           "width": 70
         },
         {
-          "x": 111,
-          "y": 0.492,
-          "width": 180
-        },
-        {
-          "x": 186,
-          "y": 0.448,
-          "width": 180
-        },
-        {
-          "x": 263,
-          "y": 0.05,
-          "width": 180
-        },
-        {
-          "x": 337,
-          "y": 0.256,
+          "x": 101,
+          "y": 0.291,
           "width": 70
         },
         {
-          "x": 414,
-          "y": 0.05,
+          "x": 159,
+          "y": 0.604,
           "width": 70
         },
         {
-          "x": 491,
-          "y": 0.411,
-          "width": 70
-        },
-        {
-          "x": 502,
-          "y": 0.159,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 43
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 383
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 206,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.531,
-          "width": 70
-        },
-        {
-          "x": 88,
-          "y": 0.679,
-          "width": 70
-        },
-        {
-          "x": 161,
-          "y": 0.715,
-          "width": 70
-        },
-        {
-          "x": 227,
+          "x": 249,
           "y": 0.95,
           "width": 70
         },
         {
-          "x": 303,
-          "y": 0.666,
-          "width": 70
-        },
-        {
-          "x": 371,
-          "y": 0.209,
+          "x": 324,
+          "y": 0.614,
           "width": 70
         },
         {
           "x": 405,
-          "y": 0.05,
+          "y": 0.494,
+          "width": 70
+        },
+        {
+          "x": 410,
+          "y": 0.271,
           "width": 70
         }
       ],
       "elements": [
         {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 27
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 92
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 159
+        },
+        {
           "type": "zapper",
-          "offsetX": 66,
-          "gapCenter": 0.693,
+          "offsetX": 239,
+          "gapCenter": 1,
           "gapH": 90
         },
         {
           "type": "zapper",
-          "offsetX": 200,
-          "gapCenter": 0.981,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 347,
-          "gapCenter": 0.324,
+          "offsetX": 368,
+          "gapCenter": 0.566,
           "gapH": 90
         }
       ],
@@ -2129,76 +2140,355 @@
       "path": [
         {
           "x": 0,
-          "y": 0.588,
+          "y": 0.432,
           "width": 70
         },
         {
-          "x": 62,
-          "y": 0.865,
+          "x": 114,
+          "y": 0.086,
           "width": 70
         },
         {
-          "x": 146,
-          "y": 0.421,
+          "x": 207,
+          "y": 0.05,
           "width": 70
         },
         {
-          "x": 259,
+          "x": 293,
           "y": 0.355,
           "width": 70
         },
         {
-          "x": 334,
-          "y": 0.247,
+          "x": 379,
+          "y": 0.05,
+          "width": 70
+        },
+        {
+          "x": 458,
+          "y": 0.05,
+          "width": 70
+        },
+        {
+          "x": 499,
+          "y": 0.05,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 199
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 295,
+          "barHeight": 102
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 453
+        }
+      ],
+      "birds": []
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.803,
+          "width": 70
+        },
+        {
+          "x": 60,
+          "y": 0.93,
+          "width": 70
+        },
+        {
+          "x": 162,
+          "y": 0.95,
+          "width": 180
+        },
+        {
+          "x": 268,
+          "y": 0.95,
+          "width": 180
+        },
+        {
+          "x": 340,
+          "y": 0.721,
+          "width": 180
+        },
+        {
+          "x": 409,
+          "y": 0.73,
+          "width": 70
+        },
+        {
+          "x": 410,
+          "y": 0.95,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 101,
+          "gapCenter": 1,
+          "gapH": 90
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 258,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.183,
+          "width": 70
+        },
+        {
+          "x": 69,
+          "y": 0.388,
+          "width": 180
+        },
+        {
+          "x": 185,
+          "y": 0.829,
+          "width": 180
+        },
+        {
+          "x": 280,
+          "y": 0.95,
+          "width": 70
+        },
+        {
+          "x": 353,
+          "y": 0.521,
+          "width": 70
+        },
+        {
+          "x": 425,
+          "y": 0.202,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 25
+        },
+        {
+          "type": "zapper",
+          "offsetX": 276,
+          "gapCenter": 1,
+          "gapH": 90
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 380
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 147,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.511,
+          "width": 70
+        },
+        {
+          "x": 110,
+          "y": 0.11,
+          "width": 180
+        },
+        {
+          "x": 173,
+          "y": 0.05,
+          "width": 180
+        },
+        {
+          "x": 258,
+          "y": 0.196,
+          "width": 180
+        },
+        {
+          "x": 325,
+          "y": 0.05,
+          "width": 70
+        },
+        {
+          "x": 426,
+          "y": 0.505,
+          "width": 70
+        },
+        {
+          "x": 537,
+          "y": 0.886,
+          "width": 70
+        },
+        {
+          "x": 586,
+          "y": 0.891,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 22
+        },
+        {
+          "type": "zapper",
+          "offsetX": 394,
+          "gapCenter": 0.311,
+          "gapH": 90
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 529,
+          "barHeight": 139
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 197,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.246,
+          "width": 70
+        },
+        {
+          "x": 82,
+          "y": 0.475,
+          "width": 180
+        },
+        {
+          "x": 179,
+          "y": 0.385,
+          "width": 180
+        },
+        {
+          "x": 298,
+          "y": 0.536,
           "width": 70
         },
         {
           "x": 413,
-          "y": 0.189,
+          "y": 0.358,
           "width": 70
         },
         {
-          "x": 501,
-          "y": 0.05,
+          "x": 479,
+          "y": 0.129,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 309
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 458
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 149,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.67,
           "width": 70
         },
         {
-          "x": 576,
-          "y": 0.05,
+          "x": 107,
+          "y": 0.95,
           "width": 70
         },
         {
-          "x": 604,
-          "y": 0.152,
+          "x": 165,
+          "y": 0.949,
+          "width": 70
+        },
+        {
+          "x": 278,
+          "y": 0.95,
+          "width": 70
+        },
+        {
+          "x": 335,
+          "y": 0.95,
+          "width": 70
+        },
+        {
+          "x": 395,
+          "y": 0.95,
+          "width": 70
+        },
+        {
+          "x": 463,
+          "y": 0.95,
           "width": 70
         }
       ],
       "elements": [
         {
           "type": "zapperBottomOpen",
-          "offsetX": 32,
-          "barHeight": 111
+          "offsetX": 69,
+          "barHeight": 235
         },
         {
           "type": "zapper",
-          "offsetX": 120,
-          "gapCenter": 0.579,
+          "offsetX": 177,
+          "gapCenter": 1,
           "gapH": 90
         },
         {
-          "type": "laserStatic",
-          "offsetX": 206,
-          "beamCenter": 0.627
+          "type": "zapper",
+          "offsetX": 279,
+          "gapCenter": 1,
+          "gapH": 90
         },
         {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 292
-        },
-        {
-          "type": "laserStatic",
-          "offsetX": 472,
-          "beamCenter": 0.286
+          "type": "zapper",
+          "offsetX": 373,
+          "gapCenter": 1,
+          "gapH": 90
         }
       ],
       "birds": []
@@ -2207,90 +2497,117 @@
       "path": [
         {
           "x": 0,
-          "y": 0.764,
+          "y": 0.384,
           "width": 70
         },
         {
-          "x": 76,
-          "y": 0.627,
-          "width": 180
+          "x": 95,
+          "y": 0.06,
+          "width": 70
         },
         {
-          "x": 150,
-          "y": 0.243,
-          "width": 180
-        },
-        {
-          "x": 221,
+          "x": 202,
           "y": 0.05,
-          "width": 180
-        },
-        {
-          "x": 336,
-          "y": 0.378,
           "width": 70
         },
         {
-          "x": 418,
-          "y": 0.695,
+          "x": 301,
+          "y": 0.05,
           "width": 70
         },
         {
-          "x": 422,
-          "y": 0.95,
+          "x": 389,
+          "y": 0.507,
+          "width": 70
+        },
+        {
+          "x": 465,
+          "y": 0.391,
+          "width": 70
+        },
+        {
+          "x": 583,
+          "y": 0.832,
+          "width": 70
+        },
+        {
+          "x": 597,
+          "y": 0.76,
           "width": 70
         }
       ],
       "elements": [
         {
-          "type": "laserSweep",
-          "offsetX": 313,
-          "pivotSide": "ground"
+          "type": "zapper",
+          "offsetX": 34,
+          "gapCenter": 0.185,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 171,
+          "gapCenter": 0,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 298,
+          "gapCenter": 0,
+          "gapH": 90
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 379,
+          "barHeight": 134
         },
         {
           "type": "ground",
           "subType": "poolNoodle",
-          "offsetX": 387
+          "offsetX": 488
         }
       ],
-      "birds": [
-        {
-          "offsetX": 169,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
+      "birds": []
     },
     {
       "path": [
         {
           "x": 0,
-          "y": 0.405,
+          "y": 0.188,
           "width": 70
         },
         {
-          "x": 90,
-          "y": 0.117,
+          "x": 116,
+          "y": 0.108,
+          "width": 70
+        },
+        {
+          "x": 185,
+          "y": 0.421,
+          "width": 70
+        },
+        {
+          "x": 248,
+          "y": 0.112,
+          "width": 70
+        },
+        {
+          "x": 333,
+          "y": 0.086,
           "width": 180
         },
         {
-          "x": 194,
+          "x": 399,
+          "y": 0.24,
+          "width": 180
+        },
+        {
+          "x": 511,
           "y": 0.05,
           "width": 180
         },
         {
-          "x": 313,
+          "x": 563,
           "y": 0.05,
-          "width": 180
-        },
-        {
-          "x": 376,
-          "y": 0.404,
-          "width": 70
-        },
-        {
-          "x": 427,
-          "y": 0.871,
           "width": 70
         }
       ],
@@ -2298,71 +2615,28 @@
         {
           "type": "zapper",
           "offsetX": 31,
-          "gapCenter": 0.236,
+          "gapCenter": 0.047,
           "gapH": 90
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 227,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
         },
         {
-          "offsetX": 160,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.505,
-          "width": 70
-        },
-        {
-          "x": 104,
-          "y": 0.265,
-          "width": 180
-        },
-        {
-          "x": 220,
-          "y": 0.278,
-          "width": 180
-        },
-        {
-          "x": 329,
-          "y": 0.05,
-          "width": 70
-        },
-        {
-          "x": 423,
-          "y": 0.5,
-          "width": 70
-        },
-        {
-          "x": 481,
-          "y": 0.57,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 59
+          "type": "zapperBottomOpen",
+          "offsetX": 167,
+          "barHeight": 100
         },
         {
           "type": "ground",
           "subType": "sandCastle",
-          "offsetX": 384
+          "offsetX": 263
         }
       ],
       "birds": [
         {
-          "offsetX": 199,
+          "offsetX": 439,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 416,
           "dodgeWidth": 180,
           "arrivalTimeSec": 1.842
         }
@@ -2372,281 +2646,66 @@
       "path": [
         {
           "x": 0,
-          "y": 0.33,
+          "y": 0.537,
           "width": 70
         },
         {
-          "x": 93,
-          "y": 0.621,
+          "x": 78,
+          "y": 0.243,
           "width": 70
         },
         {
-          "x": 166,
-          "y": 0.344,
-          "width": 180
-        },
-        {
-          "x": 259,
-          "y": 0.052,
-          "width": 180
-        },
-        {
-          "x": 324,
-          "y": 0.05,
-          "width": 180
-        },
-        {
-          "x": 394,
-          "y": 0.05,
+          "x": 185,
+          "y": 0.601,
           "width": 70
-        },
-        {
-          "x": 482,
-          "y": 0.15,
-          "width": 70
-        },
-        {
-          "x": 494,
-          "y": 0.181,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 63,
-          "gapCenter": 0.537,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 391,
-          "gapCenter": 0,
-          "gapH": 90
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 237,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.179,
-          "width": 70
-        },
-        {
-          "x": 98,
-          "y": 0.161,
-          "width": 180
-        },
-        {
-          "x": 162,
-          "y": 0.479,
-          "width": 180
-        },
-        {
-          "x": 236,
-          "y": 0.741,
-          "width": 180
-        },
-        {
-          "x": 355,
-          "y": 0.871,
-          "width": 70
-        },
-        {
-          "x": 438,
-          "y": 0.419,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 398,
-          "gapCenter": 0.686,
-          "gapH": 90
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 160,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.353,
-          "width": 70
-        },
-        {
-          "x": 76,
-          "y": 0.81,
-          "width": 180
-        },
-        {
-          "x": 181,
-          "y": 0.338,
-          "width": 180
-        },
-        {
-          "x": 291,
-          "y": 0.366,
-          "width": 180
-        },
-        {
-          "x": 367,
-          "y": 0.348,
-          "width": 180
-        },
-        {
-          "x": 433,
-          "y": 0.295,
-          "width": 180
-        },
-        {
-          "x": 475,
-          "y": 0.062,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "laserStatic",
-          "offsetX": 35,
-          "beamCenter": 0.386
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 327,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        },
-        {
-          "offsetX": 186,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.264,
-          "width": 70
-        },
-        {
-          "x": 72,
-          "y": 0.402,
-          "width": 180
-        },
-        {
-          "x": 170,
-          "y": 0.842,
-          "width": 180
-        },
-        {
-          "x": 253,
-          "y": 0.434,
-          "width": 180
-        },
-        {
-          "x": 320,
-          "y": 0.346,
-          "width": 70
-        },
-        {
-          "x": 420,
-          "y": 0.247,
-          "width": 70
-        },
-        {
-          "x": 458,
-          "y": 0.112,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "laserSweep",
-          "offsetX": 58,
-          "pivotSide": "ground"
-        },
-        {
-          "type": "zapper",
-          "offsetX": 380,
-          "gapCenter": 0.21,
-          "gapH": 90
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 191,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.439,
-          "width": 70
-        },
-        {
-          "x": 106,
-          "y": 0.05,
-          "width": 180
-        },
-        {
-          "x": 202,
-          "y": 0.05,
-          "width": 180
         },
         {
           "x": 288,
-          "y": 0.05,
+          "y": 0.95,
           "width": 180
         },
         {
-          "x": 388,
-          "y": 0.164,
-          "width": 70
-        },
-        {
-          "x": 485,
-          "y": 0.16,
-          "width": 70
+          "x": 405,
+          "y": 0.832,
+          "width": 180
         },
         {
           "x": 488,
-          "y": 0.062,
+          "y": 0.95,
+          "width": 180
+        },
+        {
+          "x": 587,
+          "y": 0.95,
           "width": 70
         }
       ],
       "elements": [
         {
-          "type": "laserSweep",
-          "offsetX": 405,
-          "pivotSide": "ground"
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 29
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 144
+        },
+        {
+          "type": "zapper",
+          "offsetX": 532,
+          "gapCenter": 1,
+          "gapH": 90
         }
       ],
       "birds": [
         {
-          "offsetX": 183,
+          "offsetX": 369,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 378,
           "dodgeWidth": 180,
           "arrivalTimeSec": 1.842
         }
@@ -2656,59 +2715,74 @@
       "path": [
         {
           "x": 0,
-          "y": 0.292,
+          "y": 0.607,
           "width": 70
         },
         {
-          "x": 114,
-          "y": 0.43,
-          "width": 180
+          "x": 75,
+          "y": 0.95,
+          "width": 70
         },
         {
-          "x": 179,
-          "y": 0.05,
-          "width": 180
+          "x": 137,
+          "y": 0.95,
+          "width": 70
         },
         {
-          "x": 296,
-          "y": 0.484,
-          "width": 180
+          "x": 237,
+          "y": 0.792,
+          "width": 70
         },
         {
-          "x": 353,
-          "y": 0.375,
-          "width": 180
+          "x": 354,
+          "y": 0.832,
+          "width": 70
         },
         {
-          "x": 472,
-          "y": 0.05,
-          "width": 180
+          "x": 430,
+          "y": 0.863,
+          "width": 70
         },
         {
-          "x": 502,
-          "y": 0.05,
+          "x": 497,
+          "y": 0.597,
+          "width": 70
+        },
+        {
+          "x": 560,
+          "y": 0.686,
           "width": 70
         }
       ],
       "elements": [
         {
-          "type": "laserStatic",
-          "offsetX": 20,
-          "beamCenter": 0.552
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 381,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
+          "type": "zapperBottomOpen",
+          "offsetX": 158,
+          "barHeight": 200
         },
         {
-          "offsetX": 208,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 247
+        },
+        {
+          "type": "zapper",
+          "offsetX": 376,
+          "gapCenter": 0.964,
+          "gapH": 90
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 471
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 541
         }
-      ]
+      ],
+      "birds": []
     }
   ]
 }
