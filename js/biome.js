@@ -22,7 +22,7 @@ const BIOMES = [
         ground: '#C2B280',
         groundStripe: '#B0A06A',
         groundHazards: ['poolNoodle', 'sandCastle'],
-        foodTypes: ['foodCoconut', 'foodShrimp'],
+        foodTypes: ['foodCoconut', 'foodLemonade'],
     },
     {
         name: 'grass',
@@ -66,7 +66,7 @@ const BIOMES = [
         ground: '#3A0060',
         groundStripe: '#5A0085',
         groundHazards: ['voidCrystal', 'weirdPillar'],
-        foodTypes: ['foodPepper', 'foodTaco'],
+        foodTypes: ['foodCarrot', 'foodTaco'],
         shifting: true,
     },
 ];

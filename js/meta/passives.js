@@ -22,7 +22,7 @@ export function getNestEggBonusPct() {
 
 // --- Parting Gift: % of distance as bonus coins on death ---
 export function getPartingGiftPct() {
-    return getTier('partingGift') * 2; // 0/2/4/6/8/10
+    return getTier('partingGift') * 4; // 0/4/8/12/16/20
 }
 
 // --- Bargain Hunter: shop price discount tier ---
@@ -44,6 +44,85 @@ export function getSecondChanceDuration() {
     const t = getTier('secondChance');
     if (t === 0) return 0;
     return [0, 2, 3, 4][t];
+}
+
+// --- Ezy-Dodge: hitbox shrink ---
+export function getHitboxShrinkFactor() {
+    const t = getTier('ezyDodge');
+    if (t === 0) return 1.0;
+    return [1.0, 0.85, 0.75, 0.65][t];
+}
+
+// --- Coin Magnet: pickup radius ---
+export function getMagnetMultiplier() {
+    const t = getTier('coinMagnet');
+    if (t === 0) return 1.0;
+    return [1.0, 4, 7, 10][t];
+}
+
+export function doesFoodDrift() {
+    return getTier('coinMagnet') >= 3;
+}
+
+// --- Coin Doubler: coin multiplier ---
+export function getCoinDoublerMult() {
+    const t = getTier('coinDoubler');
+    if (t === 0) return 1.0;
+    return [1.0, 1.25, 1.5, 1.75][t];
+}
+
+// --- Compound Interest: distance-based multiplier ---
+let compoundMult = 1.0;
+let compoundDistLast = 0;
+
+export function updateCompound(distanceMeters) {
+    const t = getTier('compoundInterest');
+    if (t === 0) return;
+    const interval = t >= 2 ? 400 : 500;
+    const increment = t >= 3 ? 0.15 : 0.1;
+    while (distanceMeters >= compoundDistLast + interval) {
+        compoundDistLast += interval;
+        compoundMult += increment;
+    }
+}
+
+export function getCompoundMult() {
+    return compoundMult;
+}
+
+export function resetCompound() {
+    compoundMult = 1.0;
+    compoundDistLast = 0;
+}
+
+// --- Money Grubber: passive coin generation ---
+let moneyGrubberTimer = 0;
+let moneyGrubberTotal = 0;
+
+export function updateMoneyGrubber(dt) {
+    const t = getTier('moneyGrubber');
+    if (t === 0) return 0;
+    const interval = [0, 3, 2, 1.5][t];
+    moneyGrubberTimer += dt;
+    let earned = 0;
+    while (moneyGrubberTimer >= interval) {
+        moneyGrubberTimer -= interval;
+        earned++;
+    }
+    if (earned > 0) {
+        moneyGrubberTotal += earned;
+        console.log(`[Money Grubber] +${earned} passive coin(s)`);
+    }
+    return earned;
+}
+
+export function getMoneyGrubberTotal() {
+    return moneyGrubberTotal;
+}
+
+export function resetMoneyGrubber() {
+    moneyGrubberTimer = 0;
+    moneyGrubberTotal = 0;
 }
 
 // Compute bonus coins from passives at end of run

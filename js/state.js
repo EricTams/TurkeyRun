@@ -436,54 +436,154 @@ const DEAD_MENU_BTN = {
     h: DEAD_BTN_H
 };
 
-export function renderRunSummary(ctx, distance, coinsEarned, totalCoins, bestDistance, isNewBest) {
+// Count-up animation config
+const LINE_REVEAL_DELAY = 0.4;   // seconds between each line appearing
+const COUNT_UP_DURATION = 0.5;   // seconds for each number to tick from 0 to value
+const TOTAL_REVEAL_EXTRA = 0.3;  // extra pause before the total line
+
+export function renderRunSummary(ctx, distance, coinsEarned, totalCoins, bestDistance, isNewBest, breakdown, timer) {
     ctx.fillStyle = OVERLAY_BG;
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    const sx = CANVAS_WIDTH / 2;
 
     // "GAME OVER" with drop shadow
     ctx.font = 'bold 44px monospace';
     ctx.fillStyle = '#000000';
-    ctx.fillText('GAME OVER', CANVAS_WIDTH / 2 + 2, 67);
+    ctx.fillText('GAME OVER', sx + 2, 47);
     ctx.fillStyle = GAME_OVER_COLOR;
-    ctx.fillText('GAME OVER', CANVAS_WIDTH / 2, 65);
+    ctx.fillText('GAME OVER', sx, 45);
 
     // "NEW BEST!" flash
-    let statsY = 135;
     if (isNewBest) {
         const flash = Math.sin(Date.now() / 200) * 0.3 + 0.7;
         ctx.save();
         ctx.globalAlpha = flash;
-        ctx.font = 'bold 26px monospace';
+        ctx.font = 'bold 22px monospace';
         ctx.fillStyle = NEW_BEST_COLOR;
-        ctx.fillText('\u2605 NEW BEST! \u2605', CANVAS_WIDTH / 2, 110);
+        ctx.fillText('\u2605 NEW BEST! \u2605', sx, 82);
         ctx.restore();
-        statsY = 150;
     }
 
-    // Stats
-    const lineH = 34;
-    const sx = CANVAS_WIDTH / 2;
-
-    ctx.font = '20px monospace';
+    // Distance line (always visible immediately)
+    ctx.font = '17px monospace';
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillText(`Distance: ${distance}m`, sx, statsY);
+    ctx.fillText(`Distance: ${distance}m`, sx, 110);
 
-    ctx.fillStyle = '#FFD700';
-    ctx.fillText(`Coins Earned: ${coinsEarned}`, sx, statsY + lineH);
+    // Breakdown lines with count-up animation
+    const hasBreakdown = breakdown && breakdown.length > 0;
+    const lineH = 24;
+    let y = 135;
 
-    ctx.fillStyle = '#CCCCFF';
-    ctx.fillText(`Total Coins: ${totalCoins}`, sx, statsY + lineH * 2);
+    if (hasBreakdown) {
+        let runningDisplayTotal = 0;
 
-    ctx.fillStyle = '#AADDAA';
-    ctx.fillText(`Best Distance: ${bestDistance}m`, sx, statsY + lineH * 3);
+        for (let i = 0; i < breakdown.length; i++) {
+            const b = breakdown[i];
+            const lineStart = LINE_REVEAL_DELAY * (i + 1);
+            const lineEnd = lineStart + COUNT_UP_DURATION;
 
-    // "Play Again" button
+            if (timer < lineStart) break;
+
+            const t = Math.min(1, (timer - lineStart) / COUNT_UP_DURATION);
+            const eased = t < 1 ? 1 - Math.pow(1 - t, 3) : 1; // ease-out cubic
+            const displayVal = Math.floor(b.value * eased);
+            runningDisplayTotal += displayVal;
+
+            // Fade in
+            const fadeAlpha = Math.min(1, (timer - lineStart) * 5);
+
+            ctx.save();
+            ctx.globalAlpha = fadeAlpha;
+
+            // Label on the left, value on the right
+            ctx.font = '16px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#AAAAAA';
+            ctx.fillText(b.label, sx - 150, y);
+
+            // Note (multiplier info) in the middle
+            if (b.note) {
+                ctx.fillStyle = '#888888';
+                ctx.font = '14px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(b.note, sx + 30, y);
+            }
+
+            // Value on the right
+            ctx.font = 'bold 16px monospace';
+            ctx.textAlign = 'right';
+            ctx.fillStyle = b.color;
+            ctx.fillText(`${b.prefix}${displayVal}`, sx + 150, y);
+
+            ctx.restore();
+            y += lineH;
+        }
+
+        // Divider line before total
+        const totalLineStart = LINE_REVEAL_DELAY * (breakdown.length + 1) + TOTAL_REVEAL_EXTRA;
+        if (timer >= totalLineStart) {
+            const totalFade = Math.min(1, (timer - totalLineStart) * 5);
+            const totalT = Math.min(1, (timer - totalLineStart) / COUNT_UP_DURATION);
+            const totalEased = totalT < 1 ? 1 - Math.pow(1 - totalT, 3) : 1;
+            const displayTotal = Math.floor(coinsEarned * totalEased);
+
+            ctx.save();
+            ctx.globalAlpha = totalFade;
+
+            // Divider
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(sx - 150, y + 2);
+            ctx.lineTo(sx + 150, y + 2);
+            ctx.stroke();
+
+            y += 14;
+
+            // TOTAL line
+            ctx.font = 'bold 20px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#FFD700';
+            ctx.fillText('TOTAL', sx - 150, y);
+
+            ctx.textAlign = 'right';
+            ctx.fillText(`${displayTotal}`, sx + 150, y);
+
+            ctx.restore();
+
+            y += lineH + 4;
+        }
+
+        // Savings line (total coins in bank) after total finishes
+        const savingsStart = totalLineStart + COUNT_UP_DURATION + 0.2;
+        if (timer >= savingsStart) {
+            const savFade = Math.min(1, (timer - savingsStart) * 5);
+            ctx.save();
+            ctx.globalAlpha = savFade;
+
+            ctx.font = '14px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#CCCCFF';
+            ctx.fillText(`Bank: ${totalCoins}    Best: ${bestDistance}m`, sx, y);
+
+            ctx.restore();
+        }
+    } else {
+        // Fallback: no breakdown data, show simple stats
+        ctx.font = '17px monospace';
+        ctx.fillStyle = '#FFD700';
+        ctx.fillText(`Coins Earned: ${coinsEarned}`, sx, y);
+        ctx.fillStyle = '#CCCCFF';
+        ctx.fillText(`Total Coins: ${totalCoins}`, sx, y + lineH);
+        ctx.fillStyle = '#AADDAA';
+        ctx.fillText(`Best Distance: ${bestDistance}m`, sx, y + lineH * 2);
+    }
+
+    // Buttons
     drawButton(ctx, PLAY_AGAIN_BTN, 'Play Again', '#2a7a2a', '#3a9a3a', '#FFFFFF', 'bold 20px monospace');
-
-    // "Menu" button
     drawButton(ctx, DEAD_MENU_BTN, 'Menu', CHANGE_SLOT_BG, CHANGE_SLOT_BORDER, SUBTITLE_COLOR, 'bold 20px monospace');
 }
 

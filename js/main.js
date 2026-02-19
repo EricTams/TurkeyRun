@@ -68,13 +68,23 @@ import {
 import { initLoadout, getLoadoutResult, onLoadoutClick, renderLoadout } from './meta/loadout.js';
 import {
     setEquippedGadgets, setGadgetLevels, resetGadgetRunState,
-    hasShieldHit, consumeShieldHit, isShieldInvulnerable, trySecondWind,
-    getHitboxShrinkFactor, getMagnetMultiplier, doesFoodDrift,
-    getTotalCoinMultiplier, rollGemologist, rollJackpot,
-    onFoodCollected, updateMoneyGrubber, updateCompound,
-    updateGadgetTimers, isFlashInvulnerable
+    hasShieldHit, consumeShieldHit, isShieldInvulnerable, shieldHitsRemaining,
+    trySecondWind,
+    getTotalCoinMultiplier, getStreakTotalBonus,
+    rollGemologist, rollJackpot,
+    onFoodCollected,
+    updateGadgetTimers, isFlashInvulnerable, getLaserGraceTime,
+    getAdrenalineMult
 } from './meta/gadgets.js';
-import { setPassiveTiers, getToughFeathersTier, computePassiveBonusCoins, getSecondChanceTier, getSecondChanceDuration } from './meta/passives.js';
+import {
+    setPassiveTiers, getToughFeathersTier, computePassiveBonusCoins,
+    getSecondChanceTier, getSecondChanceDuration,
+    getNestEggBonusPct, getPartingGiftPct,
+    getHitboxShrinkFactor, getMagnetMultiplier, doesFoodDrift,
+    getCoinDoublerMult, getCompoundMult, updateCompound,
+    updateMoneyGrubber, getMoneyGrubberTotal, resetCompound, resetMoneyGrubber
+} from './meta/passives.js';
+import { announce, startCountdown, stopCountdown, updateEffects, renderEffects, resetEffects, setPlayerPos } from './meta/gadgetEffects.js';
 import {
     startLaserPattern, stopLaserPattern, isLaserPatternActive,
     updateLaserPattern, checkLaserPatternCollision, renderLaserPattern,
@@ -91,6 +101,8 @@ let gameState = LOADING;
 let runDistance = 0;
 let runCoins = 0;
 let isNewBest = false;
+let runBreakdown = [];  // { label, value, color, prefix } for count-up display
+let deadScreenTimer = 0;
 const DEATH_PHASE_NONE = 'none';
 const DEATH_PHASE_FALL = 'fall';
 const DEATH_PHASE_SETTLED = 'settled';
@@ -149,20 +161,15 @@ function checkCollisions() {
 // State transitions
 // ---------------------------------------------------------------------------
 
-// Extra coins earned during run from gadgets (Money Grubber, etc.)
-let bonusRunCoins = 0;
-
-function addRunCoins(amount) {
-    bonusRunCoins += amount;
-}
 
 function startHatching() {
     createWorld();
     resetSpawner();
     resetCollectibles();
-    bonusRunCoins = 0;
     secondChanceNextDist = 500;
     secondChanceInvulnTimer = 0;
+    laserGraceActive = false;
+    resetEffects();
 
     turkey.x = PLAYER_START_X;
     turkey.y = -PLAYER_RENDER_HEIGHT;
@@ -192,26 +199,81 @@ function resetDeathState() {
 
 function finishDeathSequence() {
     runDistance = getDistanceMeters();
-    const baseCoins = getCoins() + bonusRunCoins;
-    const gadgetMult = getTotalCoinMultiplier();
-    const multipliedCoins = Math.floor(baseCoins * gadgetMult);
-    const passiveBonus = computePassiveBonusCoins(multipliedCoins, runDistance);
-    runCoins = multipliedCoins + passiveBonus;
+    runBreakdown = [];
 
-    console.log(`[Run End] base: ${baseCoins} (${getCoins()} collected + ${bonusRunCoins} grubber), gadget mult: ${gadgetMult.toFixed(2)}x → ${multipliedCoins}, passive bonus: +${passiveBonus}, total: ${runCoins}`);
+    // --- Additive section first ---
+    let subtotal = 0;
 
-    // Golden Runs milestone: every 10th run is 2x
+    const collected = getCoins();
+    subtotal += collected;
+    runBreakdown.push({ label: 'Collected', value: collected, color: '#FFD700', prefix: '' });
+
+    const grubberTotal = getMoneyGrubberTotal();
+    if (grubberTotal > 0) {
+        subtotal += grubberTotal;
+        runBreakdown.push({ label: 'Money Grubber', value: grubberTotal, color: '#88DDFF', prefix: '+' });
+    }
+
+    const streakBonus = getStreakTotalBonus();
+    if (streakBonus > 0) {
+        subtotal += streakBonus;
+        runBreakdown.push({ label: 'Streak Bonus', value: streakBonus, color: '#FFDD44', prefix: '+' });
+    }
+
+    const partPct = getPartingGiftPct();
+    if (partPct > 0) {
+        const partBonus = Math.floor(runDistance * partPct / 100);
+        subtotal += partBonus;
+        runBreakdown.push({ label: 'Parting Gift', value: partBonus, color: '#CCAAFF', prefix: '+', note: `${partPct}% dist` });
+    }
+
+    // --- Multiplicative section ---
+    let running = subtotal;
+
+    const coinDoublerM = getCoinDoublerMult();
+    const compoundM = getCompoundMult();
+    const adrenalineM = getAdrenalineMult();
+    const nestPct = getNestEggBonusPct();
+
+    if (coinDoublerM > 1) {
+        const before = running;
+        running = Math.floor(running * coinDoublerM);
+        runBreakdown.push({ label: 'Coin Doubler', value: running - before, color: '#FFAA44', prefix: '+', note: `x${coinDoublerM}` });
+    }
+    if (compoundM > 1) {
+        const before = running;
+        running = Math.floor(running * compoundM);
+        runBreakdown.push({ label: 'Compound', value: running - before, color: '#88DDFF', prefix: '+', note: `x${compoundM.toFixed(1)}` });
+    }
+    if (adrenalineM > 1) {
+        const before = running;
+        running = Math.floor(running * adrenalineM);
+        runBreakdown.push({ label: 'Adrenaline', value: running - before, color: '#FF4444', prefix: '+', note: `x${adrenalineM}` });
+    }
+    if (nestPct > 0) {
+        const nestBonus = Math.floor(running * nestPct / 100);
+        running += nestBonus;
+        runBreakdown.push({ label: 'Nest Egg', value: nestBonus, color: '#AADDAA', prefix: '+', note: `${nestPct}%` });
+    }
+
+    // Golden Run (every 10th run doubled) -- always last multiplier
     const slot = getActiveSlot();
     const milestones = deriveMilestones();
     if (milestones.goldenRuns && slot) {
         const runNum = (slot.runCount || 0) + 1;
         if (runNum % 10 === 0) {
-            runCoins *= 2;
-            console.log(`[Golden Run] Run #${runNum} — coins doubled to ${runCoins}!`);
+            const before = running;
+            running *= 2;
+            runBreakdown.push({ label: 'GOLDEN RUN!', value: before, color: '#FFD700', prefix: '+', note: 'x2' });
         }
     }
 
+    runCoins = running;
+
+    console.log(`[Run End] breakdown: ${runBreakdown.map(b => `${b.label}: ${b.prefix}${b.value}`).join(', ')} → total: ${runCoins}`);
+
     isNewBest = updateActiveSlot(runCoins, runDistance);
+    deadScreenTimer = 0;
     gameState = DEAD;
 }
 
@@ -273,11 +335,16 @@ function applyMetaProgression() {
     setEquippedGadgets(loadout);
     setPassiveTiers(tiers);
     resetGadgetRunState(getToughFeathersTier());
+    resetCompound();
+    resetMoneyGrubber();
 }
 
 // Second Chance passive: invuln pulse tracking
 let secondChanceNextDist = 500;
 let secondChanceInvulnTimer = 0;
+
+// Thick Skin: laser grace countdown tracking
+let laserGraceActive = false;
 
 function handleSlotSelectClick(click) {
     const slots = getSlots();
@@ -422,23 +489,55 @@ function update(dt) {
         const turkeyCY = hitbox.y + PLAYER_HEIGHT / 2;
         updateSpawner(dt, getDistancePixels(), turkeyCX, turkeyCY);
 
+        setPlayerPos(turkey.x, turkey.y);
         updateCollectibles(dt, hitbox);
         updateGadgetTimers(dt);
+        updateEffects(dt);
 
-        // Money Grubber: passive coin generation
-        const grubberCoins = updateMoneyGrubber(dt);
-        if (grubberCoins > 0) addRunCoins(grubberCoins);
+        // Money Grubber: passive coin generation (tracked in passives.js)
+        const grubberEarned = updateMoneyGrubber(dt);
+        if (grubberEarned > 0) {
+            announce(`+${grubberEarned} GRUB`, '#88DDFF');
+        }
 
         // Compound Interest: update multiplier based on distance
+        const prevCompound = getCompoundMult();
         updateCompound(getDistanceMeters());
+        const newCompound = getCompoundMult();
+        if (newCompound > prevCompound) {
+            announce(`COMPOUND +${(newCompound - prevCompound).toFixed(1)}x`, '#88DDFF');
+        }
 
         // Second Chance passive: invuln pulse every 500m
         const scTier = getSecondChanceTier();
         if (scTier > 0 && getDistanceMeters() >= secondChanceNextDist) {
             secondChanceInvulnTimer = getSecondChanceDuration();
             secondChanceNextDist += 500;
+            startCountdown('secondChance', 'SAFE', secondChanceInvulnTimer, '#44FF44');
+            announce('SECOND CHANCE!', '#44FF44');
         }
-        if (secondChanceInvulnTimer > 0) secondChanceInvulnTimer -= dt;
+        if (secondChanceInvulnTimer > 0) {
+            secondChanceInvulnTimer -= dt;
+            if (secondChanceInvulnTimer <= 0) stopCountdown('secondChance');
+        }
+
+        // Thick Skin: show countdown while in laser
+        const graceTime = getLaserGraceTime();
+        if (graceTime > 0) {
+            let inLaser = false;
+            for (const laser of getLasers()) {
+                if (checkLaserCollision(hitbox, laser)) { inLaser = true; break; }
+            }
+            if (!inLaser && checkLaserPatternCollision(hitbox)) inLaser = true;
+
+            if (inLaser && !laserGraceActive) {
+                laserGraceActive = true;
+                startCountdown('thickSkin', 'SAFE', graceTime, '#FF6644');
+            } else if (!inLaser && laserGraceActive) {
+                laserGraceActive = false;
+                stopCountdown('thickSkin');
+            }
+        }
 
         if (checkCollisions()) {
             if (secondChanceInvulnTimer > 0 || isFlashInvulnerable() || isShieldInvulnerable()) {
@@ -446,8 +545,15 @@ function update(dt) {
             } else if (hasShieldHit()) {
                 consumeShieldHit();
                 playSfx('crunch');
+                const remaining = shieldHitsRemaining();
+                if (remaining > 0) {
+                    announce(`SHIELD! ${remaining} LEFT`, '#44AAFF');
+                } else {
+                    announce('LAST SHIELD!', '#FF4444');
+                }
+                startCountdown('shieldIframes', 'IMMUNE', 1.0, '#44AAFF');
             } else if (trySecondWind()) {
-                // Revived in place
+                // announce fires inside trySecondWind()
             } else {
                 handleDeath();
             }
@@ -519,6 +625,7 @@ function update(dt) {
     }
 
     if (gameState === DEAD) {
+        deadScreenTimer += dt;
         const click = consumeClick();
         consumeJustPressed();
         if (click) {
@@ -713,6 +820,7 @@ function render() {
         renderLaserTestHud(ctx);
     } else if (gameState === PLAYING) {
         renderHud(ctx, getDistanceMeters(), getCoins(), true);
+        renderEffects(ctx);
     }
 
     if (gameState === PAUSED) {
@@ -725,7 +833,7 @@ function render() {
         const slot = getActiveSlot();
         const totalCoins = slot ? slot.totalCoins : 0;
         const bestDist = slot ? slot.bestDistance : 0;
-        renderRunSummary(ctx, runDistance, runCoins, totalCoins, bestDist, isNewBest);
+        renderRunSummary(ctx, runDistance, runCoins, totalCoins, bestDist, isNewBest, runBreakdown, deadScreenTimer);
     }
 }
 

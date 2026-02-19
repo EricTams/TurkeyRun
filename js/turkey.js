@@ -5,7 +5,7 @@ import {
     PLAYER_START_X, GROUND_Y, DEBUG_SHOW_HITBOX
 } from './config.js';
 import { createAnimator, setAnimation, updateAnimator, drawAnimator } from './animation.js';
-import { getHitboxShrinkFactor } from './meta/gadgets.js';
+import { getHitboxShrinkFactor } from './meta/passives.js';
 
 // Fallback color used when animation frames aren't loaded
 const TURKEY_COLOR = '#8B4513';

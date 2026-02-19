@@ -1,6 +1,6 @@
 { "frames": [
    {
-    "filename": "Food #Pepper 0.aseprite",
+    "filename": "Food #Lemonade 0.aseprite",
     "frame": { "x": 0, "y": 0, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -9,7 +9,7 @@
     "duration": 100
    },
    {
-    "filename": "Food #Pepper 1.aseprite",
+    "filename": "Food #Lemonade 1.aseprite",
     "frame": { "x": 32, "y": 0, "w": 32, "h": 32 },
     "rotated": false,
     "trimmed": false,
@@ -21,7 +21,7 @@
  "meta": {
   "app": "https://www.aseprite.org/",
   "version": "1.3.16.1-x64",
-  "image": "Food-Pepper.png",
+  "image": "Food-Lemonade.png",
   "format": "RGBA8888",
   "size": { "w": 64, "h": 32 },
   "scale": "1"

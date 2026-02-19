@@ -108,6 +108,7 @@ export function onShopPointerMove(x, y) {
 }
 
 export function onShopPointerUp(x, y) {
+    if (!isDragging) return; // no matching pointerDown — ignore stale event
     isDragging = false;
     if (hasDragged) return; // was a drag, not a tap
 
@@ -267,6 +268,32 @@ export function renderShop(ctx) {
     }
 }
 
+function drawGearIcon(ctx, cx, cy, size) {
+    const teeth = 6;
+    const outer = size;
+    const inner = size * 0.6;
+    const toothW = Math.PI / teeth * 0.4;
+    ctx.beginPath();
+    for (let i = 0; i < teeth; i++) {
+        const a = (i / teeth) * Math.PI * 2;
+        const a1 = a - toothW;
+        const a2 = a + toothW;
+        const aPrev = a1 - (Math.PI / teeth - toothW);
+        if (i === 0) {
+            ctx.moveTo(cx + Math.cos(aPrev) * inner, cy + Math.sin(aPrev) * inner);
+        }
+        ctx.lineTo(cx + Math.cos(a1) * outer, cy + Math.sin(a1) * outer);
+        ctx.lineTo(cx + Math.cos(a2) * outer, cy + Math.sin(a2) * outer);
+        const aNext = a2 + (Math.PI / teeth - toothW);
+        ctx.lineTo(cx + Math.cos(aNext) * inner, cy + Math.sin(aNext) * inner);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx, cy, size * 0.25, 0, Math.PI * 2);
+    ctx.fill();
+}
+
 function drawNode(ctx, node) {
     const pos = gridToScreen(node.col, node.row);
     const half = CELL_SIZE / 2;
@@ -304,6 +331,12 @@ function drawNode(ctx, node) {
     ctx.lineWidth = 2;
     ctx.stroke();
 
+    // Gear icon on gadget nodes (top-right corner)
+    if (node.type === 'gadget') {
+        ctx.fillStyle = owned ? 'rgba(150,150,170,0.5)' : 'rgba(255,255,255,0.35)';
+        drawGearIcon(ctx, x + CELL_SIZE - 10, y + 10, 7);
+    }
+
     // Label
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -311,7 +344,6 @@ function drawNode(ctx, node) {
     ctx.fillStyle = NODE_TEXT;
 
     const label = node.name || '?';
-    // Wrap long labels to 2 lines
     if (label.length > 8) {
         const mid = Math.ceil(label.length / 2);
         let splitIdx = label.lastIndexOf(' ', mid);

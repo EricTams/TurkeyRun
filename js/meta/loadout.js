@@ -1,5 +1,5 @@
 // Loadout screen: shown before each run. Player can equip gadgets into slots.
-// Tap a slot to open a picker of unlocked gadgets. Tap "Start Run" to begin.
+// Tap a slot to open a full-screen picker. All gadgets fit — no scrolling needed.
 
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from '../config.js';
 import { GADGETS } from './upgradeTree.js';
@@ -19,28 +19,25 @@ const START_BTN = { x: (CANVAS_WIDTH - 200) / 2, y: 340, w: 200, h: 48 };
 const BACK_BTN = { x: 10, y: CANVAS_HEIGHT - 44, w: 80, h: 34 };
 
 let slotCount = 2;
-let loadout = [null, null];   // gadget IDs
-let ownedGadgets = {};        // gadgetId -> level
+let loadout = [null, null];
+let ownedGadgets = {};
 let pickerOpen = false;
 let pickerSlotIdx = -1;
-let pickerGadgets = [];       // list of gadgetIds to choose from
-let pickerScroll = 0;
+let pickerGadgets = [];
 
-const PICKER_W = 300;
-const PICKER_H = 240;
-const PICKER_X = (CANVAS_WIDTH - PICKER_W) / 2;
-const PICKER_Y = (CANVAS_HEIGHT - PICKER_H) / 2;
-const PICKER_ROW_H = 36;
+const PICKER_HEADER_H = 50;
+const PICKER_ROW_H = 40;
+const PICKER_PAD = 12;
+const PICKER_COLS = 2;
+const PICKER_COL_W = (CANVAS_WIDTH - PICKER_PAD * 2) / PICKER_COLS;
 
 export function initLoadout(slots, gadgetLevels, currentLoadout) {
     slotCount = slots;
     ownedGadgets = { ...gadgetLevels };
-    // Ensure loadout array matches slot count
     loadout = [];
     for (let i = 0; i < slotCount; i++) {
         loadout.push(currentLoadout[i] || null);
     }
-    // Remove any gadgets that are no longer owned
     for (let i = 0; i < loadout.length; i++) {
         if (loadout[i] && !(loadout[i] in ownedGadgets)) {
             loadout[i] = null;
@@ -53,18 +50,34 @@ export function getLoadoutResult() {
     return [...loadout];
 }
 
+function getCellIndex(x, y) {
+    if (y < PICKER_HEADER_H) return -1;
+    const col = Math.floor((x - PICKER_PAD) / PICKER_COL_W);
+    const row = Math.floor((y - PICKER_HEADER_H) / PICKER_ROW_H);
+    if (col < 0 || col >= PICKER_COLS) return -1;
+    const idx = row * PICKER_COLS + col;
+    if (idx < 0 || idx >= pickerGadgets.length) return -1;
+    return idx;
+}
+
 export function onLoadoutClick(x, y) {
     if (pickerOpen) {
-        return handlePickerClick(x, y);
+        if (y < PICKER_HEADER_H) {
+            pickerOpen = false;
+            return null;
+        }
+        const idx = getCellIndex(x, y);
+        if (idx >= 0) {
+            loadout[pickerSlotIdx] = pickerGadgets[idx];
+            pickerOpen = false;
+            return 'loadoutChanged';
+        }
+        return null;
     }
 
-    // Start run button
     if (inRect(x, y, START_BTN)) return 'startRun';
-
-    // Back button
     if (inRect(x, y, BACK_BTN)) return 'back';
 
-    // Slot tap
     const slotsStartX = (CANVAS_WIDTH - (slotCount * SLOT_SIZE + (slotCount - 1) * SLOT_GAP)) / 2;
     for (let i = 0; i < slotCount; i++) {
         const sx = slotsStartX + i * (SLOT_SIZE + SLOT_GAP);
@@ -78,57 +91,38 @@ export function onLoadoutClick(x, y) {
 
 function openPicker(slotIdx) {
     pickerSlotIdx = slotIdx;
-    pickerScroll = 0;
-    // Build list of gadgets available (owned, not already in another slot)
     const inUse = new Set(loadout.filter((g, i) => g && i !== slotIdx));
     pickerGadgets = Object.keys(ownedGadgets).filter(gid => !inUse.has(gid));
-    pickerGadgets.unshift(null); // "Empty" option
+    pickerGadgets.unshift(null);
     pickerOpen = true;
 }
 
-function handlePickerClick(x, y) {
-    // Outside picker = close
-    if (x < PICKER_X || x > PICKER_X + PICKER_W ||
-        y < PICKER_Y || y > PICKER_Y + PICKER_H) {
-        pickerOpen = false;
-        return null;
-    }
-    // Which row?
-    const headerH = 32;
-    const listY = PICKER_Y + headerH;
-    const relY = y - listY + pickerScroll;
-    const rowIdx = Math.floor(relY / PICKER_ROW_H);
-    if (rowIdx >= 0 && rowIdx < pickerGadgets.length) {
-        loadout[pickerSlotIdx] = pickerGadgets[rowIdx];
-        pickerOpen = false;
-        return 'loadoutChanged';
-    }
-    return null;
-}
+// --- Rendering ---
 
 export function renderLoadout(ctx) {
+    if (pickerOpen) {
+        renderPicker(ctx);
+        return;
+    }
+
     ctx.fillStyle = BG;
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Title
     ctx.font = 'bold 28px monospace';
     ctx.fillStyle = TITLE_COLOR;
     ctx.fillText('LOADOUT', CANVAS_WIDTH / 2, 50);
 
-    // Subtitle
     ctx.font = '14px monospace';
     ctx.fillStyle = '#AAAACC';
     ctx.fillText('Tap a slot to equip a gadget', CANVAS_WIDTH / 2, 85);
 
-    // Slots label
     ctx.font = '12px monospace';
     ctx.fillStyle = '#888899';
     ctx.fillText(`${slotCount} slot${slotCount > 1 ? 's' : ''} available`, CANVAS_WIDTH / 2, 130);
 
-    // Draw slots
     const slotsStartX = (CANVAS_WIDTH - (slotCount * SLOT_SIZE + (slotCount - 1) * SLOT_GAP)) / 2;
     for (let i = 0; i < slotCount; i++) {
         const sx = slotsStartX + i * (SLOT_SIZE + SLOT_GAP);
@@ -154,85 +148,85 @@ export function renderLoadout(ctx) {
         }
     }
 
-    // Active passives summary
     ctx.font = '12px monospace';
     ctx.fillStyle = '#8888BB';
     ctx.fillText('Passives are always active', CANVAS_WIDTH / 2, SLOT_Y + SLOT_SIZE + 30);
 
-    // Start button
-    ctx.fillStyle = '#2a7a2a';
-    ctx.fillRect(START_BTN.x, START_BTN.y, START_BTN.w, START_BTN.h);
-    ctx.strokeStyle = '#3aaa3a';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(START_BTN.x, START_BTN.y, START_BTN.w, START_BTN.h);
-    ctx.font = 'bold 22px monospace';
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillText('START RUN', START_BTN.x + START_BTN.w / 2, START_BTN.y + START_BTN.h / 2);
-
-    // Back button
-    ctx.fillStyle = '#2a2a5a';
-    ctx.fillRect(BACK_BTN.x, BACK_BTN.y, BACK_BTN.w, BACK_BTN.h);
-    ctx.strokeStyle = '#4a4a8a';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(BACK_BTN.x, BACK_BTN.y, BACK_BTN.w, BACK_BTN.h);
-    ctx.font = 'bold 14px monospace';
-    ctx.fillStyle = '#AAAACC';
-    ctx.fillText('BACK', BACK_BTN.x + BACK_BTN.w / 2, BACK_BTN.y + BACK_BTN.h / 2);
-
-    // Picker overlay
-    if (pickerOpen) renderPicker(ctx);
+    drawBtn(ctx, START_BTN, 'START RUN', '#2a7a2a', '#3aaa3a', '#FFFFFF', 'bold 22px monospace');
+    drawBtn(ctx, BACK_BTN, 'BACK', '#2a2a5a', '#4a4a8a', '#AAAACC', 'bold 14px monospace');
 }
 
 function renderPicker(ctx) {
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillStyle = BG;
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    ctx.fillStyle = '#1a1a3a';
-    ctx.fillRect(PICKER_X, PICKER_Y, PICKER_W, PICKER_H);
-    ctx.strokeStyle = '#5a5a9a';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(PICKER_X, PICKER_Y, PICKER_W, PICKER_H);
-
     // Header
+    ctx.fillStyle = '#222244';
+    ctx.fillRect(0, 0, CANVAS_WIDTH, PICKER_HEADER_H);
+    ctx.strokeStyle = '#5a5a9a';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, PICKER_HEADER_H);
+    ctx.lineTo(CANVAS_WIDTH, PICKER_HEADER_H);
+    ctx.stroke();
+
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = 'bold 14px monospace';
+    ctx.font = 'bold 18px monospace';
     ctx.fillStyle = '#FFFFFF';
-    ctx.fillText('Choose Gadget', PICKER_X + PICKER_W / 2, PICKER_Y + 16);
+    ctx.fillText('Choose Gadget', CANVAS_WIDTH / 2, PICKER_HEADER_H / 2);
 
-    // Clip for list
-    ctx.save();
-    const headerH = 32;
-    ctx.beginPath();
-    ctx.rect(PICKER_X, PICKER_Y + headerH, PICKER_W, PICKER_H - headerH);
-    ctx.clip();
+    ctx.textAlign = 'left';
+    ctx.font = 'bold 16px monospace';
+    ctx.fillStyle = '#AAAACC';
+    ctx.fillText('< Back', PICKER_PAD, PICKER_HEADER_H / 2);
 
-    const listY = PICKER_Y + headerH;
+    // Two-column grid
     for (let i = 0; i < pickerGadgets.length; i++) {
-        const ry = listY + i * PICKER_ROW_H - pickerScroll;
+        const col = i % PICKER_COLS;
+        const row = Math.floor(i / PICKER_COLS);
+        const cx = PICKER_PAD + col * PICKER_COL_W;
+        const cy = PICKER_HEADER_H + row * PICKER_ROW_H;
         const gid = pickerGadgets[i];
 
-        // Hover-style alternating bg
-        ctx.fillStyle = i % 2 === 0 ? '#1a1a3a' : '#222244';
-        ctx.fillRect(PICKER_X + 2, ry, PICKER_W - 4, PICKER_ROW_H);
+        ctx.fillStyle = (row + col) % 2 === 0 ? '#1e1e38' : '#252548';
+        ctx.fillRect(cx, cy, PICKER_COL_W, PICKER_ROW_H);
 
-        ctx.textAlign = 'left';
-        ctx.font = '13px monospace';
+        ctx.strokeStyle = '#333355';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(cx, cy, PICKER_COL_W, PICKER_ROW_H);
+
         if (gid === null) {
+            ctx.textAlign = 'left';
+            ctx.font = '14px monospace';
             ctx.fillStyle = '#666688';
-            ctx.fillText('  (Empty)', PICKER_X + 10, ry + PICKER_ROW_H / 2);
+            ctx.fillText('(Empty)', cx + 10, cy + PICKER_ROW_H / 2);
         } else {
             const g = GADGETS[gid];
+            ctx.textAlign = 'left';
+            ctx.font = '14px monospace';
             ctx.fillStyle = '#FFFFFF';
-            ctx.fillText(`  ${g.name}`, PICKER_X + 10, ry + PICKER_ROW_H / 2);
+            ctx.fillText(g.name, cx + 10, cy + PICKER_ROW_H / 2);
+
             ctx.textAlign = 'right';
-            ctx.font = '11px monospace';
+            ctx.font = 'bold 12px monospace';
             ctx.fillStyle = '#AADDAA';
-            ctx.fillText(`Lv${(ownedGadgets[gid] || 0) + 1}`, PICKER_X + PICKER_W - 12, ry + PICKER_ROW_H / 2);
+            ctx.fillText(`Lv${(ownedGadgets[gid] || 0) + 1}`, cx + PICKER_COL_W - 10, cy + PICKER_ROW_H / 2);
         }
     }
+}
 
-    ctx.restore();
+function drawBtn(ctx, r, label, bg, border, textColor, font) {
+    ctx.fillStyle = bg;
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+    ctx.strokeStyle = border;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(r.x, r.y, r.w, r.h);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = font;
+    ctx.fillStyle = textColor;
+    ctx.fillText(label, r.x + r.w / 2, r.y + r.h / 2);
 }
 
 function inRect(px, py, r) {

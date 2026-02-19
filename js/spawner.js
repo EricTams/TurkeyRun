@@ -13,7 +13,7 @@ import {
     SPAWNER_GRACE_DISTANCE, SPAWNER_BASE_GAP, SPAWNER_MIN_GAP,
     SPAWNER_GAP_SHRINK_RATE, SPAWNER_EASY_COUNT,
     SPAWNER_HARD_FROM, SPAWNER_EXTREME_FROM, SPAWNER_EXTREME_DOMINANT, BIRD_HEIGHT,
-    PATH_COIN_SPACING, FOOD_SIZE
+    PATH_COIN_SPACING, FOOD_SIZE, PLAYER_START_X
 } from './config.js';
 import {
     createGroundHazard, updateGroundHazard, isOffScreen
@@ -123,7 +123,8 @@ function generateCoinsForLaserPattern(pattern) {
     const dedupeX = Math.max(1, Math.floor(PATH_COIN_SPACING * 0.5));
     let lastBucketX = -Infinity;
     for (let t = sampleDt; t < pattern.duration; t += sampleDt) {
-        const x = CANVAS_WIDTH + t * AUTO_RUN_SPEED;
+        // Spawn so each coin reaches player column (x=PLAYER_START_X) at sample time t.
+        const x = PLAYER_START_X + t * AUTO_RUN_SPEED;
         const xBucket = Math.floor(x / dedupeX);
         if (xBucket === lastBucketX) continue;
         const safeBands = getSafeCenterBandsAtTime(pattern, t);

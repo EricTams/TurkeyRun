@@ -1,7 +1,8 @@
 // Gadget runtime state and effect application.
 // Gadgets are equipped in loadout slots. Their effects are queried during runs.
 
-import { GADGETS } from './upgradeTree.js';
+import { announce } from './gadgetEffects.js';
+import { getCoinDoublerMult, getCompoundMult } from './passives.js';
 
 let equippedGadgets = []; // array of gadgetId strings
 let gadgetLevels = {};    // gadgetId -> 0-based level (0=Lv1, 1=Lv2, 2=Lv3)
@@ -11,10 +12,8 @@ let shieldHits = 0;
 let shieldInvulnTimer = 0;
 const SHIELD_INVULN_DURATION = 1.0; // 1 second of i-frames after absorbing a hit
 let streakCount = 0;
-let streakBonusTimer = 0;
-let moneyGrubberTimer = 0;
-let compoundDistLast = 0;
-let compoundMult = 1.0;
+let streakTotalBonus = 0;
+let streakRecentCoins = [];  // { value, time } — rolling 5s window, never manually cleared
 let adrenalineTimer = 0;
 let adrenalineMult = 1;
 let decoyTimer = 0;
@@ -51,21 +50,14 @@ export function resetGadgetRunState(toughFeathersTier) {
     shieldHits = (shieldLv >= 0 ? shieldLv + 1 : 0) + toughFeathersTier;
     shieldInvulnTimer = 0;
     streakCount = 0;
-    streakBonusTimer = 0;
-    moneyGrubberTimer = 0;
-    compoundDistLast = 0;
-    compoundMult = 1.0;
+    streakTotalBonus = 0;
+    streakRecentCoins = [];
     adrenalineTimer = 0;
     adrenalineMult = 1;
     decoyTimer = 0;
     flashInvulnTimer = 0;
     secondWindUsed = false;
-    const magLv = equippedLevel('coinMagnet');
     console.log(`[Gadgets] Run start — shield hits: ${shieldHits}, equipped: [${equippedGadgets.join(', ')}]`);
-    if (magLv >= 0) console.log(`[Coin Magnet] Active Lv${magLv + 1} — pickup radius ${getMagnetMultiplier()}x (base 8px → ${8 * getMagnetMultiplier()}px)`);
-    if (equippedLevel('coinDoubler') >= 0) console.log(`[Coin Doubler] Active — ${getCoinDoublerMult()}x multiplier`);
-    if (equippedLevel('moneyGrubber') >= 0) console.log(`[Money Grubber] Active — 1 coin every ${[3, 2, 1.5][equippedLevel('moneyGrubber')]}s`);
-    if (equippedLevel('ezyDodge') >= 0) console.log(`[Ezy-Dodge] Active — hitbox ${Math.round(getHitboxShrinkFactor() * 100)}% size`);
 }
 
 // --- Shield ---
@@ -74,17 +66,21 @@ export function hasShieldHit() {
     return shieldHits > 0;
 }
 
+export function shieldHitsRemaining() {
+    return shieldHits;
+}
+
 export function consumeShieldHit() {
     if (shieldHits > 0) {
         shieldHits--;
         shieldInvulnTimer = SHIELD_INVULN_DURATION;
         console.log(`[Shield] Hit absorbed! ${shieldHits} hits remaining, ${SHIELD_INVULN_DURATION}s i-frames`);
-        // Trigger adrenaline if equipped
         const adLv = equippedLevel('adrenaline');
         if (adLv >= 0) {
             adrenalineTimer = [3, 4, 5][adLv];
             adrenalineMult = adLv >= 2 ? 3 : 2;
             console.log(`[Adrenaline] Triggered: ${adrenalineMult}x coins for ${adrenalineTimer}s`);
+            announce(`ADRENALINE ${adrenalineMult}x`, '#FF4444');
         }
         return true;
     }
@@ -106,38 +102,11 @@ export function trySecondWind() {
     secondWindUsed = true;
     if (roll < chance) {
         console.log(`[Second Wind] Revived! (rolled ${(roll * 100).toFixed(0)}% < ${(chance * 100).toFixed(0)}%)`);
+        announce('SECOND WIND!', '#44FF44');
         return true;
     }
     console.log(`[Second Wind] Failed (rolled ${(roll * 100).toFixed(0)}% >= ${(chance * 100).toFixed(0)}%)`);
     return false;
-}
-
-// --- Ezy-Dodge (hitbox shrink) ---
-
-export function getHitboxShrinkFactor() {
-    const lv = equippedLevel('ezyDodge');
-    if (lv < 0) return 1.0;
-    return [0.85, 0.75, 0.65][lv];
-}
-
-// --- Coin Magnet (pickup radius) ---
-
-export function getMagnetMultiplier() {
-    const lv = equippedLevel('coinMagnet');
-    if (lv < 0) return 1.0;
-    return [4, 7, 10][lv];
-}
-
-export function doesFoodDrift() {
-    return equippedLevel('coinMagnet') >= 2;
-}
-
-// --- Coin Doubler ---
-
-export function getCoinDoublerMult() {
-    const lv = equippedLevel('coinDoubler');
-    if (lv < 0) return 1.0;
-    return [1.5, 2.0, 2.5][lv];
 }
 
 // --- Gemologist ---
@@ -148,34 +117,53 @@ export function rollGemologist() {
     const chance = [0.05, 0.10, 0.15][lv];
     const mult = lv >= 2 ? 8 : 5;
     const hit = Math.random() < chance;
-    if (hit) console.log(`[Gemologist] Proc! Food worth ${mult}x`);
+    if (hit) {
+        console.log(`[Gemologist] Proc! Food worth ${mult}x`);
+        announce(`GEM! ${mult}x`, '#FF44FF');
+    }
     return hit ? mult : 1;
 }
 
 // --- Streak Master ---
+// Rolling 5-second window tracks coin values. When the consecutive-collect
+// threshold is reached, bonus = percentage of everything in that window.
+// The window is NEVER manually cleared — it self-manages via time pruning.
 
-export function onFoodCollected() {
+const STREAK_WINDOW = 5;
+
+export function onFoodCollected(coinValue) {
+    const now = performance.now() / 1000;
+    streakRecentCoins.push({ value: coinValue, time: now });
+    streakRecentCoins = streakRecentCoins.filter(e => now - e.time <= STREAK_WINDOW);
     streakCount++;
+
+    const windowTotal = streakRecentCoins.reduce((s, e) => s + e.value, 0);
+    const windowCount = streakRecentCoins.length;
+    console.log(`[Streak] food +${coinValue}, streak: ${streakCount}, window: ${windowCount} items / ${windowTotal} coins (last ${STREAK_WINDOW}s), lv: ${equippedLevel('streakMaster')}`);
+
     const lv = equippedLevel('streakMaster');
-    if (lv >= 0) {
-        const threshold = [10, 7, 5][lv];
-        if (streakCount >= threshold) {
-            streakBonusTimer = 5;
-            const bonus = lv >= 2 ? '100%' : '50%';
-            console.log(`[Streak Master] ${threshold}-streak! +${bonus} coins for 5s`);
-            streakCount = 0;
-        }
+    if (lv < 0) return 0;
+
+    const threshold = [10, 7, 5][lv];
+    if (streakCount >= threshold) {
+        const bonusPct = lv >= 2 ? 0.5 : 0.25;
+        const bonus = Math.floor(windowTotal * bonusPct);
+        streakTotalBonus += bonus;
+        console.log(`[Streak Master] FIRED — ${threshold}-streak! ${Math.round(bonusPct * 100)}% of ${windowTotal} coins (${windowCount} items in window) = +${bonus}, runTotal now ${streakTotalBonus}`);
+        announce(`${threshold} STREAK! +${bonus}`, '#FFDD44');
+        streakCount = 0;
+        return bonus;
     }
+    return 0;
 }
 
 export function onFoodMissed() {
+    console.log(`[Streak] MISSED — streak broken at ${streakCount}`);
     streakCount = 0;
 }
 
-export function getStreakBonusMult() {
-    if (streakBonusTimer <= 0) return 1.0;
-    const lv = equippedLevel('streakMaster');
-    return lv >= 2 ? 2.0 : 1.5;
+export function getStreakTotalBonus() {
+    return streakTotalBonus;
 }
 
 // --- Bounty Hunter (near-miss coins) ---
@@ -193,24 +181,13 @@ export function onNearMiss(currentTime) {
         nearMissChain = 1;
     }
     lastNearMissTime = currentTime;
-    return basePayout * nearMissChain;
-}
-
-// --- Compound Interest ---
-
-export function updateCompound(distanceMeters) {
-    const lv = equippedLevel('compoundInterest');
-    if (lv < 0) return;
-    const interval = lv >= 1 ? 400 : 500;
-    const increment = lv >= 2 ? 0.15 : 0.1;
-    while (distanceMeters >= compoundDistLast + interval) {
-        compoundDistLast += interval;
-        compoundMult += increment;
+    const payout = basePayout * nearMissChain;
+    if (nearMissChain > 1) {
+        announce(`BOUNTY x${nearMissChain}! +${payout}`, '#FFAA00');
+    } else {
+        announce(`+${payout} BOUNTY`, '#FFAA00');
     }
-}
-
-export function getCompoundMult() {
-    return compoundMult;
+    return payout;
 }
 
 // --- Jackpot ---
@@ -221,24 +198,11 @@ export function rollJackpot() {
     const chance = [0.03, 0.05, 0.07][lv];
     const mult = lv >= 2 ? 30 : 20;
     const hit = Math.random() < chance;
-    if (hit) console.log(`[Jackpot] JACKPOT! ${mult}x payout!`);
-    return hit ? mult : 1;
-}
-
-// --- Money Grubber ---
-
-export function updateMoneyGrubber(dt) {
-    const lv = equippedLevel('moneyGrubber');
-    if (lv < 0) return 0;
-    const interval = [3, 2, 1.5][lv];
-    moneyGrubberTimer += dt;
-    let earned = 0;
-    while (moneyGrubberTimer >= interval) {
-        moneyGrubberTimer -= interval;
-        earned++;
+    if (hit) {
+        console.log(`[Jackpot] JACKPOT! ${mult}x payout!`);
+        announce(`JACKPOT! ${mult}x`, '#FFD700');
     }
-    if (earned > 0) console.log(`[Money Grubber] +${earned} passive coin(s)`);
-    return earned;
+    return hit ? mult : 1;
 }
 
 // --- Hazard Jammer ---
@@ -247,13 +211,17 @@ export function shouldJamZapper() {
     const lv = equippedLevel('hazardJammer');
     if (lv < 0) return false;
     const chance = [0.05, 0.10, 0.15][lv];
-    return Math.random() < chance;
+    const jammed = Math.random() < chance;
+    if (jammed) announce('JAMMED!', '#FF8844');
+    return jammed;
 }
 
 export function shouldJamLaser() {
     const lv = equippedLevel('hazardJammer');
     if (lv < 2) return false;
-    return Math.random() < 0.15;
+    const jammed = Math.random() < 0.15;
+    if (jammed) announce('LASER JAMMED!', '#FF8844');
+    return jammed;
 }
 
 // --- Thick Skin (laser grace) ---
@@ -270,6 +238,7 @@ export function triggerFlashInvuln() {
     const lv = equippedLevel('flash');
     if (lv < 0) return;
     flashInvulnTimer = [0.3, 0.5, 0.8][lv];
+    announce('FLASH!', '#FFFFFF');
 }
 
 export function isFlashInvulnerable() {
@@ -285,6 +254,7 @@ export function tryDeployDecoy() {
     const cooldown = [15, 12, 8][lv];
     const destroys = lv >= 2;
     decoyTimer = cooldown;
+    announce('DECOY!', '#AADDFF');
     return { destroys };
 }
 
@@ -299,7 +269,6 @@ export function getAdrenalineMult() {
 
 export function updateGadgetTimers(dt) {
     if (shieldInvulnTimer > 0) shieldInvulnTimer -= dt;
-    if (streakBonusTimer > 0) streakBonusTimer -= dt;
     if (adrenalineTimer > 0) adrenalineTimer -= dt;
     if (decoyTimer > 0) decoyTimer -= dt;
     if (flashInvulnTimer > 0) flashInvulnTimer -= dt;
@@ -311,7 +280,6 @@ export function getTotalCoinMultiplier() {
     let mult = 1.0;
     mult *= getCoinDoublerMult();
     mult *= getCompoundMult();
-    mult *= getStreakBonusMult();
     mult *= getAdrenalineMult();
     return mult;
 }

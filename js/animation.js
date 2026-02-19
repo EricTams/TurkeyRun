@@ -208,15 +208,15 @@ export const BIRD_ANIM_COUNT = 2;
 export function loadFoodAnimations(onItemLoaded) {
     const base = 'assets/sprites/Food/';
     const anims = [
+        ['foodCarrot',     'Food-Carrot'],
         ['foodChickenLeg', 'Food-Chicken Leg'],
         ['foodChurro',     'Food-Churro'],
         ['foodCoconut',    'Food-Coconut'],
         ['foodCookie',     'Food-Cookie'],
         ['foodDonut',      'Food-Donut'],
         ['foodIceCream',   'Food-Ice Cream'],
-        ['foodPepper',     'Food-Pepper'],
+        ['foodLemonade',   'Food-Lemonade'],
         ['foodPotato',     'Food-Potato'],
-        ['foodShrimp',     'Food-Shrimp'],
         ['foodTaco',       'Food-Taco']
     ];
     return Promise.all(anims.map(([name, file]) =>

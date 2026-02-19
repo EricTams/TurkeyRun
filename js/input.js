@@ -15,6 +15,7 @@ let escapeJustPressed = false;
 let ptrDownQueue = [];
 let ptrMoveQueue = [];
 let ptrUpQueue = [];
+let wheelDelta = 0;
 
 export function initInput(canvas) {
     canvasRef = canvas;
@@ -27,6 +28,8 @@ export function initInput(canvas) {
     canvas.addEventListener('touchmove', onTouchMove, { passive: false });
     canvas.addEventListener('touchend', onTouchEnd, { passive: false });
     canvas.addEventListener('touchcancel', onTouchEnd, { passive: false });
+
+    canvas.addEventListener('wheel', onWheel, { passive: false });
 
     window.addEventListener('keydown', onKeyDown);
     window.addEventListener('keyup', onKeyUp);
@@ -148,6 +151,14 @@ export function drainPointerMove() {
 }
 export function drainPointerUp() {
     const q = ptrUpQueue; ptrUpQueue = []; return q;
+}
+export function consumeWheelDelta() {
+    const d = wheelDelta; wheelDelta = 0; return d;
+}
+
+function onWheel(e) {
+    e.preventDefault();
+    wheelDelta += e.deltaY;
 }
 
 function onKeyDown(e) {

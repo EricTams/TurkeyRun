@@ -10,7 +10,8 @@ import { rectsOverlap } from './collision.js';
 import { getDistanceMeters } from './world.js';
 import { getBiomeFoodTypes } from './biome.js';
 import { playSfx } from './audio.js';
-import { getMagnetMultiplier, doesFoodDrift, rollGemologist, rollJackpot, onFoodCollected } from './meta/gadgets.js';
+import { rollGemologist, rollJackpot, onFoodCollected, onFoodMissed } from './meta/gadgets.js';
+import { getMagnetMultiplier, doesFoodDrift } from './meta/passives.js';
 
 let foods = [];
 let coins = 0;
@@ -81,11 +82,16 @@ export function updateCollectibles(dt, turkeyRect) {
             value *= rollGemologist();
             value *= rollJackpot();
             coins += value;
-            onFoodCollected();
+            onFoodCollected(value);
             playSfx('crunch');
         }
     }
 
+    for (const food of foods) {
+        if (!food.collected && food.x <= -FOOD_SIZE) {
+            onFoodMissed();
+        }
+    }
     foods = foods.filter(f => !f.collected && f.x > -FOOD_SIZE);
 }
 
