@@ -13,7 +13,7 @@ import {
     SPAWNER_GRACE_DISTANCE, SPAWNER_BASE_GAP, SPAWNER_MIN_GAP,
     SPAWNER_GAP_SHRINK_RATE, SPAWNER_EASY_COUNT,
     SPAWNER_HARD_FROM, SPAWNER_EXTREME_FROM, SPAWNER_EXTREME_DOMINANT, BIRD_HEIGHT,
-    PATH_COIN_SPACING
+    PATH_COIN_SPACING, FOOD_SIZE
 } from './config.js';
 import {
     createGroundHazard, updateGroundHazard, isOffScreen
@@ -27,7 +27,13 @@ import {
 import { spawnCoinsAtPositions } from './collectible.js';
 import { generateCoinsOnPath } from './sectionPath.js';
 import { getBiomeGroundHazards } from './biome.js';
-import { updateLaserPattern, isLaserPatternActive, startLaserPattern, stopLaserPattern } from './laserPattern.js';
+import {
+    updateLaserPattern,
+    isLaserPatternActive,
+    startLaserPattern,
+    stopLaserPattern,
+    getSafeCenterBandsAtTime,
+} from './laserPattern.js';
 import { LASER_PATTERNS_BY_TIER } from './data/laserPatterns.js';
 
 // ---------------------------------------------------------------------------
@@ -88,6 +94,47 @@ function getLaserSectionDistancePx(pattern) {
     return Math.max(300, durationPx * 0.85);
 }
 
+function pickLargestBandCenterY(bands) {
+    if (!bands || bands.length === 0) return null;
+    let best = bands[0];
+    let bestHeight = best.hi - best.lo;
+    for (let i = 1; i < bands.length; i++) {
+        const band = bands[i];
+        const height = band.hi - band.lo;
+        if (height > bestHeight) {
+            best = band;
+            bestHeight = height;
+        }
+    }
+    return best.lo + (best.hi - best.lo) * 0.5;
+}
+
+function clampCoinY(y) {
+    const minY = FOOD_SIZE / 2;
+    const maxY = GROUND_Y - FOOD_SIZE;
+    return Math.max(minY, Math.min(y, maxY));
+}
+
+function generateCoinsForLaserPattern(pattern) {
+    const sampleDt = PATH_COIN_SPACING / AUTO_RUN_SPEED;
+    if (sampleDt <= 0 || pattern.duration <= 0) return [];
+
+    const coins = [];
+    const dedupeX = Math.max(1, Math.floor(PATH_COIN_SPACING * 0.5));
+    let lastBucketX = -Infinity;
+    for (let t = sampleDt; t < pattern.duration; t += sampleDt) {
+        const x = CANVAS_WIDTH + t * AUTO_RUN_SPEED;
+        const xBucket = Math.floor(x / dedupeX);
+        if (xBucket === lastBucketX) continue;
+        const safeBands = getSafeCenterBandsAtTime(pattern, t);
+        const centerY = pickLargestBandCenterY(safeBands);
+        if (centerY === null) continue;
+        coins.push({ x, y: clampCoinY(centerY - FOOD_SIZE * 0.5) });
+        lastBucketX = xBucket;
+    }
+    return coins;
+}
+
 function maybeSpawnLaserSection(tier) {
     const pool = LASER_PATTERNS_BY_TIER[tier] || [];
     if (pool.length === 0) return null;
@@ -95,6 +142,10 @@ function maybeSpawnLaserSection(tier) {
     if (Math.random() >= getLaserSectionChance(tier)) return null;
     const pattern = pickRandom(pool);
     startLaserPattern(pattern);
+    const coinPositions = generateCoinsForLaserPattern(pattern);
+    if (coinPositions.length > 0) {
+        spawnCoinsAtPositions(coinPositions);
+    }
     return pattern;
 }
 

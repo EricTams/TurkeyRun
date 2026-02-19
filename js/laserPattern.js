@@ -2,7 +2,14 @@
 // Each laser has two endpoints (x1,y1)-(x2,y2) that lerp between keyframes.
 // State per keyframe: "off" (invisible), "warn" (dashed line), "active" (deadly).
 
-import { LASER_BEAM_THICKNESS, LASER_WARNING_THICKNESS } from './config.js';
+import {
+    LASER_BEAM_THICKNESS,
+    LASER_WARNING_THICKNESS,
+    GROUND_Y,
+    PLAYER_HEIGHT,
+    PLAYER_WIDTH,
+    PLAYER_START_X,
+} from './config.js';
 import { drawAnimationFrame, getAnimationFrameCount } from './animation.js';
 
 const WARNING_COLOR_BASE = [255, 50, 50];
@@ -15,6 +22,7 @@ const REQUIRED_WARN_DURATION = 1.0;
 const LIGHTNING_SEGMENTS = 16;
 const LIGHTNING_JITTER = 12;
 const JELLY_SIZE = 56;
+const EPS = 1e-6;
 
 // -----------------------------------------------------------------------
 // Active pattern state
@@ -145,6 +153,72 @@ function timeUntilNextActiveStart(t, starts, loop, cycleDuration) {
     }
 
     return best;
+}
+
+// -----------------------------------------------------------------------
+// Safe-lane helpers for laser collectible placement
+// -----------------------------------------------------------------------
+
+function blockedIntervalAtColumn(sample, playerCenterX) {
+    const x1 = sample.x1;
+    const y1 = sample.y1;
+    const x2 = sample.x2;
+    const y2 = sample.y2;
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const halfDangerY = LASER_BEAM_THICKNESS / 2 + PLAYER_HEIGHT / 2;
+
+    if (Math.abs(dx) < EPS) {
+        const halfDangerX = LASER_BEAM_THICKNESS / 2 + PLAYER_WIDTH / 2;
+        if (Math.abs(playerCenterX - x1) > halfDangerX) return null;
+        return [Math.min(y1, y2) - halfDangerY, Math.max(y1, y2) + halfDangerY];
+    }
+
+    const frac = (playerCenterX - x1) / dx;
+    if (frac < 0 || frac > 1) return null;
+    const yAtColumn = y1 + dy * frac;
+    return [yAtColumn - halfDangerY, yAtColumn + halfDangerY];
+}
+
+function mergeIntervals(intervals) {
+    if (intervals.length === 0) return [];
+    const sorted = intervals.slice().sort((a, b) => a[0] - b[0]);
+    const merged = [sorted[0].slice()];
+    for (let i = 1; i < sorted.length; i++) {
+        const [lo, hi] = sorted[i];
+        const last = merged[merged.length - 1];
+        if (lo <= last[1]) {
+            last[1] = Math.max(last[1], hi);
+        } else {
+            merged.push([lo, hi]);
+        }
+    }
+    return merged;
+}
+
+export function getSafeCenterBandsAtTime(patternDef, elapsed, playerCenterX = PLAYER_START_X + PLAYER_WIDTH / 2) {
+    const minCenterY = PLAYER_HEIGHT / 2;
+    const maxCenterY = GROUND_Y - PLAYER_HEIGHT / 2;
+    const blocked = [];
+
+    for (const laser of patternDef.lasers) {
+        const sample = sampleLaser(laser, elapsed);
+        if (!sample || sample.state !== 'active') continue;
+        const interval = blockedIntervalAtColumn(sample, playerCenterX);
+        if (interval) blocked.push(interval);
+    }
+
+    const safeBands = [];
+    let cursor = minCenterY;
+    for (const [rawLo, rawHi] of mergeIntervals(blocked)) {
+        const lo = Math.max(minCenterY, rawLo);
+        const hi = Math.min(maxCenterY, rawHi);
+        if (hi < lo) continue;
+        if (lo > cursor) safeBands.push({ lo: cursor, hi: lo });
+        cursor = Math.max(cursor, hi);
+    }
+    if (cursor < maxCenterY) safeBands.push({ lo: cursor, hi: maxCenterY });
+    return safeBands;
 }
 
 // -----------------------------------------------------------------------

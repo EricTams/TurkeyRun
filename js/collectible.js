@@ -10,6 +10,7 @@ import { rectsOverlap } from './collision.js';
 import { getDistanceMeters } from './world.js';
 import { getBiomeFoodTypes } from './biome.js';
 import { playSfx } from './audio.js';
+import { getMagnetMultiplier, doesFoodDrift, rollGemologist, rollJackpot, onFoodCollected } from './meta/gadgets.js';
 
 let foods = [];
 let coins = 0;
@@ -48,19 +49,39 @@ function padRect(rect, pad) {
 }
 
 export function updateCollectibles(dt, turkeyRect) {
-    const collectRect = padRect(turkeyRect, FOOD_HITBOX_PADDING);
+    const magnetMult = getMagnetMultiplier();
+    const effectivePad = FOOD_HITBOX_PADDING * magnetMult;
+    const collectRect = padRect(turkeyRect, effectivePad);
+    const drift = doesFoodDrift();
+    const turkeyCX = turkeyRect.x + turkeyRect.w / 2;
+    const turkeyCY = turkeyRect.y + turkeyRect.h / 2;
 
     for (const food of foods) {
         food.x -= AUTO_RUN_SPEED * dt;
 
-        // Advance the food's idle animation
+        // Coin Magnet Lv3: food drifts toward player
+        if (drift && !food.collected) {
+            const dx = turkeyCX - (food.x + food.w / 2);
+            const dy = turkeyCY - (food.y + food.h / 2);
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < effectivePad + FOOD_SIZE && dist > 1) {
+                const driftSpeed = 120;
+                food.x += (dx / dist) * driftSpeed * dt;
+                food.y += (dy / dist) * driftSpeed * dt;
+            }
+        }
+
         if (food.animator) {
             updateAnimator(food.animator, dt);
         }
 
         if (!food.collected && rectsOverlap(collectRect, food)) {
             food.collected = true;
-            coins++;
+            let value = 1;
+            value *= rollGemologist();
+            value *= rollJackpot();
+            coins += value;
+            onFoodCollected();
             playSfx('crunch');
         }
     }

@@ -1,5 +1,5 @@
-// AIDEV-NOTE: Main entry point and game loop (updated chunk 12).
-// Flow: LOADING -> SLOT_SELECT -> MENU -> HATCHING -> PLAYING <-> PAUSED
+// AIDEV-NOTE: Main entry point and game loop (updated chunk 13).
+// Flow: LOADING -> SLOT_SELECT -> MENU -> SHOP/LOADOUT -> HATCHING -> PLAYING <-> PAUSED
 //       PLAYING -> DYING -> DEAD -> HATCHING (play again) or MENU (quit)
 
 import {
@@ -7,18 +7,24 @@ import {
     CANVAS_WIDTH,
     PLAYER_WIDTH, PLAYER_HEIGHT,
     PLAYER_RENDER_HEIGHT, PLAYER_SPRITE_BOTTOM_PAD,
-    GROUND_Y,
+    PLAYER_START_X, GROUND_Y,
+    DEATH_BOOST_VELOCITY, DEATH_FALL_GRAVITY_SCALE,
+    DEATH_SETTLE_VY_THRESHOLD, DEATH_STEAM_HOLD_SECONDS,
+    DEATH_FORWARD_DRIFT_SPEED, DEATH_FORWARD_BOUNCE_DAMPING,
+    DEATH_BOUNCE_DAMPING, DEATH_BOUNCE_MIN_IMPACT_VY,
     DEBUG_LASER_TEST, LASER_PATTERN_PAUSE
 } from './config.js';
 import { initRenderer, clear, getCtx, getCanvas } from './renderer.js';
 import {
     initInput, isPressed, consumeJustPressed, consumeClick,
-    consumeDebugBiome, consumeEscapePressed
+    consumeDebugBiome, consumeEscapePressed,
+    drainPointerDown, drainPointerMove, drainPointerUp
 } from './input.js';
 import {
     createTurkey, resetTurkey, renderTurkey,
     getTurkeyHitbox, updateTurkeyAnimation,
-    playDeathAnimation, setEggState, playHatchAnimation
+    playDeathAnimation, setEggState, playHatchAnimation,
+    setTurkeyFallAnimation, isTurkeyOnGround
 } from './turkey.js';
 import {
     updateAnimator,
@@ -27,7 +33,7 @@ import {
     loadFoodAnimations, FOOD_ANIM_COUNT,
     loadLaserAnimations, LASER_ANIM_COUNT
 } from './animation.js';
-import { applyPhysics } from './physics.js';
+import { applyPhysics, applyGravityPhysics } from './physics.js';
 import { loadAll } from './sprites.js';
 import { createWorld, updateWorld, renderWorld, getDistanceMeters, getDistancePixels } from './world.js';
 import { renderHud, isPauseButtonClick, isMuteButtonClick } from './hud.js';
@@ -40,7 +46,7 @@ import { renderLaser, checkLaserCollision } from './hazards/laser.js';
 import { loadPatterns, resetSpawner, updateSpawner, getHazards, getZappers, getBirds, getLasers } from './spawner.js';
 import { resetCollectibles, updateCollectibles, renderAllFood, getCoins } from './collectible.js';
 import {
-    LOADING, SLOT_SELECT, MENU, HATCHING, PLAYING, PAUSED, DYING, DEAD,
+    LOADING, SLOT_SELECT, MENU, SHOP, LOADOUT, HATCHING, PLAYING, PAUSED, DYING, DEAD,
     renderSlotSelectScreen, getSlotSelectAction,
     renderLoadingScreen, renderMenuScreen, getMenuAction,
     renderPauseOverlay, getPauseAction,
@@ -49,9 +55,26 @@ import {
 } from './state.js';
 import {
     loadSlots, getSlots, getActiveSlot,
-    setActiveSlotIndex, createSlot, deleteSlot, updateActiveSlot
+    setActiveSlotIndex, createSlot, deleteSlot, updateActiveSlot,
+    purchaseNode, getPurchasedNodes, deriveGadgetLevels, derivePassiveTiers,
+    deriveMilestones, getGadgetSlotCount, getLoadout, setLoadout
 } from './save.js';
 import { setDebugBiomeOverride, getDebugBiomeOverride } from './biome.js';
+import {
+    initShop, updateShopCoins, updateShopPurchased,
+    renderShop, onShopPointerDown, onShopPointerMove, onShopPointerUp,
+    onShopRecenter, getShopAction
+} from './meta/shop.js';
+import { initLoadout, getLoadoutResult, onLoadoutClick, renderLoadout } from './meta/loadout.js';
+import {
+    setEquippedGadgets, setGadgetLevels, resetGadgetRunState,
+    hasShieldHit, consumeShieldHit, isShieldInvulnerable, trySecondWind,
+    getHitboxShrinkFactor, getMagnetMultiplier, doesFoodDrift,
+    getTotalCoinMultiplier, rollGemologist, rollJackpot,
+    onFoodCollected, updateMoneyGrubber, updateCompound,
+    updateGadgetTimers, isFlashInvulnerable
+} from './meta/gadgets.js';
+import { setPassiveTiers, getToughFeathersTier, computePassiveBonusCoins, getSecondChanceTier, getSecondChanceDuration } from './meta/passives.js';
 import {
     startLaserPattern, stopLaserPattern, isLaserPatternActive,
     updateLaserPattern, checkLaserPatternCollision, renderLaserPattern,
@@ -68,6 +91,12 @@ let gameState = LOADING;
 let runDistance = 0;
 let runCoins = 0;
 let isNewBest = false;
+const DEATH_PHASE_NONE = 'none';
+const DEATH_PHASE_FALL = 'fall';
+const DEATH_PHASE_SETTLED = 'settled';
+let deathPhase = DEATH_PHASE_NONE;
+let deathSteamTimer = 0;
+let deathForwardSpeed = 0;
 
 // Laser test mode state
 let laserTestIndex = 0;
@@ -120,11 +149,22 @@ function checkCollisions() {
 // State transitions
 // ---------------------------------------------------------------------------
 
+// Extra coins earned during run from gadgets (Money Grubber, etc.)
+let bonusRunCoins = 0;
+
+function addRunCoins(amount) {
+    bonusRunCoins += amount;
+}
+
 function startHatching() {
     createWorld();
     resetSpawner();
     resetCollectibles();
+    bonusRunCoins = 0;
+    secondChanceNextDist = 500;
+    secondChanceInvulnTimer = 0;
 
+    turkey.x = PLAYER_START_X;
     turkey.y = -PLAYER_RENDER_HEIGHT;
     turkey.vy = 0;
     eggVy = 0;
@@ -132,6 +172,7 @@ function startHatching() {
 
     hatchPhase = 'falling';
     hatchTimer = 0;
+    resetDeathState();
     gameState = HATCHING;
     playMusic();
 }
@@ -139,7 +180,39 @@ function startHatching() {
 function startRun() {
     turkey.vy = 0;
     turkey.animState = 'run';
+    resetDeathState();
     gameState = PLAYING;
+}
+
+function resetDeathState() {
+    deathPhase = DEATH_PHASE_NONE;
+    deathSteamTimer = 0;
+    deathForwardSpeed = 0;
+}
+
+function finishDeathSequence() {
+    runDistance = getDistanceMeters();
+    const baseCoins = getCoins() + bonusRunCoins;
+    const gadgetMult = getTotalCoinMultiplier();
+    const multipliedCoins = Math.floor(baseCoins * gadgetMult);
+    const passiveBonus = computePassiveBonusCoins(multipliedCoins, runDistance);
+    runCoins = multipliedCoins + passiveBonus;
+
+    console.log(`[Run End] base: ${baseCoins} (${getCoins()} collected + ${bonusRunCoins} grubber), gadget mult: ${gadgetMult.toFixed(2)}x → ${multipliedCoins}, passive bonus: +${passiveBonus}, total: ${runCoins}`);
+
+    // Golden Runs milestone: every 10th run is 2x
+    const slot = getActiveSlot();
+    const milestones = deriveMilestones();
+    if (milestones.goldenRuns && slot) {
+        const runNum = (slot.runCount || 0) + 1;
+        if (runNum % 10 === 0) {
+            runCoins *= 2;
+            console.log(`[Golden Run] Run #${runNum} — coins doubled to ${runCoins}!`);
+        }
+    }
+
+    isNewBest = updateActiveSlot(runCoins, runDistance);
+    gameState = DEAD;
 }
 
 function handleDeath() {
@@ -149,20 +222,62 @@ function handleDeath() {
 
     consumeJustPressed();
     consumeClick();
-
-    playDeathAnimation(turkey, () => {
-        runDistance = getDistanceMeters();
-        runCoins = getCoins();
-        isNewBest = updateActiveSlot(runCoins, runDistance);
-        gameState = DEAD;
-    });
+    deathPhase = DEATH_PHASE_FALL;
+    deathSteamTimer = 0;
+    deathForwardSpeed = DEATH_FORWARD_DRIFT_SPEED;
+    turkey.vy = DEATH_BOOST_VELOCITY;
+    setTurkeyFallAnimation(turkey);
 }
 
 function goToMenu() {
     consumeJustPressed();
     consumeClick();
+    drainPointerDown(); drainPointerMove(); drainPointerUp();
     gameState = MENU;
 }
+
+function openShop() {
+    const slot = getActiveSlot();
+    initShop(
+        getPurchasedNodes(),
+        slot ? slot.totalCoins : 0,
+        (nodeId, cost) => {
+            purchaseNode(nodeId, cost);
+            updateShopCoins(getActiveSlot().totalCoins);
+            updateShopPurchased(getPurchasedNodes());
+        }
+    );
+    consumeJustPressed();
+    consumeClick();
+    drainPointerDown(); drainPointerMove(); drainPointerUp();
+    gameState = SHOP;
+}
+
+function openLoadout() {
+    const levels = deriveGadgetLevels();
+    const slotCount = getGadgetSlotCount();
+    const currentLoadout = getLoadout();
+    initLoadout(slotCount, levels, currentLoadout);
+    consumeJustPressed();
+    consumeClick();
+    gameState = LOADOUT;
+}
+
+function applyMetaProgression() {
+    const levels = deriveGadgetLevels();
+    const tiers = derivePassiveTiers();
+    const loadout = getLoadout();
+    const milestones = deriveMilestones();
+
+    setGadgetLevels(levels);
+    setEquippedGadgets(loadout);
+    setPassiveTiers(tiers);
+    resetGadgetRunState(getToughFeathersTier());
+}
+
+// Second Chance passive: invuln pulse tracking
+let secondChanceNextDist = 500;
+let secondChanceInvulnTimer = 0;
 
 function handleSlotSelectClick(click) {
     const slots = getSlots();
@@ -216,11 +331,53 @@ function update(dt) {
         if (click) {
             const action = getMenuAction(click.x, click.y);
             if (action === 'play') {
-                startHatching();
+                openLoadout();
+            } else if (action === 'shop') {
+                openShop();
             } else if (action === 'changeSlot') {
                 gameState = SLOT_SELECT;
             }
         }
+        return;
+    }
+
+    if (gameState === SHOP) {
+        // Forward pointer events for drag-to-pan
+        for (const p of drainPointerDown()) onShopPointerDown(p.x, p.y);
+        for (const p of drainPointerMove()) onShopPointerMove(p.x, p.y);
+        for (const p of drainPointerUp()) onShopPointerUp(p.x, p.y);
+
+        const click = consumeClick();
+        consumeJustPressed();
+        if (click) {
+            const action = getShopAction(click.x, click.y);
+            if (action === 'back') {
+                goToMenu();
+            } else if (action === 'recenter') {
+                onShopRecenter();
+            }
+        }
+        if (consumeEscapePressed()) goToMenu();
+        return;
+    }
+
+    if (gameState === LOADOUT) {
+        const click = consumeClick();
+        consumeJustPressed();
+        if (click) {
+            const action = onLoadoutClick(click.x, click.y);
+            if (action === 'startRun') {
+                const finalLoadout = getLoadoutResult();
+                setLoadout(finalLoadout);
+                applyMetaProgression();
+                startHatching();
+            } else if (action === 'back') {
+                goToMenu();
+            } else if (action === 'loadoutChanged') {
+                setLoadout(getLoadoutResult());
+            }
+        }
+        if (consumeEscapePressed()) goToMenu();
         return;
     }
 
@@ -266,9 +423,34 @@ function update(dt) {
         updateSpawner(dt, getDistancePixels(), turkeyCX, turkeyCY);
 
         updateCollectibles(dt, hitbox);
+        updateGadgetTimers(dt);
+
+        // Money Grubber: passive coin generation
+        const grubberCoins = updateMoneyGrubber(dt);
+        if (grubberCoins > 0) addRunCoins(grubberCoins);
+
+        // Compound Interest: update multiplier based on distance
+        updateCompound(getDistanceMeters());
+
+        // Second Chance passive: invuln pulse every 500m
+        const scTier = getSecondChanceTier();
+        if (scTier > 0 && getDistanceMeters() >= secondChanceNextDist) {
+            secondChanceInvulnTimer = getSecondChanceDuration();
+            secondChanceNextDist += 500;
+        }
+        if (secondChanceInvulnTimer > 0) secondChanceInvulnTimer -= dt;
 
         if (checkCollisions()) {
-            handleDeath();
+            if (secondChanceInvulnTimer > 0 || isFlashInvulnerable() || isShieldInvulnerable()) {
+                // Invulnerable -- skip death (i-frames active)
+            } else if (hasShieldHit()) {
+                consumeShieldHit();
+                playSfx('crunch');
+            } else if (trySecondWind()) {
+                // Revived in place
+            } else {
+                handleDeath();
+            }
         }
         return;
     }
@@ -301,7 +483,38 @@ function update(dt) {
     }
 
     if (gameState === DYING) {
+        if (deathForwardSpeed > 0) {
+            turkey.x += deathForwardSpeed * dt;
+        }
+
+        if (deathPhase === DEATH_PHASE_FALL) {
+            const impactVy = turkey.vy;
+            applyGravityPhysics(turkey, dt, DEATH_FALL_GRAVITY_SCALE);
+            updateAnimator(turkey.animator, dt);
+            const hitGround = isTurkeyOnGround(turkey) && impactVy > 0 && turkey.vy <= DEATH_SETTLE_VY_THRESHOLD;
+            if (hitGround && impactVy >= DEATH_BOUNCE_MIN_IMPACT_VY) {
+                turkey.vy = -impactVy * DEATH_BOUNCE_DAMPING;
+                deathForwardSpeed *= DEATH_FORWARD_BOUNCE_DAMPING;
+                return;
+            }
+            if (hitGround) {
+                deathPhase = DEATH_PHASE_SETTLED;
+                turkey.vy = 0;
+                playDeathAnimation(turkey, null, () => {
+                    deathForwardSpeed = 0;
+                    deathSteamTimer = DEATH_STEAM_HOLD_SECONDS;
+                });
+            }
+            return;
+        }
+
         updateAnimator(turkey.animator, dt);
+        if (deathPhase === DEATH_PHASE_SETTLED && deathSteamTimer > 0) {
+            deathSteamTimer -= dt;
+            if (deathSteamTimer <= 0) {
+                finishDeathSequence();
+            }
+        }
         return;
     }
 
@@ -311,7 +524,7 @@ function update(dt) {
         if (click) {
             const action = getDeadScreenAction(click.x, click.y);
             if (action === 'playAgain') {
-                startHatching();
+                openLoadout();
             } else if (action === 'menu') {
                 goToMenu();
             }
@@ -448,6 +661,16 @@ function render() {
         const slot = getActiveSlot();
         const name = slot ? slot.name : '???';
         renderMenuScreen(ctx, name);
+        return;
+    }
+
+    if (gameState === SHOP) {
+        renderShop(ctx);
+        return;
+    }
+
+    if (gameState === LOADOUT) {
+        renderLoadout(ctx);
         return;
     }
 

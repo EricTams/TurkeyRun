@@ -8,6 +8,18 @@ import {
 // space below the feet, so the frame bottom is allowed past GROUND_Y.
 const FEET_Y = PLAYER_RENDER_HEIGHT - PLAYER_SPRITE_BOTTOM_PAD;
 
+function clampTurkeyVerticalBounds(turkey) {
+    if (turkey.y < 0) {
+        turkey.y = 0;
+        turkey.vy = 0;
+    }
+
+    if (turkey.y + FEET_Y > GROUND_Y) {
+        turkey.y = GROUND_Y - FEET_Y;
+        turkey.vy = 0;
+    }
+}
+
 export function applyPhysics(turkey, dt, pressing) {
     if (pressing) {
         turkey.vy -= THRUST * dt;
@@ -19,16 +31,12 @@ export function applyPhysics(turkey, dt, pressing) {
     if (turkey.vy > TERMINAL_VEL_DOWN) turkey.vy = TERMINAL_VEL_DOWN;
 
     turkey.y += turkey.vy * dt;
+    clampTurkeyVerticalBounds(turkey);
+}
 
-    // Clamp to ceiling (y is top of the render sprite)
-    if (turkey.y < 0) {
-        turkey.y = 0;
-        turkey.vy = 0;
-    }
-
-    // Clamp to floor (turkey's feet at GROUND_Y, not the frame bottom)
-    if (turkey.y + FEET_Y > GROUND_Y) {
-        turkey.y = GROUND_Y - FEET_Y;
-        turkey.vy = 0;
-    }
+export function applyGravityPhysics(turkey, dt, gravityScale) {
+    turkey.vy += GRAVITY * gravityScale * dt;
+    if (turkey.vy > TERMINAL_VEL_DOWN) turkey.vy = TERMINAL_VEL_DOWN;
+    turkey.y += turkey.vy * dt;
+    clampTurkeyVerticalBounds(turkey);
 }

@@ -5,6 +5,7 @@ import {
     PLAYER_START_X, GROUND_Y, DEBUG_SHOW_HITBOX
 } from './config.js';
 import { createAnimator, setAnimation, updateAnimator, drawAnimator } from './animation.js';
+import { getHitboxShrinkFactor } from './meta/gadgets.js';
 
 // Fallback color used when animation frames aren't loaded
 const TURKEY_COLOR = '#8B4513';
@@ -32,20 +33,26 @@ export function resetTurkey(turkey) {
 /**
  * Returns the hitbox rect for collision detection.
  * The hitbox is inset from the full render rect.
+ * Ezy-Dodge gadget shrinks the hitbox further.
  */
 export function getTurkeyHitbox(turkey) {
+    const shrink = getHitboxShrinkFactor();
+    const w = PLAYER_WIDTH * shrink;
+    const h = PLAYER_HEIGHT * shrink;
+    const cx = turkey.x + PLAYER_HITBOX_OFFSET_X + PLAYER_WIDTH / 2;
+    const cy = turkey.y + PLAYER_HITBOX_OFFSET_Y + PLAYER_HEIGHT / 2;
     return {
-        x: turkey.x + PLAYER_HITBOX_OFFSET_X,
-        y: turkey.y + PLAYER_HITBOX_OFFSET_Y,
-        w: PLAYER_WIDTH,
-        h: PLAYER_HEIGHT
+        x: cx - w / 2,
+        y: cy - h / 2,
+        w,
+        h
     };
 }
 
 /**
  * Check if the turkey's feet are on the ground.
  */
-function isOnGround(turkey) {
+export function isTurkeyOnGround(turkey) {
     return turkey.y + FEET_Y >= GROUND_Y;
 }
 
@@ -54,7 +61,7 @@ function isOnGround(turkey) {
  * Called each frame during PLAYING state.
  */
 export function updateTurkeyAnimation(turkey, dt, pressing) {
-    const onGround = isOnGround(turkey);
+    const onGround = isTurkeyOnGround(turkey);
     const state = turkey.animState;
 
     if (state === 'run') {
@@ -105,13 +112,19 @@ export function updateTurkeyAnimation(turkey, dt, pressing) {
 /**
  * Set the turkey to the die animation. Returns when complete via callback.
  */
-export function playDeathAnimation(turkey, onComplete) {
+export function setTurkeyFallAnimation(turkey) {
+    turkey.animState = 'fallDown';
+    setAnimation(turkey.animator, 'fallDown');
+}
+
+export function playDeathAnimation(turkey, onComplete, onDeadStart) {
     turkey.animState = 'die';
     setAnimation(turkey.animator, 'die', {
         loop: false,
         onComplete: () => {
             turkey.animState = 'dead';
             setAnimation(turkey.animator, 'dead');
+            if (onDeadStart) onDeadStart();
             if (onComplete) onComplete();
         }
     });

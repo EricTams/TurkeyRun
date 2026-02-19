@@ -1,7 +1,7 @@
-// AIDEV-NOTE: Save system with 3 named slots (chunk 10). Each slot stores
-// player name, total coins, best distance, and unlock/progression data.
-// Progress percentage is computed from unlocks (0% until later chunks add
-// unlockable content).
+// Save system with 3 named slots. Each slot stores player name, total coins,
+// best distance, purchasedNodes (upgrade tree), and loadout (equipped gadgets).
+
+import { TREE_NODES } from './meta/upgradeTree.js';
 
 const SAVE_KEY = 'turkeyrun_saves';
 const SLOT_COUNT = 3;
@@ -14,7 +14,9 @@ function createEmptySlotData(name) {
         name,
         totalCoins: 0,
         bestDistance: 0,
-        unlocks: {}
+        purchasedNodes: ['start'],
+        loadout: [null, null],
+        runCount: 0,
     };
 }
 
@@ -25,6 +27,18 @@ export function loadSlots() {
             const parsed = JSON.parse(raw);
             if (Array.isArray(parsed) && parsed.length === SLOT_COUNT) {
                 slots = parsed;
+                // Migrate old saves that lack new fields
+                for (const slot of slots) {
+                    if (slot && !slot.purchasedNodes) {
+                        slot.purchasedNodes = ['start'];
+                    }
+                    if (slot && !slot.loadout) {
+                        slot.loadout = [null, null];
+                    }
+                    if (slot && slot.runCount == null) {
+                        slot.runCount = 0;
+                    }
+                }
             }
         }
     } catch (e) {
@@ -80,6 +94,7 @@ export function updateActiveSlot(coinsEarned, distance) {
     if (!slot) return false;
 
     slot.totalCoins += coinsEarned;
+    slot.runCount = (slot.runCount || 0) + 1;
     const isNewBest = distance > slot.bestDistance;
     if (isNewBest) {
         slot.bestDistance = distance;
@@ -88,14 +103,95 @@ export function updateActiveSlot(coinsEarned, distance) {
     return isNewBest;
 }
 
-// Progress percentage: total items unlocked / total unlockable items.
-// Returns 0% until shop/gadgets/cosmetics are added in later chunks.
+// Purchase a node: deduct coins, add to purchasedNodes
+export function purchaseNode(nodeId, cost) {
+    const slot = getActiveSlot();
+    if (!slot) return;
+    slot.totalCoins -= cost;
+    if (!slot.purchasedNodes.includes(nodeId)) {
+        slot.purchasedNodes.push(nodeId);
+    }
+    persistSlots();
+}
+
+// Update the loadout (array of gadget IDs)
+export function setLoadout(gadgetIds) {
+    const slot = getActiveSlot();
+    if (!slot) return;
+    slot.loadout = gadgetIds;
+    persistSlots();
+}
+
+export function getLoadout() {
+    const slot = getActiveSlot();
+    if (!slot) return [null, null];
+    return slot.loadout || [null, null];
+}
+
+export function getPurchasedNodes() {
+    const slot = getActiveSlot();
+    if (!slot) return ['start'];
+    return slot.purchasedNodes || ['start'];
+}
+
+// --- Derive gadget levels from purchased nodes ---
+// Returns { gadgetId: maxLevel(0-indexed) } for all owned gadgets
+export function deriveGadgetLevels() {
+    const purchased = new Set(getPurchasedNodes());
+    const levels = {};
+    for (const node of TREE_NODES) {
+        if (node.type !== 'gadget') continue;
+        if (!purchased.has(node.id)) continue;
+        const gid = node.gadgetId;
+        const current = levels[gid] ?? -1;
+        if (node.level > current) levels[gid] = node.level;
+    }
+    return levels;
+}
+
+// --- Derive passive tiers from purchased nodes ---
+// Returns { passiveId: maxTier(1-indexed) }
+export function derivePassiveTiers() {
+    const purchased = new Set(getPurchasedNodes());
+    const tiers = {};
+    for (const node of TREE_NODES) {
+        if (node.type !== 'passive') continue;
+        if (!purchased.has(node.id)) continue;
+        const pid = node.passiveId;
+        const tierVal = node.tier + 1; // 1-indexed
+        const current = tiers[pid] ?? 0;
+        if (tierVal > current) tiers[pid] = tierVal;
+    }
+    return tiers;
+}
+
+// --- Derive milestones from purchased nodes ---
+export function deriveMilestones() {
+    const purchased = new Set(getPurchasedNodes());
+    const milestones = {};
+    for (const node of TREE_NODES) {
+        if (node.type !== 'milestone') continue;
+        milestones[node.milestoneId] = purchased.has(node.id);
+    }
+    return milestones;
+}
+
+// How many gadget slots the player has (2 base + milestones)
+export function getGadgetSlotCount() {
+    const ms = deriveMilestones();
+    let count = 2;
+    if (ms.thirdSlot) count = 3;
+    if (ms.fourthSlot) count = 4;
+    return count;
+}
+
+// Progress percentage: purchased nodes / total nodes (excluding start)
 export function getProgressPercent(slot) {
-    if (!slot || !slot.unlocks) return 0;
-    const totalUnlockable = 0;
-    if (totalUnlockable === 0) return 0;
-    const unlocked = Object.keys(slot.unlocks).filter(k => slot.unlocks[k]).length;
-    return Math.floor((unlocked / totalUnlockable) * 100);
+    if (!slot || !slot.purchasedNodes) return 0;
+    const total = TREE_NODES.length - 1; // exclude start
+    if (total <= 0) return 0;
+    const owned = slot.purchasedNodes.filter(id => id !== 'start').length;
+    return Math.floor((owned / total) * 100);
 }
 
 export function getSlotCount() {

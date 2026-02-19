@@ -55,6 +55,8 @@ function drawLogo(ctx, centerX, topY, width) {
 export const LOADING = 'LOADING';
 export const SLOT_SELECT = 'SLOT_SELECT';
 export const MENU = 'MENU';
+export const SHOP = 'SHOP';
+export const LOADOUT = 'LOADOUT';
 export const HATCHING = 'HATCHING';
 export const PLAYING = 'PLAYING';
 export const PAUSED = 'PAUSED';
@@ -342,11 +344,8 @@ export function renderMenuScreen(ctx, playerName) {
     // "Play" button
     drawButton(ctx, MENU_PLAY_BTN, 'PLAY', BTN_BG, BTN_BORDER, BTN_TEXT_COLOR, 'bold 24px monospace');
 
-    // "Shop" button (disabled)
-    drawButton(ctx, MENU_SHOP_BTN, 'SHOP', BTN_DISABLED_BG, BTN_DISABLED_BORDER, BTN_DISABLED_TEXT, 'bold 22px monospace');
-    ctx.font = '11px monospace';
-    ctx.fillStyle = BTN_DISABLED_TEXT;
-    ctx.fillText('Coming Soon', CANVAS_WIDTH / 2, SHOP_BTN_Y + MENU_BTN_H + 14);
+    // "Shop" button
+    drawButton(ctx, MENU_SHOP_BTN, 'SHOP', CHANGE_SLOT_BG, CHANGE_SLOT_BORDER, SUBTITLE_COLOR, 'bold 22px monospace');
 
     // "Change Slot" button
     drawButton(ctx, MENU_CHANGE_SLOT_BTN, 'CHANGE SLOT', CHANGE_SLOT_BG, CHANGE_SLOT_BORDER, SUBTITLE_COLOR, 'bold 18px monospace');
@@ -355,7 +354,7 @@ export function renderMenuScreen(ctx, playerName) {
 /** Returns 'play' | 'shop' | 'changeSlot' | null based on click position. */
 export function getMenuAction(cx, cy) {
     if (pointInRect(cx, cy, MENU_PLAY_BTN)) return 'play';
-    // Shop is disabled for now -- don't return an action
+    if (pointInRect(cx, cy, MENU_SHOP_BTN)) return 'shop';
     if (pointInRect(cx, cy, MENU_CHANGE_SLOT_BTN)) return 'changeSlot';
     return null;
 }

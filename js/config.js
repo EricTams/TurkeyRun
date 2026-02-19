@@ -31,6 +31,14 @@ export const GRAVITY = 1200;
 export const THRUST = 1500;
 export const TERMINAL_VEL_UP = 380;
 export const TERMINAL_VEL_DOWN = 450;
+export const DEATH_BOOST_VELOCITY = -460;
+export const DEATH_FALL_GRAVITY_SCALE = 1.15;
+export const DEATH_SETTLE_VY_THRESHOLD = 10;
+export const DEATH_STEAM_HOLD_SECONDS = 0.9;
+export const DEATH_FORWARD_DRIFT_SPEED = 120;
+export const DEATH_FORWARD_BOUNCE_DAMPING = 0.35;
+export const DEATH_BOUNCE_DAMPING = 0.42;
+export const DEATH_BOUNCE_MIN_IMPACT_VY = 140;
 
 // World
 export const GROUND_Y = 400;

@@ -8,16 +8,23 @@ let canvasRef = null;
 let clickX = -1;
 let clickY = -1;
 let hasClick = false;
-let debugBiomeKey = 0; // 1-5 when a debug biome key was pressed, 0 otherwise
+let debugBiomeKey = 0;
 let escapeJustPressed = false;
+
+// Pointer event queues for shop drag-to-pan
+let ptrDownQueue = [];
+let ptrMoveQueue = [];
+let ptrUpQueue = [];
 
 export function initInput(canvas) {
     canvasRef = canvas;
 
     canvas.addEventListener('mousedown', onMouseDown);
-    window.addEventListener('mouseup', onRelease);
+    canvas.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
 
     canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', onTouchMove, { passive: false });
     canvas.addEventListener('touchend', onTouchEnd, { passive: false });
     canvas.addEventListener('touchcancel', onTouchEnd, { passive: false });
 
@@ -73,6 +80,16 @@ function onMouseDown(e) {
     pressed = true;
     justPressedFlag = true;
     recordClick(e.clientX, e.clientY);
+    ptrDownQueue.push(toCanvasCoords(e.clientX, e.clientY));
+}
+
+function onMouseMove(e) {
+    if (pressed) ptrMoveQueue.push(toCanvasCoords(e.clientX, e.clientY));
+}
+
+function onMouseUp(e) {
+    pressed = false;
+    ptrUpQueue.push(toCanvasCoords(e.clientX, e.clientY));
 }
 
 function onRelease() {
@@ -85,11 +102,22 @@ function onTouchStart(e) {
     justPressedFlag = true;
     if (e.touches.length > 0) {
         recordClick(e.touches[0].clientX, e.touches[0].clientY);
+        ptrDownQueue.push(toCanvasCoords(e.touches[0].clientX, e.touches[0].clientY));
+    }
+}
+
+function onTouchMove(e) {
+    e.preventDefault();
+    if (e.touches.length > 0) {
+        ptrMoveQueue.push(toCanvasCoords(e.touches[0].clientX, e.touches[0].clientY));
     }
 }
 
 function onTouchEnd(e) {
     e.preventDefault();
+    if (e.changedTouches.length > 0) {
+        ptrUpQueue.push(toCanvasCoords(e.changedTouches[0].clientX, e.changedTouches[0].clientY));
+    }
     if (e.touches.length === 0) {
         pressed = false;
     }
@@ -109,6 +137,17 @@ export function consumeEscapePressed() {
         return true;
     }
     return false;
+}
+
+// Drain pointer event queues (used by shop for drag-to-pan)
+export function drainPointerDown() {
+    const q = ptrDownQueue; ptrDownQueue = []; return q;
+}
+export function drainPointerMove() {
+    const q = ptrMoveQueue; ptrMoveQueue = []; return q;
+}
+export function drainPointerUp() {
+    const q = ptrUpQueue; ptrUpQueue = []; return q;
 }
 
 function onKeyDown(e) {
