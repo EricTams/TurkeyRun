@@ -5,9 +5,13 @@
 import {
     CANVAS_WIDTH, CANVAS_HEIGHT, GROUND_Y,
     AUTO_RUN_SPEED, PIXELS_PER_METER,
-    FAR_BG_PARALLAX, NEAR_BG_PARALLAX
+    FAR_BG_PARALLAX, NEAR_BG_PARALLAX,
+    TILE_SIZE, TILE_ROW_Y,
+    DEBUG_SHOW_HITBOX
 } from './config.js';
-import { getBiomeColors, getSpiritualBlend } from './biome.js';
+import { getBiomeColors, getSpiritualBlend, getCurrentBiomeName } from './biome.js';
+import { getVisibleTileColumns, getGroundYAt } from './terrain.js';
+import { getTile } from './terrainTiles.js';
 
 // Scrolling offsets (wrap around their respective layer widths)
 let farOffset = 0;
@@ -48,7 +52,7 @@ export function updateWorld(dt) {
     distancePixels += scrollPx;
     farOffset = (farOffset + scrollPx * FAR_BG_PARALLAX) % FAR_HILL_WIDTH;
     nearOffset = (nearOffset + scrollPx * NEAR_BG_PARALLAX) % NEAR_HILL_WIDTH;
-    groundOffset = (groundOffset + scrollPx) % GROUND_STRIPE_SPACING;
+    groundOffset = (groundOffset + scrollPx) % TILE_SIZE;
 }
 
 export function renderWorld(ctx) {
@@ -58,13 +62,17 @@ export function renderWorld(ctx) {
     renderSky(ctx, colors.sky);
     renderFarHills(ctx, colors.farBg);
     renderNearHills(ctx, colors.nearBg);
-    renderGround(ctx, colors.ground, colors.groundStripe);
+    renderGroundBase(ctx, colors.ground);
 
     // Spiritual realm: floating geometry fades in during transition
     const spiritBlend = getSpiritualBlend(distMeters);
     if (spiritBlend > 0) {
         renderSpiritualEffects(ctx, spiritBlend);
     }
+}
+
+export function renderWorldTerrain(ctx) {
+    renderGroundTerrain(ctx);
 }
 
 function renderSky(ctx, skyColor) {
@@ -101,16 +109,68 @@ function drawHill(ctx, cx, baseY, halfWidth, height) {
     ctx.fill();
 }
 
-function renderGround(ctx, groundColor, stripeColor) {
-    ctx.fillStyle = groundColor;
-    ctx.fillRect(0, GROUND_Y, CANVAS_WIDTH, GROUND_HEIGHT);
+function renderGroundBase(ctx, groundColor) {
+    const distMeters = Math.floor(distancePixels / PIXELS_PER_METER);
+    const biome = getCurrentBiomeName(distMeters);
 
-    // Scrolling vertical stripes for ground motion
-    ctx.fillStyle = stripeColor;
-    const stripeCount = Math.ceil(CANVAS_WIDTH / GROUND_STRIPE_SPACING) + 1;
-    for (let i = 0; i < stripeCount; i++) {
-        const x = i * GROUND_STRIPE_SPACING - groundOffset;
-        ctx.fillRect(x, GROUND_Y, GROUND_STRIPE_WIDTH, GROUND_HEIGHT);
+    // 1) Solid fill below the tile row to canvas bottom
+    ctx.fillStyle = groundColor;
+    ctx.fillRect(0, TILE_ROW_Y + TILE_SIZE, CANVAS_WIDTH, CANVAS_HEIGHT - TILE_ROW_Y - TILE_SIZE);
+
+    // 2) Draw scrolling default ground (Flat-Low tiles) across the full width
+    const tileCount = Math.ceil(CANVAS_WIDTH / TILE_SIZE) + 2;
+    const defaultTile = getTile(biome, 'flatLow');
+    if (defaultTile) {
+        for (let i = 0; i < tileCount; i++) {
+            const x = i * TILE_SIZE - groundOffset;
+            ctx.drawImage(defaultTile, x, TILE_ROW_Y, TILE_SIZE, TILE_SIZE);
+        }
+    }
+
+    // 3) Draw Full tiles below the default ground row
+    const fullTile = getTile(biome, 'full');
+    if (fullTile) {
+        for (let i = 0; i < tileCount; i++) {
+            const x = i * TILE_SIZE - groundOffset;
+            ctx.drawImage(fullTile, x, TILE_ROW_Y + TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        }
+    }
+}
+
+function renderGroundTerrain(ctx) {
+    const distMeters = Math.floor(distancePixels / PIXELS_PER_METER);
+    const biome = getCurrentBiomeName(distMeters);
+
+    // Overdraw section terrain tiles on top
+    const columns = getVisibleTileColumns();
+    for (const col of columns) {
+        const tile = getTile(biome, col.tileType);
+        if (tile) {
+            ctx.drawImage(tile, col.screenX, TILE_ROW_Y, TILE_SIZE, TILE_SIZE);
+        }
+        if (col.tileType !== 'flatLow') {
+            const ft = getTile(biome, 'full');
+            if (ft) {
+                ctx.drawImage(ft, col.screenX, TILE_ROW_Y + TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            }
+        }
+    }
+
+    // Debug: dashed magenta collision line
+    if (DEBUG_SHOW_HITBOX) {
+        ctx.save();
+        ctx.strokeStyle = '#FF00FF';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        for (let x = 0; x <= CANVAS_WIDTH; x += 3) {
+            const y = getGroundYAt(x);
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
     }
 }
 

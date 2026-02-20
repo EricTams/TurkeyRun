@@ -42,6 +42,33 @@ POOL_NOODLE_HEIGHT = 60
 SAND_CASTLE_WIDTH = 50
 SAND_CASTLE_HEIGHT = 35
 
+# Animated blocker dimensions (must match js/config.js)
+OLD_IGUANA_WIDTH = 50
+OLD_IGUANA_HEIGHT = 50
+TIE_DYE_IGUANA_WIDTH = 56
+TIE_DYE_IGUANA_HEIGHT = 28
+SMALL_ASTEROID_SIZE = 36
+MEDIUM_ASTEROID_SIZE = 50
+LARGE_ASTEROID_SIZE = 72
+
+# Sky blocker (pufferfish) -- must match js/config.js
+PUFFERFISH_SIZE = 180
+PUFFERFISH_Y_MIN = 20
+PUFFERFISH_Y_MAX = 250
+
+# Worst-case ground hazard footprint across all biomes (used for corridor
+# clearance so patterns are safe no matter which biome swaps in its hazards).
+MAX_GROUND_HAZARD_WIDTH = max(
+    POOL_NOODLE_WIDTH, SAND_CASTLE_WIDTH,
+    OLD_IGUANA_WIDTH, TIE_DYE_IGUANA_WIDTH,
+    SMALL_ASTEROID_SIZE, MEDIUM_ASTEROID_SIZE, LARGE_ASTEROID_SIZE
+)
+MAX_GROUND_HAZARD_HEIGHT = max(
+    POOL_NOODLE_HEIGHT, SAND_CASTLE_HEIGHT,
+    OLD_IGUANA_HEIGHT, TIE_DYE_IGUANA_HEIGHT,
+    SMALL_ASTEROID_SIZE, MEDIUM_ASTEROID_SIZE, LARGE_ASTEROID_SIZE
+)
+
 LASER_BEAM_THICKNESS = 16
 LASER_STATIC_WIDTH = 300
 LASER_SWEEP_ARC = math.pi * 0.5
@@ -49,6 +76,10 @@ LASER_SWEEP_ARC = math.pi * 0.5
 PLAYER_HEIGHT = 40  # matches js/config.js PLAYER_HEIGHT
 PLAYER_START_X = 100
 BIRD_X_SPEED = 380  # constant horizontal speed (must match config.js)
+
+# Terrain elevation (must match js/config.js)
+TILE_SIZE = 64
+TIER_HEIGHT = 32  # collision height difference between Low and Normal
 
 # ---------------------------------------------------------------------------
 # Tier parameters -- tweak these and re-run
@@ -65,9 +96,11 @@ TIER_PARAMS = {
         "section_length_max": 450, # max total section width in px
         "obstacle_count_min": 1,
         "obstacle_count_max": 3,
-        "obstacle_types": ["ground"],
+        "obstacle_types": ["ground", "skyBlocker"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.0,
+        "elevation_chance": 0.35,
+        "max_elevation": 1,
     },
     "medium": {
         "count": 15,
@@ -79,10 +112,11 @@ TIER_PARAMS = {
         "section_length_max": 550,
         "obstacle_count_min": 2,
         "obstacle_count_max": 5,
-        # Laser obstacles removed; medium uses only ground/zapper variants.
-        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen"],
+        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen", "skyBlocker"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.3,
+        "elevation_chance": 0.5,
+        "max_elevation": 1,
     },
     "hard": {
         "count": 15,
@@ -94,10 +128,11 @@ TIER_PARAMS = {
         "section_length_max": 600,
         "obstacle_count_min": 3,
         "obstacle_count_max": 7,
-        # Laser obstacles removed; hard uses only ground/zapper variants.
-        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen"],
+        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen", "skyBlocker"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.5,
+        "elevation_chance": 0.6,
+        "max_elevation": 1,
     },
     "extreme": {
         "count": 15,
@@ -109,10 +144,11 @@ TIER_PARAMS = {
         "section_length_max": 650,
         "obstacle_count_min": 4,
         "obstacle_count_max": 8,
-        # Laser obstacles removed; extreme uses only ground/zapper variants.
-        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen"],
+        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen", "skyBlocker"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.7,
+        "elevation_chance": 0.7,
+        "max_elevation": 1,
     },
 }
 
@@ -196,28 +232,33 @@ def generate_path(params):
 # Obstacle placement
 # ---------------------------------------------------------------------------
 
-def place_ground_hazard(path, params, occupied_xs):
-    """Place a ground hazard at an x that doesn't overlap the corridor at ground level."""
+def place_ground_hazard(path, params, occupied_xs, elevation=None):
+    """Place a ground hazard at an x that doesn't overlap the corridor at ground level.
+
+    Uses worst-case dimensions because the spawner replaces subType with
+    the current biome's hazard types at runtime.  Avoids slope tiles when
+    elevation data is present.
+    """
     section_end = path[-1]["x"]
     sub_type = random.choice(params["ground_types"])
-
-    if sub_type == "poolNoodle":
-        hw, hh = POOL_NOODLE_WIDTH, POOL_NOODLE_HEIGHT
-    else:
-        hw, hh = SAND_CASTLE_WIDTH, SAND_CASTLE_HEIGHT
-
-    hazard_top_y = GROUND_Y - hh
+    hw = MAX_GROUND_HAZARD_WIDTH
+    hh = MAX_GROUND_HAZARD_HEIGHT
 
     for _ in range(40):
         offset_x = random.randint(20, max(20, int(section_end) - hw))
 
-        # Check this x isn't too close to another obstacle
         if any(abs(offset_x - ox) < 60 for ox in occupied_xs):
             continue
 
+        # Skip slope tiles
+        if elevation and is_on_slope(elevation, offset_x):
+            continue
+
+        local_ground_y = get_ground_y_at_elevation(elevation, offset_x)
+        hazard_top_y = local_ground_y - hh
+
         # Verify the path corridor doesn't overlap the hazard rect.
-        # Check every few pixels along the hazard width with a generous buffer.
-        buffer = 20  # extra px clearance between corridor and hazard
+        buffer = 20
         overlaps = False
         for sx in range(max(0, offset_x - 10), offset_x + hw + 11, max(1, hw // 8)):
             center_y, w = interpolate_path(path, sx)
@@ -233,7 +274,7 @@ def place_ground_hazard(path, params, occupied_xs):
     return None
 
 
-def place_zapper(path, params, occupied_xs):
+def place_zapper(path, params, occupied_xs, elevation=None):
     """Place a zapper whose gap is aligned with the path at that x."""
     section_end = path[-1]["x"]
 
@@ -275,7 +316,7 @@ def place_zapper(path, params, occupied_xs):
     return None
 
 
-def place_static_laser(path, params, occupied_xs):
+def place_static_laser(path, params, occupied_xs, elevation=None):
     """Place a static laser beam outside the corridor."""
     section_end = path[-1]["x"]
 
@@ -320,7 +361,7 @@ def place_static_laser(path, params, occupied_xs):
     return None
 
 
-def place_sweep_laser(path, params, occupied_xs):
+def place_sweep_laser(path, params, occupied_xs, elevation=None):
     """Place a sweep laser with pivot at ceiling or ground."""
     section_end = path[-1]["x"]
 
@@ -347,7 +388,7 @@ def place_sweep_laser(path, params, occupied_xs):
     return None
 
 
-def place_bottom_open_zapper(path, params, occupied_xs):
+def place_bottom_open_zapper(path, params, occupied_xs, elevation=None):
     """Place a bottom-open zapper (top bar only, open below).
 
     The corridor must pass below the bar, so the bar height must be less than
@@ -385,16 +426,89 @@ def place_bottom_open_zapper(path, params, occupied_xs):
     return None
 
 
+def place_sky_blocker(path, params, occupied_xs, elevation=None):
+    """Place a sky blocker (pufferfish) at a Y that avoids the corridor.
+
+    The blocker is a circle of diameter PUFFERFISH_SIZE.  We sample the
+    corridor at the candidate x and pick a Y above or below it within the
+    allowed sky region [PUFFERFISH_Y_MIN, PUFFERFISH_Y_MAX].
+    At most one sky blocker per pattern (enforced by occupied_xs spacing).
+    """
+    section_end = path[-1]["x"]
+    size = PUFFERFISH_SIZE
+    buffer = 30  # clearance between blocker edge and corridor edge
+
+    for _ in range(40):
+        offset_x = random.randint(40, max(40, int(section_end) - size))
+
+        # Wide spacing -- sky blockers are large
+        if any(abs(offset_x - ox) < size + 40 for ox in occupied_xs):
+            continue
+
+        # Sample the corridor across the blocker's width
+        corridor_top = float("inf")
+        corridor_bottom = float("-inf")
+        for sx in range(max(0, offset_x), offset_x + size + 1, max(1, size // 6)):
+            center_y, w = interpolate_path(path, sx)
+            corridor_top = min(corridor_top, center_y - w / 2)
+            corridor_bottom = max(corridor_bottom, center_y + w / 2)
+
+        # Find valid Y ranges (blocker top-left corner Y)
+        candidates = []
+
+        # Above corridor
+        above_max_y = corridor_top - buffer - size
+        if above_max_y >= PUFFERFISH_Y_MIN:
+            candidates.append((PUFFERFISH_Y_MIN, above_max_y))
+
+        # Below corridor
+        below_min_y = corridor_bottom + buffer
+        if below_min_y + size <= PUFFERFISH_Y_MAX + size:
+            candidates.append((below_min_y, min(PUFFERFISH_Y_MAX, GROUND_Y - size - 10)))
+
+        # Filter out degenerate ranges
+        candidates = [(lo, hi) for lo, hi in candidates if hi >= lo]
+        if not candidates:
+            continue
+
+        # Pick a range weighted by span
+        total = sum(hi - lo for lo, hi in candidates)
+        pick = random.random() * total
+        chosen_y = None
+        for lo, hi in candidates:
+            span = hi - lo
+            if pick <= span:
+                chosen_y = lo + pick
+                break
+            pick -= span
+        if chosen_y is None:
+            chosen_y = candidates[-1][0]
+
+        chosen_y = round(chosen_y, 1)
+        # Reserve the full width so other obstacles don't land inside
+        occupied_xs.append(offset_x)
+        occupied_xs.append(offset_x + size // 2)
+        occupied_xs.append(offset_x + size)
+        return {
+            "type": "skyBlocker",
+            "offsetX": offset_x,
+            "y": chosen_y,
+        }
+
+    return None
+
+
 OBSTACLE_PLACERS = {
     "ground": place_ground_hazard,
     "zapper": place_zapper,
     "zapperBottomOpen": place_bottom_open_zapper,
     "laserStatic": place_static_laser,
     "laserSweep": place_sweep_laser,
+    "skyBlocker": place_sky_blocker,
 }
 
 
-def place_obstacles(path, params):
+def place_obstacles(path, params, elevation=None):
     """Place a random number of obstacles outside the path corridor."""
     count = random.randint(params["obstacle_count_min"],
                            params["obstacle_count_max"])
@@ -404,7 +518,7 @@ def place_obstacles(path, params):
     for _ in range(count):
         obs_type = random.choice(params["obstacle_types"])
         placer = OBSTACLE_PLACERS[obs_type]
-        elem = placer(path, params, occupied_xs)
+        elem = placer(path, params, occupied_xs, elevation)
         if elem is not None:
             elements.append(elem)
 
@@ -446,13 +560,122 @@ def place_birds(path, params):
 
 
 # ---------------------------------------------------------------------------
+# Elevation generation
+# ---------------------------------------------------------------------------
+
+MIN_PLATEAU_TILES = 2  # minimum flat tiles at elevated level before descending
+
+def generate_elevation(params, section_length):
+    """Generate a tile-grid elevation profile for the section.
+
+    Returns a list of {"x": int, "level": 0|1} entries at TILE_SIZE intervals.
+    Always starts and ends at level 0.  Transitions between levels occupy one
+    tile column (the terrain module converts these into slope tiles at runtime).
+    Elevated plateaus are held for at least MIN_PLATEAU_TILES before descending.
+    """
+    chance = params.get("elevation_chance", 0)
+    max_elev = params.get("max_elevation", 0)
+    if max_elev == 0 or chance <= 0:
+        return []
+
+    num_tiles = max(1, section_length // TILE_SIZE)
+    levels = [0] * num_tiles
+    current = 0
+    tiles_at_current = 0
+
+    for i in range(1, num_tiles):
+        tiles_remaining = num_tiles - i
+        # Reserve room to return to 0 (need 1 slope tile per level)
+        if current > 0 and tiles_remaining <= current:
+            current -= 1
+            tiles_at_current = 0
+            levels[i] = current
+            continue
+
+        # Don't allow descent until the plateau has been held long enough
+        can_descend = current == 0 or tiles_at_current >= MIN_PLATEAU_TILES
+        # Need enough room for the plateau + slope down
+        can_ascend = (current == 0
+                      and tiles_remaining >= MIN_PLATEAU_TILES + 1)
+
+        if random.random() < chance:
+            if current == 0 and can_ascend:
+                current = 1
+                tiles_at_current = 0
+            elif current == 1 and can_descend:
+                current = 0
+                tiles_at_current = 0
+
+        tiles_at_current += 1
+        levels[i] = current
+
+    # Force last tile to level 0, then smooth backwards
+    levels[-1] = 0
+    for i in range(num_tiles - 2, 0, -1):
+        if levels[i] > levels[i + 1] + 1:
+            levels[i] = levels[i + 1] + 1
+
+    elevation = []
+    for i, lv in enumerate(levels):
+        elevation.append({"x": i * TILE_SIZE, "level": lv})
+    return elevation
+
+
+def get_ground_y_at_elevation(elevation, offset_x):
+    """Return the effective ground Y at a given section-local x, accounting
+    for the elevation profile.  Used during obstacle placement."""
+    if not elevation:
+        return GROUND_Y
+
+    # Find which tile column this x falls in
+    tile_idx = int(offset_x) // TILE_SIZE
+    if tile_idx < 0:
+        tile_idx = 0
+    if tile_idx >= len(elevation):
+        tile_idx = len(elevation) - 1
+
+    lv = elevation[tile_idx]["level"]
+
+    # Check if this tile is a slope (level differs from neighbour)
+    prev_lv = elevation[tile_idx - 1]["level"] if tile_idx > 0 else lv
+    next_lv = elevation[tile_idx + 1]["level"] if tile_idx < len(elevation) - 1 else lv
+
+    is_slope = (lv != prev_lv) or (lv != next_lv and tile_idx < len(elevation) - 1
+                                    and elevation[tile_idx + 1]["level"] != lv)
+
+    # For slopes, use the higher ground (conservative for hazard clearance)
+    if prev_lv != lv:
+        effective_lv = max(prev_lv, lv)
+    else:
+        effective_lv = lv
+
+    return GROUND_Y - effective_lv * TIER_HEIGHT
+
+
+def is_on_slope(elevation, offset_x):
+    """Return True if offset_x falls on a slope transition tile."""
+    if not elevation:
+        return False
+    tile_idx = int(offset_x) // TILE_SIZE
+    if tile_idx < 0 or tile_idx >= len(elevation):
+        return False
+    lv = elevation[tile_idx]["level"]
+    prev_lv = elevation[tile_idx - 1]["level"] if tile_idx > 0 else lv
+    next_idx = tile_idx + 1
+    next_lv = elevation[next_idx]["level"] if next_idx < len(elevation) else lv
+    return lv != prev_lv or lv != next_lv
+
+
+# ---------------------------------------------------------------------------
 # Pattern generation
 # ---------------------------------------------------------------------------
 
 def generate_pattern(params):
     """Generate a single section pattern."""
     path = generate_path(params)
-    elements = place_obstacles(path, params)
+    section_length = path[-1]["x"]
+    elevation = generate_elevation(params, section_length)
+    elements = place_obstacles(path, params, elevation)
     birds = place_birds(path, params)
 
     # Widen the path around bird spawn points so the player has room to dodge.
@@ -474,11 +697,14 @@ def generate_pattern(params):
                 if abs(e["offsetX"] - bx) > dodge_half + 30
             ]
 
-    return {
+    result = {
         "path": path,
         "elements": elements,
         "birds": birds,
     }
+    if elevation:
+        result["elevation"] = elevation
+    return result
 
 
 def generate_all():
@@ -516,13 +742,10 @@ def validate_patterns(patterns):
                     print(f"  WARNING: {tier}[{i}] path y out of range at waypoint {j}: {wp['y']}")
                     issues += 1
 
-            # Check ground hazards don't overlap corridor
+            # Check ground hazards don't overlap corridor (worst-case height)
             for elem in pat["elements"]:
                 if elem["type"] == "ground":
-                    if elem["subType"] == "poolNoodle":
-                        hazard_top = GROUND_Y - POOL_NOODLE_HEIGHT
-                    else:
-                        hazard_top = GROUND_Y - SAND_CASTLE_HEIGHT
+                    hazard_top = GROUND_Y - MAX_GROUND_HAZARD_HEIGHT
 
                     center_y, w = interpolate_path(path, elem["offsetX"])
                     if center_y + w / 2 >= hazard_top:
@@ -530,6 +753,21 @@ def validate_patterns(patterns):
                               f"overlaps corridor (bottom={center_y + w/2:.0f}, "
                               f"hazard_top={hazard_top})")
                         issues += 1
+
+                # Check sky blockers don't overlap corridor
+                if elem["type"] == "skyBlocker":
+                    blocker_y = elem["y"]
+                    blocker_bottom = blocker_y + PUFFERFISH_SIZE
+                    for sx in range(max(0, elem["offsetX"]), elem["offsetX"] + PUFFERFISH_SIZE + 1,
+                                    max(1, PUFFERFISH_SIZE // 6)):
+                        center_y, w = interpolate_path(path, sx)
+                        ct = center_y - w / 2
+                        cb = center_y + w / 2
+                        if blocker_bottom > ct and blocker_y < cb:
+                            print(f"  WARNING: {tier}[{i}] skyBlocker at x={elem['offsetX']} "
+                                  f"y={blocker_y:.0f} overlaps corridor")
+                            issues += 1
+                            break
 
                 # Check bottom-open zappers don't overlap corridor
                 if elem["type"] == "zapperBottomOpen":

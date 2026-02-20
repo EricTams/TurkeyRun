@@ -21,7 +21,8 @@ const BIOMES = [
         nearBg: '#5A9E5A',
         ground: '#C2B280',
         groundStripe: '#B0A06A',
-        groundHazards: ['poolNoodle', 'sandCastle'],
+        groundHazards: ['oldIguana'],
+        skyBlockers: ['pufferfish'],
         foodTypes: ['foodCoconut', 'foodLemonade'],
     },
     {
@@ -32,7 +33,8 @@ const BIOMES = [
         nearBg: '#3D6B3D',
         ground: '#6AAF4E',
         groundStripe: '#528A3C',
-        groundHazards: ['rock', 'bush'],
+        groundHazards: ['oldIguana'],
+        skyBlockers: ['pufferfish'],
         foodTypes: ['foodChickenLeg', 'foodCookie'],
     },
     {
@@ -43,7 +45,7 @@ const BIOMES = [
         nearBg: '#5E6670',
         ground: '#8B7D6B',
         groundStripe: '#736B5C',
-        groundHazards: ['boulder', 'icePatch'],
+        groundHazards: ['smallAsteroid', 'mediumAsteroid'],
         foodTypes: ['foodPotato', 'foodChurro'],
     },
     {
@@ -54,7 +56,7 @@ const BIOMES = [
         nearBg: '#252545',
         ground: '#9A9A9A',
         groundStripe: '#7A7A7A',
-        groundHazards: ['crater', 'alienRock'],
+        groundHazards: ['mediumAsteroid', 'largeAsteroid'],
         foodTypes: ['foodIceCream', 'foodDonut'],
     },
     {
@@ -65,7 +67,7 @@ const BIOMES = [
         nearBg: '#4A0080',
         ground: '#3A0060',
         groundStripe: '#5A0085',
-        groundHazards: ['voidCrystal', 'weirdPillar'],
+        groundHazards: ['tieDyeIguana', 'largeAsteroid'],
         foodTypes: ['foodCarrot', 'foodTaco'],
         shifting: true,
     },
@@ -188,6 +190,11 @@ export function getBiomeColors(distanceMeters) {
 export function getBiomeGroundHazards(distanceMeters) {
     const idx = getBiomeIndex(distanceMeters);
     return BIOMES[idx].groundHazards;
+}
+
+export function getBiomeSkyBlockers(distanceMeters) {
+    const idx = getBiomeIndex(distanceMeters);
+    return BIOMES[idx].skyBlockers || [];
 }
 
 export function getCurrentBiomeName(distanceMeters) {

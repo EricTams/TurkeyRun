@@ -4,23 +4,2450 @@
       "path": [
         {
           "x": 0,
-          "y": 0.227,
+          "y": 0.444,
           "width": 180
         },
         {
-          "x": 121,
+          "x": 149,
+          "y": 0.418,
+          "width": 180
+        },
+        {
+          "x": 305,
+          "y": 0.474,
+          "width": 180
+        },
+        {
+          "x": 319,
+          "y": 0.375,
+          "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 44
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 162
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 0
+        },
+        {
+          "x": 192,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.177,
+          "width": 180
+        },
+        {
+          "x": 155,
+          "y": 0.291,
+          "width": 180
+        },
+        {
+          "x": 322,
+          "y": 0.37,
+          "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 136
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 203
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 0
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.239,
+          "width": 180
+        },
+        {
+          "x": 178,
+          "y": 0.123,
+          "width": 180
+        },
+        {
+          "x": 291,
+          "y": 0.05,
+          "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "skyBlocker",
+          "offsetX": 98,
+          "y": 210.0
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 0
+        },
+        {
+          "x": 192,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.786,
+          "width": 180
+        },
+        {
+          "x": 188,
+          "y": 0.93,
+          "width": 180
+        },
+        {
+          "x": 337,
+          "y": 0.95,
+          "width": 180
+        },
+        {
+          "x": 390,
+          "y": 0.95,
+          "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "skyBlocker",
+          "offsetX": 170,
+          "y": 33.6
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.287,
+          "width": 180
+        },
+        {
+          "x": 176,
+          "y": 0.443,
+          "width": 180
+        },
+        {
+          "x": 320,
+          "y": 0.309,
+          "width": 180
+        },
+        {
+          "x": 386,
+          "y": 0.267,
+          "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 257
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.309,
+          "width": 180
+        },
+        {
+          "x": 130,
+          "y": 0.446,
+          "width": 180
+        },
+        {
+          "x": 257,
+          "y": 0.401,
+          "width": 180
+        },
+        {
+          "x": 413,
+          "y": 0.37,
+          "width": 180
+        },
+        {
+          "x": 433,
+          "y": 0.231,
+          "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 208
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 0
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.488,
+          "width": 180
+        },
+        {
+          "x": 133,
+          "y": 0.451,
+          "width": 180
+        },
+        {
+          "x": 245,
+          "y": 0.299,
+          "width": 180
+        },
+        {
+          "x": 288,
+          "y": 0.338,
+          "width": 180
+        }
+      ],
+      "elements": [],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.163,
+          "width": 180
+        },
+        {
+          "x": 116,
+          "y": 0.332,
+          "width": 180
+        },
+        {
+          "x": 247,
+          "y": 0.2,
+          "width": 180
+        },
+        {
+          "x": 406,
+          "y": 0.318,
+          "width": 180
+        },
+        {
+          "x": 419,
+          "y": 0.403,
+          "width": 180
+        }
+      ],
+      "elements": [],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 0
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        }
+      ]
+    }
+  ],
+  "medium": [
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.467,
+          "width": 140
+        },
+        {
+          "x": 140,
+          "y": 0.226,
+          "width": 180
+        },
+        {
+          "x": 238,
+          "y": 0.221,
+          "width": 180
+        },
+        {
+          "x": 338,
+          "y": 0.228,
+          "width": 180
+        },
+        {
+          "x": 443,
+          "y": 0.379,
+          "width": 140
+        },
+        {
+          "x": 525,
+          "y": 0.116,
+          "width": 140
+        }
+      ],
+      "elements": [],
+      "birds": [
+        {
+          "offsetX": 285,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 169,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 1
+        },
+        {
+          "x": 448,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.515,
+          "width": 140
+        },
+        {
+          "x": 94,
+          "y": 0.304,
+          "width": 140
+        },
+        {
+          "x": 213,
+          "y": 0.289,
+          "width": 140
+        },
+        {
+          "x": 309,
+          "y": 0.364,
+          "width": 140
+        },
+        {
+          "x": 379,
+          "y": 0.499,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 92,
+          "gapCenter": 0.205,
+          "gapH": 119
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 179
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.178,
+          "width": 140
+        },
+        {
+          "x": 135,
+          "y": 0.428,
+          "width": 140
+        },
+        {
+          "x": 256,
+          "y": 0.221,
+          "width": 140
+        },
+        {
+          "x": 419,
+          "y": 0.344,
+          "width": 140
+        },
+        {
+          "x": 481,
+          "y": 0.513,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 75,
+          "gapCenter": 0.218,
+          "gapH": 119
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 162
+        },
+        {
+          "type": "zapper",
+          "offsetX": 276,
+          "gapCenter": 0.094,
+          "gapH": 119
+        },
+        {
+          "type": "zapper",
+          "offsetX": 398,
+          "gapCenter": 0.236,
+          "gapH": 119
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.318,
+          "width": 140
+        },
+        {
+          "x": 155,
+          "y": 0.557,
+          "width": 140
+        },
+        {
+          "x": 306,
+          "y": 0.565,
+          "width": 140
+        },
+        {
+          "x": 308,
+          "y": 0.716,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 26
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 101,
+          "barHeight": 100
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 161
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 222
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 0
+        },
+        {
+          "x": 192,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.218,
+          "width": 140
+        },
+        {
+          "x": 92,
+          "y": 0.067,
+          "width": 180
+        },
+        {
+          "x": 242,
           "y": 0.311,
           "width": 180
         },
         {
-          "x": 265,
-          "y": 0.475,
+          "x": 338,
+          "y": 0.126,
+          "width": 140
+        },
+        {
+          "x": 376,
+          "y": 0.099,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 23
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 286
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 150,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 0
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.166,
+          "width": 140
+        },
+        {
+          "x": 144,
+          "y": 0.268,
+          "width": 140
+        },
+        {
+          "x": 274,
+          "y": 0.105,
+          "width": 140
+        },
+        {
+          "x": 399,
+          "y": 0.36,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 166,
+          "gapCenter": 0.101,
+          "gapH": 119
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 288
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.362,
+          "width": 140
+        },
+        {
+          "x": 145,
+          "y": 0.533,
+          "width": 140
+        },
+        {
+          "x": 263,
+          "y": 0.342,
+          "width": 140
+        },
+        {
+          "x": 308,
+          "y": 0.521,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 113,
+          "gapCenter": 0.493,
+          "gapH": 119
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 194,
+          "barHeight": 103
+        },
+        {
+          "type": "zapper",
+          "offsetX": 278,
+          "gapCenter": 0.349,
+          "gapH": 119
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.461,
+          "width": 140
+        },
+        {
+          "x": 169,
+          "y": 0.595,
+          "width": 140
+        },
+        {
+          "x": 274,
+          "y": 0.499,
           "width": 180
         },
         {
-          "x": 325,
-          "y": 0.574,
+          "x": 386,
+          "y": 0.635,
           "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 25
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 171,
+          "barHeight": 108
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 292,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.528,
+          "width": 140
+        },
+        {
+          "x": 160,
+          "y": 0.453,
+          "width": 140
+        },
+        {
+          "x": 309,
+          "y": 0.576,
+          "width": 140
+        },
+        {
+          "x": 470,
+          "y": 0.574,
+          "width": 140
+        },
+        {
+          "x": 513,
+          "y": 0.785,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 423,
+          "barHeight": 131
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 0
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 0
+        },
+        {
+          "x": 448,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.758,
+          "width": 140
+        },
+        {
+          "x": 108,
+          "y": 0.95,
+          "width": 140
+        },
+        {
+          "x": 278,
+          "y": 0.95,
+          "width": 140
+        },
+        {
+          "x": 396,
+          "y": 0.913,
+          "width": 140
+        },
+        {
+          "x": 494,
+          "y": 0.95,
+          "width": 140
+        },
+        {
+          "x": 527,
+          "y": 0.95,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 146,
+          "barHeight": 200
+        },
+        {
+          "type": "zapper",
+          "offsetX": 415,
+          "gapCenter": 1,
+          "gapH": 119
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 0
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 0
+        },
+        {
+          "x": 384,
+          "level": 0
+        },
+        {
+          "x": 448,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.228,
+          "width": 140
+        },
+        {
+          "x": 149,
+          "y": 0.406,
+          "width": 180
+        },
+        {
+          "x": 315,
+          "y": 0.247,
+          "width": 180
+        },
+        {
+          "x": 362,
+          "y": 0.144,
+          "width": 140
+        }
+      ],
+      "elements": [],
+      "birds": [
+        {
+          "offsetX": 214,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 122,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.604,
+          "width": 140
+        },
+        {
+          "x": 142,
+          "y": 0.479,
+          "width": 180
+        },
+        {
+          "x": 312,
+          "y": 0.736,
+          "width": 180
+        },
+        {
+          "x": 348,
+          "y": 0.669,
+          "width": 140
+        }
+      ],
+      "elements": [],
+      "birds": [
+        {
+          "offsetX": 204,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.318,
+          "width": 140
+        },
+        {
+          "x": 121,
+          "y": 0.384,
+          "width": 140
+        },
+        {
+          "x": 250,
+          "y": 0.653,
+          "width": 140
+        },
+        {
+          "x": 393,
+          "y": 0.602,
+          "width": 140
+        },
+        {
+          "x": 423,
+          "y": 0.442,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 82,
+          "gapCenter": 0.289,
+          "gapH": 119
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.802,
+          "width": 140
+        },
+        {
+          "x": 141,
+          "y": 0.694,
+          "width": 140
+        },
+        {
+          "x": 259,
+          "y": 0.442,
+          "width": 140
+        },
+        {
+          "x": 314,
+          "y": 0.251,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 92,
+          "barHeight": 191
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 249,
+          "barHeight": 105
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.263,
+          "width": 140
+        },
+        {
+          "x": 116,
+          "y": 0.05,
+          "width": 140
+        },
+        {
+          "x": 251,
+          "y": 0.05,
+          "width": 180
+        },
+        {
+          "x": 396,
+          "y": 0.277,
+          "width": 140
+        },
+        {
+          "x": 478,
+          "y": 0.19,
+          "width": 140
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 368,
+          "gapCenter": 0.089,
+          "gapH": 119
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 238,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 0
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 0
+        }
+      ]
+    }
+  ],
+  "hard": [
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.751,
+          "width": 100
+        },
+        {
+          "x": 76,
+          "y": 0.882,
+          "width": 100
+        },
+        {
+          "x": 174,
+          "y": 0.623,
+          "width": 180
+        },
+        {
+          "x": 305,
+          "y": 0.863,
+          "width": 180
+        },
+        {
+          "x": 436,
+          "y": 0.95,
+          "width": 100
+        },
+        {
+          "x": 450,
+          "y": 0.83,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 71,
+          "gapCenter": 1,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 360,
+          "gapCenter": 1,
+          "gapH": 90
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 201,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.731,
+          "width": 100
+        },
+        {
+          "x": 128,
+          "y": 0.95,
+          "width": 180
+        },
+        {
+          "x": 240,
+          "y": 0.639,
+          "width": 180
+        },
+        {
+          "x": 359,
+          "y": 0.318,
+          "width": 100
+        },
+        {
+          "x": 408,
+          "y": 0.619,
+          "width": 100
+        }
+      ],
+      "elements": [],
+      "birds": [
+        {
+          "offsetX": 229,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 179,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.744,
+          "width": 100
+        },
+        {
+          "x": 129,
+          "y": 0.716,
+          "width": 100
+        },
+        {
+          "x": 261,
+          "y": 0.446,
+          "width": 180
+        },
+        {
+          "x": 374,
+          "y": 0.374,
+          "width": 180
+        },
+        {
+          "x": 455,
+          "y": 0.696,
+          "width": 100
+        },
+        {
+          "x": 500,
+          "y": 0.543,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 120,
+          "gapCenter": 0.796,
+          "gapH": 90
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 332,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.272,
+          "width": 100
+        },
+        {
+          "x": 136,
+          "y": 0.05,
+          "width": 180
+        },
+        {
+          "x": 265,
+          "y": 0.24,
+          "width": 180
+        },
+        {
+          "x": 353,
+          "y": 0.05,
+          "width": 180
+        },
+        {
+          "x": 457,
+          "y": 0.05,
+          "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 43
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 206,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 344,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        },
+        {
+          "x": 384,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.809,
+          "width": 100
+        },
+        {
+          "x": 87,
+          "y": 0.95,
+          "width": 100
+        },
+        {
+          "x": 236,
+          "y": 0.677,
+          "width": 180
+        },
+        {
+          "x": 361,
+          "y": 0.421,
+          "width": 180
+        },
+        {
+          "x": 484,
+          "y": 0.079,
+          "width": 180
+        },
+        {
+          "x": 527,
+          "y": 0.271,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 54,
+          "gapCenter": 1,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 167,
+          "gapCenter": 0.913,
+          "gapH": 90
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 290,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 400,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 0
+        },
+        {
+          "x": 448,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.293,
+          "width": 100
+        },
+        {
+          "x": 126,
+          "y": 0.05,
+          "width": 100
+        },
+        {
+          "x": 225,
+          "y": 0.147,
+          "width": 100
+        },
+        {
+          "x": 339,
+          "y": 0.448,
+          "width": 100
+        },
+        {
+          "x": 463,
+          "y": 0.621,
+          "width": 100
+        },
+        {
+          "x": 535,
+          "y": 0.502,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 44
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 105
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 262
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 351
+        },
+        {
+          "type": "zapper",
+          "offsetX": 498,
+          "gapCenter": 0.586,
+          "gapH": 90
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 0
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 1
+        },
+        {
+          "x": 448,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.438,
+          "width": 100
+        },
+        {
+          "x": 150,
+          "y": 0.198,
+          "width": 100
+        },
+        {
+          "x": 284,
+          "y": 0.187,
+          "width": 100
+        },
+        {
+          "x": 388,
+          "y": 0.119,
+          "width": 100
+        },
+        {
+          "x": 425,
+          "y": 0.218,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 58,
+          "gapCenter": 0.289,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 247,
+          "gapCenter": 0.078,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 345,
+          "gapCenter": 0.02,
+          "gapH": 90
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.253,
+          "width": 100
+        },
+        {
+          "x": 110,
+          "y": 0.431,
+          "width": 180
+        },
+        {
+          "x": 222,
+          "y": 0.762,
+          "width": 180
+        },
+        {
+          "x": 358,
+          "y": 0.383,
+          "width": 180
+        },
+        {
+          "x": 481,
+          "y": 0.477,
+          "width": 100
+        },
+        {
+          "x": 490,
+          "y": 0.501,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 424,
+          "gapCenter": 0.409,
+          "gapH": 90
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 263,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 200,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        },
+        {
+          "x": 384,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.78,
+          "width": 100
+        },
+        {
+          "x": 80,
+          "y": 0.889,
+          "width": 100
+        },
+        {
+          "x": 202,
+          "y": 0.576,
+          "width": 100
+        },
+        {
+          "x": 348,
+          "y": 0.259,
+          "width": 100
+        },
+        {
+          "x": 472,
+          "y": 0.162,
+          "width": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 142,
+          "barHeight": 102
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 285,
+          "barHeight": 101
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.475,
+          "width": 100
+        },
+        {
+          "x": 120,
+          "y": 0.636,
+          "width": 180
+        },
+        {
+          "x": 249,
+          "y": 0.303,
+          "width": 180
+        },
+        {
+          "x": 338,
+          "y": 0.639,
+          "width": 180
+        },
+        {
+          "x": 406,
+          "y": 0.756,
+          "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 31
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 287,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 159,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.777,
+          "width": 100
+        },
+        {
+          "x": 136,
+          "y": 0.867,
+          "width": 100
+        },
+        {
+          "x": 263,
+          "y": 0.57,
+          "width": 180
+        },
+        {
+          "x": 361,
+          "y": 0.229,
+          "width": 180
+        },
+        {
+          "x": 394,
+          "y": 0.581,
+          "width": 180
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 30,
+          "gapCenter": 0.904,
+          "gapH": 90
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 178,
+          "barHeight": 229
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 311,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.561,
+          "width": 100
+        },
+        {
+          "x": 127,
+          "y": 0.856,
+          "width": 180
+        },
+        {
+          "x": 240,
+          "y": 0.76,
+          "width": 180
+        },
+        {
+          "x": 381,
+          "y": 0.771,
+          "width": 100
+        },
+        {
+          "x": 470,
+          "y": 0.519,
+          "width": 100
+        },
+        {
+          "x": 496,
+          "y": 0.637,
+          "width": 100
+        }
+      ],
+      "elements": [],
+      "birds": [
+        {
+          "offsetX": 208,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 237,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        },
+        {
+          "x": 384,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.254,
+          "width": 100
+        },
+        {
+          "x": 115,
+          "y": 0.193,
+          "width": 100
+        },
+        {
+          "x": 230,
+          "y": 0.086,
+          "width": 100
+        },
+        {
+          "x": 321,
+          "y": 0.05,
+          "width": 100
+        },
+        {
+          "x": 452,
+          "y": 0.05,
+          "width": 100
+        },
+        {
+          "x": 471,
+          "y": 0.05,
+          "width": 100
         }
       ],
       "elements": [
@@ -32,440 +2459,43 @@
         {
           "type": "ground",
           "subType": "poolNoodle",
-          "offsetX": 220
+          "offsetX": 114
+        },
+        {
+          "type": "skyBlocker",
+          "offsetX": 245,
+          "y": 205.2
         }
       ],
-      "birds": []
-    },
-    {
-      "path": [
+      "birds": [],
+      "elevation": [
         {
           "x": 0,
-          "y": 0.581,
-          "width": 180
+          "level": 0
         },
         {
-          "x": 159,
-          "y": 0.555,
-          "width": 180
+          "x": 64,
+          "level": 0
         },
         {
-          "x": 279,
-          "y": 0.72,
-          "width": 180
+          "x": 128,
+          "level": 0
         },
         {
-          "x": 404,
-          "y": 0.761,
-          "width": 180
+          "x": 192,
+          "level": 1
         },
         {
-          "x": 412,
-          "y": 0.647,
-          "width": 180
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 37
+          "x": 256,
+          "level": 1
         },
         {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 127
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.497,
-          "width": 180
-        },
-        {
-          "x": 133,
-          "y": 0.464,
-          "width": 180
-        },
-        {
-          "x": 275,
-          "y": 0.577,
-          "width": 180
-        },
-        {
-          "x": 391,
-          "y": 0.631,
-          "width": 180
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 125
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.732,
-          "width": 180
-        },
-        {
-          "x": 139,
-          "y": 0.789,
-          "width": 180
-        },
-        {
-          "x": 325,
-          "y": 0.778,
-          "width": 180
+          "x": 320,
+          "level": 1
         },
         {
           "x": 384,
-          "y": 0.616,
-          "width": 180
-        }
-      ],
-      "elements": [],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.264,
-          "width": 180
-        },
-        {
-          "x": 179,
-          "y": 0.235,
-          "width": 180
-        },
-        {
-          "x": 331,
-          "y": 0.088,
-          "width": 180
-        },
-        {
-          "x": 350,
-          "y": 0.123,
-          "width": 180
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 130
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 214
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.823,
-          "width": 180
-        },
-        {
-          "x": 160,
-          "y": 0.882,
-          "width": 180
-        },
-        {
-          "x": 338,
-          "y": 0.824,
-          "width": 180
-        },
-        {
-          "x": 387,
-          "y": 0.811,
-          "width": 180
-        }
-      ],
-      "elements": [],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.683,
-          "width": 180
-        },
-        {
-          "x": 159,
-          "y": 0.601,
-          "width": 180
-        },
-        {
-          "x": 329,
-          "y": 0.658,
-          "width": 180
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 192
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.45,
-          "width": 180
-        },
-        {
-          "x": 157,
-          "y": 0.375,
-          "width": 180
-        },
-        {
-          "x": 287,
-          "y": 0.201,
-          "width": 180
-        },
-        {
-          "x": 351,
-          "y": 0.212,
-          "width": 180
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 151
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 276
-        }
-      ],
-      "birds": []
-    }
-  ],
-  "medium": [
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.373,
-          "width": 140
-        },
-        {
-          "x": 116,
-          "y": 0.561,
-          "width": 140
-        },
-        {
-          "x": 208,
-          "y": 0.37,
-          "width": 140
-        },
-        {
-          "x": 352,
-          "y": 0.371,
-          "width": 140
-        },
-        {
-          "x": 466,
-          "y": 0.579,
-          "width": 140
-        },
-        {
-          "x": 495,
-          "y": 0.516,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 119,
-          "barHeight": 137
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 223
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 293
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 370
-        },
-        {
-          "type": "zapper",
-          "offsetX": 444,
-          "gapCenter": 0.56,
-          "gapH": 119
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.539,
-          "width": 140
-        },
-        {
-          "x": 122,
-          "y": 0.57,
-          "width": 140
-        },
-        {
-          "x": 289,
-          "y": 0.396,
-          "width": 140
-        },
-        {
-          "x": 409,
-          "y": 0.34,
-          "width": 140
-        },
-        {
-          "x": 501,
-          "y": 0.381,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 68,
-          "barHeight": 108
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 161
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 229
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 299
-        },
-        {
-          "type": "zapper",
-          "offsetX": 401,
-          "gapCenter": 0.26,
-          "gapH": 119
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.727,
-          "width": 140
-        },
-        {
-          "x": 109,
-          "y": 0.574,
-          "width": 140
-        },
-        {
-          "x": 228,
-          "y": 0.676,
-          "width": 140
-        },
-        {
-          "x": 311,
-          "y": 0.407,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 60,
-          "barHeight": 148
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 159
-        },
-        {
-          "type": "zapper",
-          "offsetX": 276,
-          "gapCenter": 0.531,
-          "gapH": 119
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.269,
-          "width": 140
-        },
-        {
-          "x": 143,
-          "y": 0.091,
-          "width": 180
-        },
-        {
-          "x": 276,
-          "y": 0.078,
-          "width": 180
-        },
-        {
-          "x": 301,
-          "y": 0.05,
-          "width": 180
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 58,
-          "gapCenter": 0.034,
-          "gapH": 119
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 211,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
+          "level": 0
         }
       ]
     },
@@ -473,604 +2503,91 @@
       "path": [
         {
           "x": 0,
-          "y": 0.336,
-          "width": 140
+          "y": 0.804,
+          "width": 100
         },
         {
-          "x": 139,
-          "y": 0.413,
-          "width": 140
+          "x": 117,
+          "y": 0.64,
+          "width": 100
         },
         {
-          "x": 275,
-          "y": 0.207,
-          "width": 140
-        },
-        {
-          "x": 351,
-          "y": 0.433,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 122,
-          "gapCenter": 0.352,
-          "gapH": 119
-        },
-        {
-          "type": "zapper",
-          "offsetX": 280,
-          "gapCenter": 0.072,
-          "gapH": 119
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.799,
-          "width": 140
-        },
-        {
-          "x": 167,
-          "y": 0.936,
+          "x": 211,
+          "y": 0.431,
           "width": 180
         },
         {
-          "x": 329,
-          "y": 0.849,
-          "width": 140
+          "x": 359,
+          "y": 0.136,
+          "width": 180
         },
         {
           "x": 459,
-          "y": 0.78,
-          "width": 140
-        },
-        {
-          "x": 504,
-          "y": 0.95,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 423,
-          "barHeight": 131
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 185,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.545,
-          "width": 140
-        },
-        {
-          "x": 138,
-          "y": 0.524,
-          "width": 140
-        },
-        {
-          "x": 272,
-          "y": 0.253,
-          "width": 140
-        },
-        {
-          "x": 307,
-          "y": 0.53,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 76,
-          "barHeight": 102
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 197
-        },
-        {
-          "type": "zapper",
-          "offsetX": 257,
-          "gapCenter": 0.167,
-          "gapH": 119
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.715,
-          "width": 140
-        },
-        {
-          "x": 134,
-          "y": 0.585,
-          "width": 140
-        },
-        {
-          "x": 295,
-          "y": 0.316,
-          "width": 140
-        },
-        {
-          "x": 409,
-          "y": 0.05,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 257,
-          "gapCenter": 0.315,
-          "gapH": 119
-        },
-        {
-          "type": "zapper",
-          "offsetX": 378,
-          "gapCenter": 0,
-          "gapH": 119
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.769,
-          "width": 140
-        },
-        {
-          "x": 106,
-          "y": 0.95,
-          "width": 140
-        },
-        {
-          "x": 222,
-          "y": 0.95,
+          "y": 0.491,
           "width": 180
         },
         {
-          "x": 355,
-          "y": 0.95,
-          "width": 180
-        },
-        {
-          "x": 468,
-          "y": 0.673,
-          "width": 140
-        },
-        {
-          "x": 507,
-          "y": 0.874,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 59,
-          "gapCenter": 1,
-          "gapH": 119
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 337,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.567,
-          "width": 180
-        },
-        {
-          "x": 121,
-          "y": 0.586,
-          "width": 180
-        },
-        {
-          "x": 249,
-          "y": 0.772,
-          "width": 180
-        },
-        {
-          "x": 349,
-          "y": 0.926,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 309,
-          "gapCenter": 1,
-          "gapH": 119
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 111,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        },
-        {
-          "offsetX": 131,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.538,
-          "width": 140
-        },
-        {
-          "x": 138,
-          "y": 0.59,
-          "width": 140
-        },
-        {
-          "x": 269,
-          "y": 0.53,
-          "width": 180
-        },
-        {
-          "x": 362,
-          "y": 0.288,
-          "width": 180
-        },
-        {
-          "x": 395,
-          "y": 0.286,
-          "width": 180
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 104,
-          "barHeight": 143
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 288,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        },
-        {
-          "offsetX": 275,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.415,
-          "width": 140
-        },
-        {
-          "x": 113,
-          "y": 0.221,
-          "width": 140
-        },
-        {
-          "x": 257,
-          "y": 0.37,
-          "width": 140
-        },
-        {
-          "x": 365,
-          "y": 0.562,
-          "width": 140
-        },
-        {
-          "x": 518,
-          "y": 0.347,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 33,
-          "gapCenter": 0.282,
-          "gapH": 119
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 292
-        },
-        {
-          "type": "zapper",
-          "offsetX": 419,
-          "gapCenter": 0.479,
-          "gapH": 119
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.415,
-          "width": 140
-        },
-        {
-          "x": 147,
-          "y": 0.351,
-          "width": 140
-        },
-        {
-          "x": 280,
-          "y": 0.587,
-          "width": 140
-        },
-        {
-          "x": 350,
-          "y": 0.765,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 56
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 127
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.625,
-          "width": 140
-        },
-        {
-          "x": 133,
-          "y": 0.474,
-          "width": 140
-        },
-        {
-          "x": 265,
-          "y": 0.64,
-          "width": 140
-        },
-        {
-          "x": 397,
-          "y": 0.424,
-          "width": 140
-        },
-        {
-          "x": 408,
-          "y": 0.48,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 22
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 117
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 258
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 321
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.434,
-          "width": 140
-        },
-        {
-          "x": 109,
-          "y": 0.687,
-          "width": 140
-        },
-        {
-          "x": 222,
-          "y": 0.665,
-          "width": 140
-        },
-        {
-          "x": 386,
-          "y": 0.92,
-          "width": 140
-        },
-        {
-          "x": 446,
-          "y": 0.887,
-          "width": 140
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 52,
-          "gapCenter": 0.584,
-          "gapH": 119
-        },
-        {
-          "type": "zapper",
-          "offsetX": 281,
-          "gapCenter": 0.895,
-          "gapH": 119
-        }
-      ],
-      "birds": []
-    }
-  ],
-  "hard": [
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.321,
-          "width": 100
-        },
-        {
-          "x": 93,
-          "y": 0.397,
-          "width": 180
-        },
-        {
-          "x": 234,
-          "y": 0.153,
-          "width": 180
-        },
-        {
-          "x": 325,
-          "y": 0.494,
-          "width": 100
-        },
-        {
-          "x": 355,
-          "y": 0.82,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 22
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 320,
-          "barHeight": 104
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 174,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.354,
-          "width": 100
-        },
-        {
-          "x": 86,
-          "y": 0.599,
-          "width": 100
-        },
-        {
-          "x": 208,
-          "y": 0.482,
-          "width": 180
-        },
-        {
-          "x": 346,
-          "y": 0.301,
-          "width": 180
-        },
-        {
-          "x": 467,
+          "x": 531,
           "y": 0.333,
           "width": 100
-        },
-        {
-          "x": 567,
-          "y": 0.541,
-          "width": 100
-        },
-        {
-          "x": 599,
-          "y": 0.343,
-          "width": 100
         }
       ],
       "elements": [
         {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 68
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 139
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 424
+          "type": "zapperBottomOpen",
+          "offsetX": 72,
+          "barHeight": 160
         },
         {
           "type": "zapperBottomOpen",
-          "offsetX": 493,
-          "barHeight": 101
+          "offsetX": 158,
+          "barHeight": 129
         }
       ],
       "birds": [
         {
-          "offsetX": 281,
+          "offsetX": 355,
           "dodgeWidth": 180,
           "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 313,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 0
+        },
+        {
+          "x": 384,
+          "level": 0
+        },
+        {
+          "x": 448,
+          "level": 0
         }
       ]
     },
@@ -1078,700 +2595,91 @@
       "path": [
         {
           "x": 0,
-          "y": 0.262,
-          "width": 100
-        },
-        {
-          "x": 144,
-          "y": 0.429,
-          "width": 100
-        },
-        {
-          "x": 284,
-          "y": 0.451,
-          "width": 180
-        },
-        {
-          "x": 394,
-          "y": 0.701,
-          "width": 180
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 29
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 114
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 307,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.55,
-          "width": 100
-        },
-        {
-          "x": 93,
-          "y": 0.697,
-          "width": 100
-        },
-        {
-          "x": 168,
-          "y": 0.573,
-          "width": 100
-        },
-        {
-          "x": 271,
-          "y": 0.444,
-          "width": 100
-        },
-        {
-          "x": 348,
-          "y": 0.56,
-          "width": 100
-        },
-        {
-          "x": 395,
-          "y": 0.384,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 109,
-          "gapCenter": 0.732,
-          "gapH": 90
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 196
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 278
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 343
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.597,
-          "width": 100
-        },
-        {
-          "x": 145,
-          "y": 0.616,
-          "width": 100
-        },
-        {
-          "x": 277,
-          "y": 0.437,
-          "width": 100
-        },
-        {
-          "x": 367,
-          "y": 0.728,
-          "width": 100
-        },
-        {
-          "x": 468,
-          "y": 0.542,
-          "width": 100
-        },
-        {
-          "x": 533,
-          "y": 0.456,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 40,
-          "gapCenter": 0.639,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 145,
-          "gapCenter": 0.658,
-          "gapH": 90
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 220
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 316,
-          "barHeight": 102
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 476
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.604,
-          "width": 100
-        },
-        {
-          "x": 93,
-          "y": 0.693,
-          "width": 180
-        },
-        {
-          "x": 224,
-          "y": 0.862,
-          "width": 180
-        },
-        {
-          "x": 334,
-          "y": 0.835,
-          "width": 100
-        },
-        {
-          "x": 420,
-          "y": 0.495,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 38,
-          "gapCenter": 0.691,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 342,
-          "gapCenter": 0.913,
-          "gapH": 90
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 191,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.558,
-          "width": 100
-        },
-        {
-          "x": 143,
-          "y": 0.331,
-          "width": 100
-        },
-        {
-          "x": 246,
-          "y": 0.072,
-          "width": 100
-        },
-        {
-          "x": 364,
-          "y": 0.129,
-          "width": 100
-        },
-        {
-          "x": 439,
-          "y": 0.445,
-          "width": 100
-        },
-        {
-          "x": 560,
-          "y": 0.686,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 170
-        },
-        {
-          "type": "zapper",
-          "offsetX": 231,
-          "gapCenter": 0,
-          "gapH": 90
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 304
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 486,
-          "barHeight": 104
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.19,
+          "y": 0.584,
           "width": 100
         },
         {
           "x": 136,
-          "y": 0.05,
+          "y": 0.414,
           "width": 100
         },
         {
-          "x": 260,
-          "y": 0.05,
+          "x": 240,
+          "y": 0.318,
           "width": 180
         },
         {
-          "x": 387,
-          "y": 0.05,
-          "width": 180
-        },
-        {
-          "x": 393,
-          "y": 0.249,
-          "width": 180
-        }
-      ],
-      "elements": [],
-      "birds": [
-        {
-          "offsetX": 285,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.195,
+          "x": 390,
+          "y": 0.152,
           "width": 100
         },
         {
-          "x": 85,
-          "y": 0.561,
-          "width": 180
-        },
-        {
-          "x": 230,
-          "y": 0.251,
-          "width": 180
-        },
-        {
-          "x": 374,
-          "y": 0.205,
+          "x": 538,
+          "y": 0.469,
           "width": 100
         },
         {
-          "x": 414,
-          "y": 0.211,
+          "x": 577,
+          "y": 0.515,
           "width": 100
         }
       ],
       "elements": [
         {
           "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 345
+          "subType": "poolNoodle",
+          "offsetX": 57
+        },
+        {
+          "type": "zapper",
+          "offsetX": 538,
+          "gapCenter": 0.458,
+          "gapH": 90
         }
       ],
       "birds": [
         {
-          "offsetX": 134,
+          "offsetX": 259,
           "dodgeWidth": 180,
           "arrivalTimeSec": 1.842
         }
-      ]
-    },
-    {
-      "path": [
+      ],
+      "elevation": [
         {
           "x": 0,
-          "y": 0.81,
-          "width": 100
+          "level": 0
         },
         {
-          "x": 135,
-          "y": 0.764,
-          "width": 100
-        },
-        {
-          "x": 259,
-          "y": 0.709,
-          "width": 100
-        },
-        {
-          "x": 350,
-          "y": 0.95,
-          "width": 100
-        },
-        {
-          "x": 452,
-          "y": 0.634,
-          "width": 100
-        },
-        {
-          "x": 546,
-          "y": 0.92,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 106
-        },
-        {
-          "type": "zapper",
-          "offsetX": 210,
-          "gapCenter": 0.814,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 310,
-          "gapCenter": 0.968,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 410,
-          "gapCenter": 0.859,
-          "gapH": 90
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.376,
-          "width": 100
+          "x": 64,
+          "level": 0
         },
         {
           "x": 128,
-          "y": 0.169,
-          "width": 100
+          "level": 0
         },
         {
-          "x": 274,
-          "y": 0.486,
-          "width": 180
+          "x": 192,
+          "level": 0
         },
         {
-          "x": 368,
-          "y": 0.43,
-          "width": 180
+          "x": 256,
+          "level": 1
         },
         {
-          "x": 493,
-          "y": 0.237,
-          "width": 100
+          "x": 320,
+          "level": 1
         },
         {
-          "x": 522,
-          "y": 0.611,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 42
+          "x": 384,
+          "level": 1
         },
         {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 484
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 351,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.47,
-          "width": 100
+          "x": 448,
+          "level": 1
         },
         {
-          "x": 135,
-          "y": 0.723,
-          "width": 180
-        },
-        {
-          "x": 226,
-          "y": 0.453,
-          "width": 180
-        },
-        {
-          "x": 371,
-          "y": 0.491,
-          "width": 100
-        },
-        {
-          "x": 506,
-          "y": 0.622,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 337,
-          "gapCenter": 0.476,
-          "gapH": 90
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 460,
-          "barHeight": 143
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 169,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.684,
-          "width": 100
-        },
-        {
-          "x": 126,
-          "y": 0.95,
-          "width": 100
-        },
-        {
-          "x": 205,
-          "y": 0.855,
-          "width": 100
-        },
-        {
-          "x": 298,
-          "y": 0.921,
-          "width": 100
-        },
-        {
-          "x": 403,
-          "y": 0.773,
-          "width": 100
-        },
-        {
-          "x": 511,
-          "y": 0.699,
-          "width": 100
-        },
-        {
-          "x": 593,
-          "y": 0.95,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 39,
-          "barHeight": 181
-        },
-        {
-          "type": "zapper",
-          "offsetX": 173,
-          "gapCenter": 1,
-          "gapH": 90
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 255,
-          "barHeight": 181
-        },
-        {
-          "type": "zapper",
-          "offsetX": 348,
-          "gapCenter": 0.977,
-          "gapH": 90
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 460
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.22,
-          "width": 100
-        },
-        {
-          "x": 77,
-          "y": 0.459,
-          "width": 100
-        },
-        {
-          "x": 202,
-          "y": 0.682,
-          "width": 100
-        },
-        {
-          "x": 338,
-          "y": 0.361,
-          "width": 100
-        },
-        {
-          "x": 463,
-          "y": 0.621,
-          "width": 100
-        },
-        {
-          "x": 544,
-          "y": 0.853,
-          "width": 100
-        },
-        {
-          "x": 562,
-          "y": 0.873,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 125,
-          "barHeight": 105
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 287,
-          "barHeight": 107
-        },
-        {
-          "type": "zapper",
-          "offsetX": 385,
-          "gapCenter": 0.444,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 528,
-          "gapCenter": 0.918,
-          "gapH": 90
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.259,
-          "width": 100
-        },
-        {
-          "x": 102,
-          "y": 0.422,
-          "width": 180
-        },
-        {
-          "x": 200,
-          "y": 0.771,
-          "width": 180
-        },
-        {
-          "x": 290,
-          "y": 0.453,
-          "width": 100
-        },
-        {
-          "x": 375,
-          "y": 0.554,
-          "width": 100
-        },
-        {
-          "x": 398,
-          "y": 0.643,
-          "width": 100
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 318,
-          "barHeight": 122
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 378
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 153,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
+          "x": 512,
+          "level": 0
         }
       ]
     }
@@ -1781,289 +2689,106 @@
       "path": [
         {
           "x": 0,
-          "y": 0.216,
+          "y": 0.802,
           "width": 70
         },
         {
-          "x": 81,
-          "y": 0.05,
+          "x": 102,
+          "y": 0.897,
+          "width": 180
+        },
+        {
+          "x": 167,
+          "y": 0.95,
+          "width": 180
+        },
+        {
+          "x": 283,
+          "y": 0.693,
+          "width": 180
+        },
+        {
+          "x": 364,
+          "y": 0.912,
           "width": 70
         },
         {
-          "x": 144,
-          "y": 0.429,
+          "x": 424,
+          "y": 0.519,
           "width": 70
         },
         {
-          "x": 218,
-          "y": 0.819,
+          "x": 535,
+          "y": 0.054,
           "width": 70
         },
         {
-          "x": 279,
-          "y": 0.54,
-          "width": 70
-        },
-        {
-          "x": 399,
-          "y": 0.286,
-          "width": 70
-        },
-        {
-          "x": 466,
-          "y": 0.231,
-          "width": 70
-        },
-        {
-          "x": 540,
-          "y": 0.167,
-          "width": 70
-        },
-        {
-          "x": 546,
-          "y": 0.05,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 136,
-          "barHeight": 110
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 232,
-          "barHeight": 133
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 396
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 501
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.21,
-          "width": 70
-        },
-        {
-          "x": 117,
-          "y": 0.441,
-          "width": 70
-        },
-        {
-          "x": 196,
-          "y": 0.05,
-          "width": 70
-        },
-        {
-          "x": 296,
-          "y": 0.434,
-          "width": 70
-        },
-        {
-          "x": 361,
-          "y": 0.697,
-          "width": 70
-        },
-        {
-          "x": 421,
-          "y": 0.272,
-          "width": 70
-        },
-        {
-          "x": 471,
-          "y": 0.05,
+          "x": 617,
+          "y": 0.264,
           "width": 70
         }
       ],
       "elements": [
         {
           "type": "zapper",
-          "offsetX": 56,
-          "gapCenter": 0.256,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 191,
-          "gapCenter": 0,
-          "gapH": 90
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 260
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 326
-        },
-        {
-          "type": "zapper",
-          "offsetX": 441,
-          "gapCenter": 0.069,
-          "gapH": 90
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.449,
-          "width": 70
-        },
-        {
-          "x": 104,
-          "y": 0.05,
-          "width": 70
-        },
-        {
-          "x": 166,
-          "y": 0.376,
-          "width": 70
-        },
-        {
-          "x": 240,
-          "y": 0.342,
-          "width": 70
-        },
-        {
-          "x": 295,
-          "y": 0.821,
-          "width": 70
-        },
-        {
-          "x": 355,
-          "y": 0.461,
-          "width": 70
-        },
-        {
-          "x": 439,
-          "y": 0.119,
-          "width": 70
-        },
-        {
-          "x": 527,
-          "y": 0.349,
-          "width": 70
-        },
-        {
-          "x": 599,
-          "y": 0.81,
-          "width": 70
-        },
-        {
-          "x": 639,
-          "y": 0.738,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 53
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 121
-        },
-        {
-          "type": "zapper",
-          "offsetX": 213,
-          "gapCenter": 0.302,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 303,
-          "gapCenter": 0.871,
-          "gapH": 90
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 382
-        },
-        {
-          "type": "zapper",
-          "offsetX": 468,
-          "gapCenter": 0.085,
+          "offsetX": 342,
+          "gapCenter": 0.979,
           "gapH": 90
         },
         {
           "type": "zapperBottomOpen",
-          "offsetX": 552,
-          "barHeight": 153
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.356,
-          "width": 70
+          "offsetX": 424,
+          "barHeight": 111
         },
-        {
-          "x": 82,
-          "y": 0.05,
-          "width": 70
-        },
-        {
-          "x": 179,
-          "y": 0.05,
-          "width": 70
-        },
-        {
-          "x": 291,
-          "y": 0.302,
-          "width": 180
-        },
-        {
-          "x": 346,
-          "y": 0.05,
-          "width": 180
-        },
-        {
-          "x": 408,
-          "y": 0.42,
-          "width": 180
-        },
-        {
-          "x": 504,
-          "y": 0.227,
-          "width": 70
-        }
-      ],
-      "elements": [
         {
           "type": "ground",
           "subType": "sandCastle",
-          "offsetX": 66
+          "offsetX": 542
         }
       ],
       "birds": [
         {
-          "offsetX": 339,
+          "offsetX": 202,
           "dodgeWidth": 180,
           "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 1
+        },
+        {
+          "x": 448,
+          "level": 0
+        },
+        {
+          "x": 512,
+          "level": 0
         }
       ]
     },
@@ -2071,127 +2796,1215 @@
       "path": [
         {
           "x": 0,
-          "y": 0.509,
-          "width": 70
-        },
-        {
-          "x": 101,
-          "y": 0.291,
-          "width": 70
-        },
-        {
-          "x": 159,
-          "y": 0.604,
-          "width": 70
-        },
-        {
-          "x": 249,
-          "y": 0.95,
-          "width": 70
-        },
-        {
-          "x": 324,
-          "y": 0.614,
-          "width": 70
-        },
-        {
-          "x": 405,
           "y": 0.494,
           "width": 70
         },
         {
-          "x": 410,
-          "y": 0.271,
+          "x": 113,
+          "y": 0.775,
+          "width": 70
+        },
+        {
+          "x": 227,
+          "y": 0.677,
+          "width": 180
+        },
+        {
+          "x": 323,
+          "y": 0.697,
+          "width": 180
+        },
+        {
+          "x": 442,
+          "y": 0.933,
+          "width": 70
+        },
+        {
+          "x": 505,
+          "y": 0.855,
           "width": 70
         }
       ],
       "elements": [
         {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 27
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 92
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 159
+          "type": "zapperBottomOpen",
+          "offsetX": 83,
+          "barHeight": 192
         },
         {
           "type": "zapper",
-          "offsetX": 239,
+          "offsetX": 444,
           "gapCenter": 1,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 368,
-          "gapCenter": 0.566,
           "gapH": 90
         }
       ],
-      "birds": []
+      "birds": [
+        {
+          "offsetX": 235,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        },
+        {
+          "x": 384,
+          "level": 0
+        }
+      ]
     },
     {
       "path": [
         {
           "x": 0,
-          "y": 0.432,
-          "width": 70
-        },
-        {
-          "x": 114,
-          "y": 0.086,
-          "width": 70
-        },
-        {
-          "x": 207,
-          "y": 0.05,
-          "width": 70
-        },
-        {
-          "x": 293,
           "y": 0.355,
           "width": 70
         },
         {
-          "x": 379,
-          "y": 0.05,
+          "x": 57,
+          "y": 0.297,
           "width": 70
         },
         {
-          "x": 458,
-          "y": 0.05,
+          "x": 121,
+          "y": 0.369,
           "width": 70
         },
         {
-          "x": 499,
+          "x": 212,
+          "y": 0.448,
+          "width": 70
+        },
+        {
+          "x": 326,
+          "y": 0.606,
+          "width": 70
+        },
+        {
+          "x": 382,
+          "y": 0.812,
+          "width": 70
+        },
+        {
+          "x": 445,
+          "y": 0.691,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 30,
+          "gapCenter": 0.261,
+          "gapH": 90
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 116,
+          "barHeight": 108
+        },
+        {
+          "type": "ground",
+          "subType": "poolNoodle",
+          "offsetX": 264
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 381,
+          "barHeight": 121
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.637,
+          "width": 70
+        },
+        {
+          "x": 90,
+          "y": 0.95,
+          "width": 70
+        },
+        {
+          "x": 168,
+          "y": 0.78,
+          "width": 70
+        },
+        {
+          "x": 270,
+          "y": 0.553,
+          "width": 70
+        },
+        {
+          "x": 328,
+          "y": 0.881,
+          "width": 70
+        },
+        {
+          "x": 406,
+          "y": 0.774,
+          "width": 70
+        },
+        {
+          "x": 480,
+          "y": 0.476,
+          "width": 70
+        },
+        {
+          "x": 535,
+          "y": 0.714,
+          "width": 70
+        },
+        {
+          "x": 536,
+          "y": 0.466,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 73,
+          "gapCenter": 1,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 397,
+          "gapCenter": 0.889,
+          "gapH": 90
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 1
+        },
+        {
+          "x": 448,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.518,
+          "width": 70
+        },
+        {
+          "x": 94,
+          "y": 0.797,
+          "width": 70
+        },
+        {
+          "x": 153,
+          "y": 0.95,
+          "width": 70
+        },
+        {
+          "x": 234,
+          "y": 0.513,
+          "width": 180
+        },
+        {
+          "x": 310,
+          "y": 0.715,
+          "width": 180
+        },
+        {
+          "x": 394,
+          "y": 0.442,
+          "width": 180
+        },
+        {
+          "x": 433,
+          "y": 0.867,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 78,
+          "barHeight": 157
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 161,
+          "barHeight": 230
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 286,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.376,
+          "width": 70
+        },
+        {
+          "x": 96,
+          "y": 0.171,
+          "width": 70
+        },
+        {
+          "x": 151,
+          "y": 0.517,
+          "width": 70
+        },
+        {
+          "x": 258,
+          "y": 0.15,
+          "width": 70
+        },
+        {
+          "x": 333,
+          "y": 0.613,
+          "width": 70
+        },
+        {
+          "x": 447,
+          "y": 0.291,
+          "width": 70
+        },
+        {
+          "x": 525,
           "y": 0.05,
           "width": 70
         }
       ],
       "elements": [
         {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 199
+          "type": "zapper",
+          "offsetX": 173,
+          "gapCenter": 0.42,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 293,
+          "gapCenter": 0.318,
+          "gapH": 90
         },
         {
           "type": "zapperBottomOpen",
-          "offsetX": 295,
+          "offsetX": 424,
           "barHeight": 102
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 0
+        },
+        {
+          "x": 448,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.606,
+          "width": 70
+        },
+        {
+          "x": 96,
+          "y": 0.134,
+          "width": 70
+        },
+        {
+          "x": 177,
+          "y": 0.05,
+          "width": 70
+        },
+        {
+          "x": 239,
+          "y": 0.363,
+          "width": 70
+        },
+        {
+          "x": 299,
+          "y": 0.81,
+          "width": 70
+        },
+        {
+          "x": 416,
+          "y": 0.95,
+          "width": 70
+        },
+        {
+          "x": 506,
+          "y": 0.54,
+          "width": 70
+        },
+        {
+          "x": 573,
+          "y": 0.289,
+          "width": 70
+        },
+        {
+          "x": 606,
+          "y": 0.405,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 51,
+          "gapCenter": 0.303,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 428,
+          "gapCenter": 1,
+          "gapH": 90
         },
         {
           "type": "ground",
           "subType": "poolNoodle",
-          "offsetX": 453
+          "offsetX": 509
         }
       ],
-      "birds": []
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        },
+        {
+          "x": 384,
+          "level": 0
+        },
+        {
+          "x": 448,
+          "level": 0
+        },
+        {
+          "x": 512,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.468,
+          "width": 70
+        },
+        {
+          "x": 85,
+          "y": 0.912,
+          "width": 70
+        },
+        {
+          "x": 140,
+          "y": 0.95,
+          "width": 70
+        },
+        {
+          "x": 247,
+          "y": 0.95,
+          "width": 180
+        },
+        {
+          "x": 346,
+          "y": 0.688,
+          "width": 180
+        },
+        {
+          "x": 462,
+          "y": 0.95,
+          "width": 70
+        },
+        {
+          "x": 529,
+          "y": 0.95,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 56,
+          "gapCenter": 0.854,
+          "gapH": 90
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 461,
+          "barHeight": 111
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 287,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 0
+        },
+        {
+          "x": 384,
+          "level": 0
+        },
+        {
+          "x": 448,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.234,
+          "width": 70
+        },
+        {
+          "x": 60,
+          "y": 0.05,
+          "width": 70
+        },
+        {
+          "x": 125,
+          "y": 0.05,
+          "width": 70
+        },
+        {
+          "x": 231,
+          "y": 0.381,
+          "width": 70
+        },
+        {
+          "x": 289,
+          "y": 0.676,
+          "width": 70
+        },
+        {
+          "x": 396,
+          "y": 0.661,
+          "width": 70
+        },
+        {
+          "x": 497,
+          "y": 0.29,
+          "width": 70
+        },
+        {
+          "x": 564,
+          "y": 0.743,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 99,
+          "gapCenter": 0,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 196,
+          "gapCenter": 0.19,
+          "gapH": 90
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 299,
+          "barHeight": 108
+        },
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 468,
+          "barHeight": 116
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 1
+        },
+        {
+          "x": 448,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.374,
+          "width": 70
+        },
+        {
+          "x": 74,
+          "y": 0.813,
+          "width": 70
+        },
+        {
+          "x": 142,
+          "y": 0.846,
+          "width": 180
+        },
+        {
+          "x": 217,
+          "y": 0.95,
+          "width": 180
+        },
+        {
+          "x": 322,
+          "y": 0.759,
+          "width": 180
+        },
+        {
+          "x": 415,
+          "y": 0.95,
+          "width": 70
+        },
+        {
+          "x": 499,
+          "y": 0.532,
+          "width": 70
+        },
+        {
+          "x": 556,
+          "y": 0.409,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 460,
+          "gapCenter": 0.807,
+          "gapH": 90
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 227,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 0
+        },
+        {
+          "x": 448,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.514,
+          "width": 70
+        },
+        {
+          "x": 99,
+          "y": 0.327,
+          "width": 180
+        },
+        {
+          "x": 214,
+          "y": 0.27,
+          "width": 180
+        },
+        {
+          "x": 290,
+          "y": 0.05,
+          "width": 180
+        },
+        {
+          "x": 389,
+          "y": 0.05,
+          "width": 180
+        },
+        {
+          "x": 468,
+          "y": 0.05,
+          "width": 180
+        },
+        {
+          "x": 583,
+          "y": 0.05,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapperBottomOpen",
+          "offsetX": 39,
+          "barHeight": 127
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 203,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        },
+        {
+          "offsetX": 409,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 1
+        },
+        {
+          "x": 448,
+          "level": 0
+        },
+        {
+          "x": 512,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.612,
+          "width": 70
+        },
+        {
+          "x": 103,
+          "y": 0.463,
+          "width": 70
+        },
+        {
+          "x": 212,
+          "y": 0.793,
+          "width": 180
+        },
+        {
+          "x": 317,
+          "y": 0.757,
+          "width": 180
+        },
+        {
+          "x": 380,
+          "y": 0.95,
+          "width": 180
+        },
+        {
+          "x": 456,
+          "y": 0.932,
+          "width": 70
+        },
+        {
+          "x": 547,
+          "y": 0.95,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 43,
+          "gapCenter": 0.568,
+          "gapH": 90
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 290,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 1
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 1
+        },
+        {
+          "x": 448,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.686,
+          "width": 70
+        },
+        {
+          "x": 87,
+          "y": 0.761,
+          "width": 70
+        },
+        {
+          "x": 194,
+          "y": 0.95,
+          "width": 180
+        },
+        {
+          "x": 279,
+          "y": 0.839,
+          "width": 180
+        },
+        {
+          "x": 356,
+          "y": 0.95,
+          "width": 180
+        },
+        {
+          "x": 471,
+          "y": 0.801,
+          "width": 70
+        },
+        {
+          "x": 574,
+          "y": 0.95,
+          "width": 70
+        },
+        {
+          "x": 601,
+          "y": 0.95,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 156,
+          "gapCenter": 1,
+          "gapH": 90
+        },
+        {
+          "type": "skyBlocker",
+          "offsetX": 419,
+          "y": 35.5
+        }
+      ],
+      "birds": [
+        {
+          "offsetX": 278,
+          "dodgeWidth": 180,
+          "arrivalTimeSec": 1.842
+        }
+      ],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 1
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 0
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 1
+        },
+        {
+          "x": 384,
+          "level": 1
+        },
+        {
+          "x": 448,
+          "level": 0
+        },
+        {
+          "x": 512,
+          "level": 0
+        }
+      ]
+    },
+    {
+      "path": [
+        {
+          "x": 0,
+          "y": 0.398,
+          "width": 70
+        },
+        {
+          "x": 95,
+          "y": 0.106,
+          "width": 70
+        },
+        {
+          "x": 197,
+          "y": 0.05,
+          "width": 70
+        },
+        {
+          "x": 309,
+          "y": 0.414,
+          "width": 70
+        },
+        {
+          "x": 427,
+          "y": 0.209,
+          "width": 70
+        },
+        {
+          "x": 448,
+          "y": 0.676,
+          "width": 70
+        }
+      ],
+      "elements": [
+        {
+          "type": "zapper",
+          "offsetX": 98,
+          "gapCenter": 0,
+          "gapH": 90
+        },
+        {
+          "type": "zapper",
+          "offsetX": 253,
+          "gapCenter": 0.136,
+          "gapH": 90
+        },
+        {
+          "type": "ground",
+          "subType": "sandCastle",
+          "offsetX": 373
+        }
+      ],
+      "birds": [],
+      "elevation": [
+        {
+          "x": 0,
+          "level": 0
+        },
+        {
+          "x": 64,
+          "level": 0
+        },
+        {
+          "x": 128,
+          "level": 1
+        },
+        {
+          "x": 192,
+          "level": 1
+        },
+        {
+          "x": 256,
+          "level": 0
+        },
+        {
+          "x": 320,
+          "level": 0
+        },
+        {
+          "x": 384,
+          "level": 0
+        }
+      ]
     },
     {
       "path": [
@@ -2201,588 +4014,82 @@
           "width": 70
         },
         {
-          "x": 60,
-          "y": 0.93,
-          "width": 70
-        },
-        {
-          "x": 162,
+          "x": 56,
           "y": 0.95,
-          "width": 180
-        },
-        {
-          "x": 268,
-          "y": 0.95,
-          "width": 180
-        },
-        {
-          "x": 340,
-          "y": 0.721,
-          "width": 180
-        },
-        {
-          "x": 409,
-          "y": 0.73,
-          "width": 70
-        },
-        {
-          "x": 410,
-          "y": 0.95,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 101,
-          "gapCenter": 1,
-          "gapH": 90
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 258,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.183,
-          "width": 70
-        },
-        {
-          "x": 69,
-          "y": 0.388,
-          "width": 180
-        },
-        {
-          "x": 185,
-          "y": 0.829,
-          "width": 180
-        },
-        {
-          "x": 280,
-          "y": 0.95,
-          "width": 70
-        },
-        {
-          "x": 353,
-          "y": 0.521,
-          "width": 70
-        },
-        {
-          "x": 425,
-          "y": 0.202,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 25
-        },
-        {
-          "type": "zapper",
-          "offsetX": 276,
-          "gapCenter": 1,
-          "gapH": 90
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 380
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 147,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.511,
-          "width": 70
-        },
-        {
-          "x": 110,
-          "y": 0.11,
-          "width": 180
-        },
-        {
-          "x": 173,
-          "y": 0.05,
-          "width": 180
-        },
-        {
-          "x": 258,
-          "y": 0.196,
-          "width": 180
-        },
-        {
-          "x": 325,
-          "y": 0.05,
-          "width": 70
-        },
-        {
-          "x": 426,
-          "y": 0.505,
-          "width": 70
-        },
-        {
-          "x": 537,
-          "y": 0.886,
-          "width": 70
-        },
-        {
-          "x": 586,
-          "y": 0.891,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 22
-        },
-        {
-          "type": "zapper",
-          "offsetX": 394,
-          "gapCenter": 0.311,
-          "gapH": 90
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 529,
-          "barHeight": 139
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 197,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.246,
-          "width": 70
-        },
-        {
-          "x": 82,
-          "y": 0.475,
-          "width": 180
-        },
-        {
-          "x": 179,
-          "y": 0.385,
-          "width": 180
-        },
-        {
-          "x": 298,
-          "y": 0.536,
-          "width": 70
-        },
-        {
-          "x": 413,
-          "y": 0.358,
-          "width": 70
-        },
-        {
-          "x": 479,
-          "y": 0.129,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 309
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 458
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 149,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.67,
-          "width": 70
-        },
-        {
-          "x": 107,
-          "y": 0.95,
-          "width": 70
-        },
-        {
-          "x": 165,
-          "y": 0.949,
-          "width": 70
-        },
-        {
-          "x": 278,
-          "y": 0.95,
-          "width": 70
-        },
-        {
-          "x": 335,
-          "y": 0.95,
-          "width": 70
-        },
-        {
-          "x": 395,
-          "y": 0.95,
-          "width": 70
-        },
-        {
-          "x": 463,
-          "y": 0.95,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 69,
-          "barHeight": 235
-        },
-        {
-          "type": "zapper",
-          "offsetX": 177,
-          "gapCenter": 1,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 279,
-          "gapCenter": 1,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 373,
-          "gapCenter": 1,
-          "gapH": 90
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.384,
-          "width": 70
-        },
-        {
-          "x": 95,
-          "y": 0.06,
-          "width": 70
-        },
-        {
-          "x": 202,
-          "y": 0.05,
-          "width": 70
-        },
-        {
-          "x": 301,
-          "y": 0.05,
-          "width": 70
-        },
-        {
-          "x": 389,
-          "y": 0.507,
-          "width": 70
-        },
-        {
-          "x": 465,
-          "y": 0.391,
-          "width": 70
-        },
-        {
-          "x": 583,
-          "y": 0.832,
-          "width": 70
-        },
-        {
-          "x": 597,
-          "y": 0.76,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "zapper",
-          "offsetX": 34,
-          "gapCenter": 0.185,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 171,
-          "gapCenter": 0,
-          "gapH": 90
-        },
-        {
-          "type": "zapper",
-          "offsetX": 298,
-          "gapCenter": 0,
-          "gapH": 90
-        },
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 379,
-          "barHeight": 134
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 488
-        }
-      ],
-      "birds": []
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.188,
           "width": 70
         },
         {
           "x": 116,
-          "y": 0.108,
+          "y": 0.667,
           "width": 70
         },
         {
-          "x": 185,
-          "y": 0.421,
+          "x": 197,
+          "y": 0.923,
           "width": 70
         },
         {
-          "x": 248,
-          "y": 0.112,
+          "x": 270,
+          "y": 0.95,
           "width": 70
         },
         {
-          "x": 333,
-          "y": 0.086,
-          "width": 180
+          "x": 368,
+          "y": 0.95,
+          "width": 70
         },
         {
-          "x": 399,
-          "y": 0.24,
-          "width": 180
-        },
-        {
-          "x": 511,
-          "y": 0.05,
-          "width": 180
-        },
-        {
-          "x": 563,
-          "y": 0.05,
+          "x": 423,
+          "y": 0.761,
           "width": 70
         }
       ],
       "elements": [
         {
+          "type": "skyBlocker",
+          "offsetX": 46,
+          "y": 26.0
+        },
+        {
           "type": "zapper",
-          "offsetX": 31,
-          "gapCenter": 0.047,
+          "offsetX": 266,
+          "gapCenter": 1,
           "gapH": 90
         },
         {
-          "type": "zapperBottomOpen",
-          "offsetX": 167,
-          "barHeight": 100
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 263
-        }
-      ],
-      "birds": [
-        {
-          "offsetX": 439,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        },
-        {
-          "offsetX": 416,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
-        {
-          "x": 0,
-          "y": 0.537,
-          "width": 70
-        },
-        {
-          "x": 78,
-          "y": 0.243,
-          "width": 70
-        },
-        {
-          "x": 185,
-          "y": 0.601,
-          "width": 70
-        },
-        {
-          "x": 288,
-          "y": 0.95,
-          "width": 180
-        },
-        {
-          "x": 405,
-          "y": 0.832,
-          "width": 180
-        },
-        {
-          "x": 488,
-          "y": 0.95,
-          "width": 180
-        },
-        {
-          "x": 587,
-          "y": 0.95,
-          "width": 70
-        }
-      ],
-      "elements": [
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 29
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 144
-        },
-        {
           "type": "zapper",
-          "offsetX": 532,
+          "offsetX": 375,
           "gapCenter": 1,
           "gapH": 90
         }
       ],
-      "birds": [
-        {
-          "offsetX": 369,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        },
-        {
-          "offsetX": 378,
-          "dodgeWidth": 180,
-          "arrivalTimeSec": 1.842
-        }
-      ]
-    },
-    {
-      "path": [
+      "birds": [],
+      "elevation": [
         {
           "x": 0,
-          "y": 0.607,
-          "width": 70
+          "level": 0
         },
         {
-          "x": 75,
-          "y": 0.95,
-          "width": 70
+          "x": 64,
+          "level": 0
         },
         {
-          "x": 137,
-          "y": 0.95,
-          "width": 70
+          "x": 128,
+          "level": 0
         },
         {
-          "x": 237,
-          "y": 0.792,
-          "width": 70
+          "x": 192,
+          "level": 0
         },
         {
-          "x": 354,
-          "y": 0.832,
-          "width": 70
+          "x": 256,
+          "level": 0
         },
         {
-          "x": 430,
-          "y": 0.863,
-          "width": 70
-        },
-        {
-          "x": 497,
-          "y": 0.597,
-          "width": 70
-        },
-        {
-          "x": 560,
-          "y": 0.686,
-          "width": 70
+          "x": 320,
+          "level": 0
         }
-      ],
-      "elements": [
-        {
-          "type": "zapperBottomOpen",
-          "offsetX": 158,
-          "barHeight": 200
-        },
-        {
-          "type": "ground",
-          "subType": "sandCastle",
-          "offsetX": 247
-        },
-        {
-          "type": "zapper",
-          "offsetX": 376,
-          "gapCenter": 0.964,
-          "gapH": 90
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 471
-        },
-        {
-          "type": "ground",
-          "subType": "poolNoodle",
-          "offsetX": 541
-        }
-      ],
-      "birds": []
+      ]
     }
   ]
 }

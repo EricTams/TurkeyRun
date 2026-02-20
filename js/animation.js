@@ -246,3 +246,28 @@ export function loadLaserAnimations(onItemLoaded) {
 
 /** Number of animation assets loaded by loadLaserAnimations. */
 export const LASER_ANIM_COUNT = 3;
+
+/**
+ * Load blocker animations (iguanas, pufferfish, asteroids). Returns a promise.
+ */
+export function loadBlockerAnimations(onItemLoaded) {
+    const base = 'assets/sprites/Blockers/';
+    const anims = [
+        ['oldIguanaIdle',      'Old Iguana-Idle'],
+        ['pufferfishIdle',     'Pufferfish-Idle'],
+        ['smallAsteroidIdle',  'Small Asteroid-Idle'],
+        ['mediumAsteroidIdle', 'Medium Asteroid-Idle'],
+        ['largeAsteroidIdle',  'Large Asteroid-Idle'],
+        ['tieDyeIguanaIdle',   'Tie Dye Iguana-Idle'],
+        ['poolNoodleSpin1',    'Pool Noodle-Spin1'],
+        ['poolNoodleSpin2',    'Pool Noodle-Spin2'],
+        ['poolNoodleSpin3',    'Pool Noodle-Spin3'],
+    ];
+    return Promise.all(anims.map(([name, file]) =>
+        loadAnimation(name, base + file + '.json', base + file + '.png')
+            .then(() => { if (onItemLoaded) onItemLoaded(); })
+    ));
+}
+
+/** Number of animation assets loaded by loadBlockerAnimations. */
+export const BLOCKER_ANIM_COUNT = 9;

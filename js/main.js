@@ -31,19 +31,21 @@ import {
     loadTurkeyAnimations, TURKEY_ANIM_COUNT,
     loadBirdAnimations, BIRD_ANIM_COUNT,
     loadFoodAnimations, FOOD_ANIM_COUNT,
-    loadLaserAnimations, LASER_ANIM_COUNT
+    loadLaserAnimations, LASER_ANIM_COUNT,
+    loadBlockerAnimations, BLOCKER_ANIM_COUNT
 } from './animation.js';
 import { applyPhysics, applyGravityPhysics } from './physics.js';
 import { loadAll } from './sprites.js';
-import { createWorld, updateWorld, renderWorld, getDistanceMeters, getDistancePixels } from './world.js';
+import { createWorld, updateWorld, renderWorld, renderWorldTerrain, getDistanceMeters, getDistancePixels } from './world.js';
 import { renderHud, isPauseButtonClick, isMuteButtonClick } from './hud.js';
 import { loadMusic, playMusic, pauseMusic, stopMusic, toggleMute, playSfx, playGobble } from './audio.js';
-import { rectsOverlap } from './collision.js';
-import { renderGroundHazard } from './hazards/groundHazard.js';
+import { renderGroundHazard, checkGroundHazardCollision } from './hazards/groundHazard.js';
+import { renderSkyBlocker, checkSkyBlockerCollision } from './hazards/skyBlocker.js';
 import { renderZapper, checkZapperCollision } from './hazards/zapper.js';
 import { renderBird, checkBirdCollision } from './hazards/bird.js';
 import { renderLaser, checkLaserCollision } from './hazards/laser.js';
-import { loadPatterns, resetSpawner, updateSpawner, getHazards, getZappers, getBirds, getLasers } from './spawner.js';
+import { loadPatterns, resetSpawner, updateSpawner, getHazards, getZappers, getBirds, getLasers, getSkyBlockers } from './spawner.js';
+import { loadTerrainTiles } from './terrainTiles.js';
 import { resetCollectibles, updateCollectibles, renderAllFood, getCoins } from './collectible.js';
 import {
     LOADING, SLOT_SELECT, MENU, SHOP, LOADOUT, HATCHING, PLAYING, PAUSED, DYING, DEAD,
@@ -132,7 +134,12 @@ let eggVy = 0;
 function checkCollisions() {
     const turkeyRect = getTurkeyHitbox(turkey);
     for (const hazard of getHazards()) {
-        if (rectsOverlap(turkeyRect, hazard)) {
+        if (checkGroundHazardCollision(turkeyRect, hazard)) {
+            return true;
+        }
+    }
+    for (const sb of getSkyBlockers()) {
+        if (checkSkyBlockerCollision(turkeyRect, sb)) {
             return true;
         }
     }
@@ -786,11 +793,21 @@ function render() {
 
     if (gameState === PLAYING || gameState === PAUSED ||
         gameState === DYING || gameState === DEAD) {
+        // Pool noodle zappers draw behind terrain
+        for (const zapper of getZappers()) {
+            renderZapper(ctx, zapper);
+        }
+    }
+
+    renderWorldTerrain(ctx);
+
+    if (gameState === PLAYING || gameState === PAUSED ||
+        gameState === DYING || gameState === DEAD) {
         for (const hazard of getHazards()) {
             renderGroundHazard(ctx, hazard);
         }
-        for (const zapper of getZappers()) {
-            renderZapper(ctx, zapper);
+        for (const sb of getSkyBlockers()) {
+            renderSkyBlocker(ctx, sb);
         }
         for (const bird of getBirds()) {
             renderBird(ctx, bird);
@@ -853,7 +870,7 @@ function onVisibilityChange() {
 // ---------------------------------------------------------------------------
 
 function loadWithProgress() {
-    loadProgress.total = TURKEY_ANIM_COUNT + BIRD_ANIM_COUNT + FOOD_ANIM_COUNT + LASER_ANIM_COUNT + 3;
+    loadProgress.total = TURKEY_ANIM_COUNT + BIRD_ANIM_COUNT + FOOD_ANIM_COUNT + LASER_ANIM_COUNT + BLOCKER_ANIM_COUNT + 4;
     loadProgress.loaded = 0;
 
     const spritePromise = loadAll().then(() => { loadProgress.loaded++; });
@@ -862,7 +879,9 @@ function loadWithProgress() {
     const birdAnimPromise = loadBirdAnimations(() => { loadProgress.loaded++; });
     const foodAnimPromise = loadFoodAnimations(() => { loadProgress.loaded++; });
     const laserAnimPromise = loadLaserAnimations(() => { loadProgress.loaded++; });
+    const blockerAnimPromise = loadBlockerAnimations(() => { loadProgress.loaded++; });
     const musicPromise = loadMusic().then(() => { loadProgress.loaded++; });
+    const terrainPromise = loadTerrainTiles().then(() => { loadProgress.loaded++; });
 
     return Promise.all([
         spritePromise,
@@ -871,7 +890,9 @@ function loadWithProgress() {
         birdAnimPromise,
         foodAnimPromise,
         laserAnimPromise,
-        musicPromise
+        blockerAnimPromise,
+        musicPromise,
+        terrainPromise
     ]);
 }
 

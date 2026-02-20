@@ -24,9 +24,12 @@ import {
 import {
     createBird, updateBird, isBirdOffScreen
 } from './hazards/bird.js';
+import {
+    createSkyBlocker, updateSkyBlocker, isSkyBlockerOffScreen
+} from './hazards/skyBlocker.js';
 import { spawnCoinsAtPositions } from './collectible.js';
 import { generateCoinsOnPath } from './sectionPath.js';
-import { getBiomeGroundHazards } from './biome.js';
+import { getBiomeGroundHazards, getBiomeSkyBlockers, getCurrentBiomeName } from './biome.js';
 import {
     updateLaserPattern,
     isLaserPatternActive,
@@ -35,6 +38,7 @@ import {
     getSafeCenterBandsAtTime,
 } from './laserPattern.js';
 import { LASER_PATTERNS_BY_TIER } from './data/laserPatterns.js';
+import { addTerrainSegment, updateTerrain, resetTerrain } from './terrain.js';
 
 // ---------------------------------------------------------------------------
 // Pattern pool -- loaded from JSON
@@ -80,6 +84,19 @@ function randomBirdY() {
     return margin + Math.random() * (GROUND_Y - BIRD_HEIGHT - 2 * margin);
 }
 
+const BIOME_NOODLE_ANIM = {
+    beach:     'poolNoodleSpin3',
+    grass:     'poolNoodleSpin1',
+    mountain:  'poolNoodleSpin1',
+    moon:      'poolNoodleSpin3',
+    spiritual: 'poolNoodleSpin2',
+};
+
+function getNoodleAnimKey() {
+    const biome = getCurrentBiomeName(currentDistanceMeters);
+    return BIOME_NOODLE_ANIM[biome] || 'poolNoodleSpin1';
+}
+
 function getLaserSectionChance(tier) {
     if (tier === 'medium') return 0.15;
     if (tier === 'hard') return 0.28;
@@ -120,9 +137,11 @@ function generateCoinsForLaserPattern(pattern) {
     if (sampleDt <= 0 || pattern.duration <= 0) return [];
 
     const coins = [];
+    const collectibleEndLeadSeconds = 0.8;
+    const maxSampleTime = Math.max(sampleDt, pattern.duration - collectibleEndLeadSeconds);
     const dedupeX = Math.max(1, Math.floor(PATH_COIN_SPACING * 0.5));
     let lastBucketX = -Infinity;
-    for (let t = sampleDt; t < pattern.duration; t += sampleDt) {
+    for (let t = sampleDt; t < maxSampleTime; t += sampleDt) {
         // Spawn so each coin reaches player column (x=PLAYER_START_X) at sample time t.
         const x = PLAYER_START_X + t * AUTO_RUN_SPEED;
         const xBucket = Math.floor(x / dedupeX);
@@ -199,7 +218,7 @@ function getGapForDistance(distanceMeters) {
 // Current distance in meters, updated each frame by updateSpawner()
 let currentDistanceMeters = 0;
 
-function spawnElement(elem, groundArr, zapperArr) {
+function spawnElement(elem, groundArr, zapperArr, skyArr) {
     if (elem.type === 'ground') {
         // Pick a biome-appropriate ground hazard type instead of the
         // pattern's hardcoded subType (which is always beach-biome).
@@ -210,17 +229,26 @@ function spawnElement(elem, groundArr, zapperArr) {
         groundArr.push(hazard);
         return;
     }
+    if (elem.type === 'skyBlocker') {
+        // Only spawn if the current biome has sky blockers defined
+        const biomeSky = getBiomeSkyBlockers(currentDistanceMeters);
+        if (biomeSky.length > 0) {
+            const blocker = createSkyBlocker(pickRandom(biomeSky), elem.y);
+            blocker.x = CANVAS_WIDTH + elem.offsetX;
+            skyArr.push(blocker);
+        }
+        return;
+    }
     if (elem.type === 'zapper') {
         const gapY = resolveGapY(elem.gapCenter, elem.gapH);
-        zapperArr.push(createZapperAt(CANVAS_WIDTH + elem.offsetX, gapY, elem.gapH));
+        zapperArr.push(createZapperAt(CANVAS_WIDTH + elem.offsetX, gapY, elem.gapH, getNoodleAnimKey()));
         return;
     }
     if (elem.type === 'zapperBottomOpen') {
-        zapperArr.push(createBottomOpenZapper(CANVAS_WIDTH + elem.offsetX, elem.barHeight));
+        zapperArr.push(createBottomOpenZapper(CANVAS_WIDTH + elem.offsetX, elem.barHeight, getNoodleAnimKey()));
         return;
     }
     // Legacy section lasers are intentionally disabled.
-    // We'll re-introduce lasers via dedicated laser sections.
     if (elem.type === 'laserStatic' || elem.type === 'laserSweep') {
         return;
     }
@@ -231,9 +259,14 @@ function spawnElement(elem, groundArr, zapperArr) {
 // ---------------------------------------------------------------------------
 
 function spawnPattern(pattern) {
-    // Spawn obstacle elements
+    // Spawn terrain elevation segment
+    if (pattern.elevation && pattern.elevation.length > 0) {
+        addTerrainSegment(pattern.elevation, CANVAS_WIDTH);
+    }
+
+    // Spawn obstacle elements (ground hazards, zappers, sky blockers)
     for (const elem of pattern.elements) {
-        spawnElement(elem, hazards, zappers);
+        spawnElement(elem, hazards, zappers, skyBlockers);
     }
 
     // Spawn coins along the safe path
@@ -266,6 +299,7 @@ let nextSpawnDistancePx = 0;
 let hazards = [];
 let zappers = [];
 let birds = [];
+let skyBlockers = [];
 let patternCount = 0;
 
 export function resetSpawner() {
@@ -273,13 +307,17 @@ export function resetSpawner() {
     hazards = [];
     zappers = [];
     birds = [];
+    skyBlockers = [];
     patternCount = 0;
     currentDistanceMeters = 0;
     stopLaserPattern();
+    resetTerrain();
 }
 
 export function updateSpawner(dt, distancePx, turkeyCenterX, turkeyCenterY) {
     if (!patternsLoaded) return;
+
+    updateTerrain(dt);
 
     const distanceMeters = Math.floor(distancePx / PIXELS_PER_METER);
     currentDistanceMeters = distanceMeters;
@@ -321,6 +359,12 @@ export function updateSpawner(dt, distancePx, turkeyCenterX, turkeyCenterY) {
         updateLaserPattern(dt);
     }
 
+    // Update and cull sky blockers
+    for (const sb of skyBlockers) {
+        updateSkyBlocker(sb, dt);
+    }
+    skyBlockers = skyBlockers.filter(sb => !isSkyBlockerOffScreen(sb));
+
     // Update and cull birds
     for (const b of birds) {
         updateBird(b, dt, turkeyCenterX, turkeyCenterY);
@@ -338,6 +382,10 @@ export function getZappers() {
 
 export function getBirds() {
     return birds;
+}
+
+export function getSkyBlockers() {
+    return skyBlockers;
 }
 
 export function getLasers() {

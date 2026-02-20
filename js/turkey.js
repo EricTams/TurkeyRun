@@ -6,6 +6,7 @@ import {
 } from './config.js';
 import { createAnimator, setAnimation, updateAnimator, drawAnimator } from './animation.js';
 import { getHitboxShrinkFactor } from './meta/passives.js';
+import { getGroundYAt } from './terrain.js';
 
 // Fallback color used when animation frames aren't loaded
 const TURKEY_COLOR = '#8B4513';
@@ -53,7 +54,8 @@ export function getTurkeyHitbox(turkey) {
  * Check if the turkey's feet are on the ground.
  */
 export function isTurkeyOnGround(turkey) {
-    return turkey.y + FEET_Y >= GROUND_Y;
+    const groundY = getGroundYAt(PLAYER_START_X);
+    return turkey.y + FEET_Y >= groundY;
 }
 
 /**

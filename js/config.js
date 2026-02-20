@@ -44,6 +44,13 @@ export const DEATH_BOUNCE_MIN_IMPACT_VY = 140;
 export const GROUND_Y = 400;
 export const AUTO_RUN_SPEED = 300; // pixels per second
 
+// Terrain tiles
+export const TILE_SIZE = 64;
+export const TILE_SURFACE_OFFSET_LOW = 48;     // px from top of Flat-Low tile to collision line
+export const TILE_SURFACE_OFFSET_NORMAL = 16;  // px from top of Flat tile to collision line
+export const TIER_HEIGHT = TILE_SURFACE_OFFSET_LOW - TILE_SURFACE_OFFSET_NORMAL; // 32px
+export const TILE_ROW_Y = GROUND_Y - TILE_SURFACE_OFFSET_LOW; // 352 -- Y where all surface tiles are drawn
+
 // Sky / background layer colors
 export const SKY_COLOR = '#87CEEB';
 export const FAR_BG_COLOR = '#6DB3D1';  // distant hills
@@ -89,6 +96,21 @@ export const VOID_CRYSTAL_WIDTH = 30;
 export const VOID_CRYSTAL_HEIGHT = 48;
 export const WEIRD_PILLAR_WIDTH = 18;
 export const WEIRD_PILLAR_HEIGHT = 60;
+
+// Animated blocker dimensions (render size in-game)
+export const OLD_IGUANA_WIDTH = 50;
+export const OLD_IGUANA_HEIGHT = 50;
+export const TIE_DYE_IGUANA_WIDTH = 56;
+export const TIE_DYE_IGUANA_HEIGHT = 28;
+export const SMALL_ASTEROID_SIZE = 36;
+export const MEDIUM_ASTEROID_SIZE = 50;
+export const LARGE_ASTEROID_SIZE = 72;
+export const PUFFERFISH_SIZE = 180;
+export const PUFFERFISH_ROTATE_SPEED = 0.4; // radians per second
+
+// Sky blocker (pufferfish) Y bounds (used by generator, kept here for reference)
+export const PUFFERFISH_Y_MIN = 20;
+export const PUFFERFISH_Y_MAX = 250;
 
 // Biome progression (distance in meters)
 export const BIOME_BEACH_START = 0;
