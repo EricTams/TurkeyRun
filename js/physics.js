@@ -1,7 +1,6 @@
 import {
     GRAVITY, THRUST, TERMINAL_VEL_UP, TERMINAL_VEL_DOWN,
-    GROUND_Y, PLAYER_RENDER_HEIGHT, PLAYER_SPRITE_BOTTOM_PAD,
-    PLAYER_START_X
+    PLAYER_RENDER_HEIGHT, PLAYER_SPRITE_BOTTOM_PAD, PLAYER_RENDER_WIDTH
 } from './config.js';
 import { getGroundYAt } from './terrain.js';
 
@@ -16,7 +15,8 @@ function clampTurkeyVerticalBounds(turkey) {
         turkey.vy = 0;
     }
 
-    const groundY = getGroundYAt(PLAYER_START_X);
+    const sampleX = turkey.x + PLAYER_RENDER_WIDTH / 2;
+    const groundY = getGroundYAt(sampleX);
     if (turkey.y + FEET_Y > groundY) {
         turkey.y = groundY - FEET_Y;
         turkey.vy = 0;

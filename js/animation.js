@@ -190,7 +190,8 @@ export function loadBirdAnimations(onItemLoaded) {
     const base = 'assets/sprites/Birds/';
     const anims = [
         ['birdStart', 'Grackle-Start'],
-        ['birdFly',   'Grackle-Fly']
+        ['birdFly',   'Grackle-Fly'],
+        ['boarFly',   'Boar-Fly']
     ];
     return Promise.all(anims.map(([name, file]) =>
         loadAnimation(name, base + file + '.json', base + file + '.png')
@@ -199,7 +200,7 @@ export function loadBirdAnimations(onItemLoaded) {
 }
 
 /** Number of individual animation assets loaded by loadBirdAnimations. */
-export const BIRD_ANIM_COUNT = 2;
+export const BIRD_ANIM_COUNT = 3;
 
 /**
  * Load all food animations. Returns a promise.
@@ -271,3 +272,30 @@ export function loadBlockerAnimations(onItemLoaded) {
 
 /** Number of animation assets loaded by loadBlockerAnimations. */
 export const BLOCKER_ANIM_COUNT = 9;
+
+/**
+ * Load decorative background sprites (biome signs + palms). Returns a promise.
+ * Optional onItemLoaded callback is called once per asset as it finishes.
+ */
+export function loadBackgroundDecorAnimations(onItemLoaded) {
+    const signBase = 'assets/sprites/Signs/';
+    const palmBase = 'assets/sprites/BackgroundElements/';
+    const anims = [
+        ['signBeach',    signBase + 'Signs-Beach'],
+        ['signGrass',    signBase + 'Signs-Grass'],
+        ['signMountain', signBase + 'Signs-Mountain'],
+        ['signMoon',     signBase + 'Signs-Moon'],
+        ['signRealm',    signBase + 'Signs-Realm'],
+        ['palmDefault',  palmBase + 'Palm Tree-Palm Tree'],
+        ['palmSnow',     palmBase + 'Palm Tree-Snow Palm Tree'],
+        ['palmInverted', palmBase + 'Palm Tree-Inverted'],
+        ['palmDome',     palmBase + 'Palm Tree-Dome'],
+    ];
+    return Promise.all(anims.map(([name, file]) =>
+        loadAnimation(name, file + '.json', file + '.png')
+            .then(() => { if (onItemLoaded) onItemLoaded(); })
+    ));
+}
+
+/** Number of background decor assets loaded by loadBackgroundDecorAnimations. */
+export const BACKGROUND_DECOR_ANIM_COUNT = 9;

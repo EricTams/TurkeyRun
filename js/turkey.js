@@ -54,7 +54,8 @@ export function getTurkeyHitbox(turkey) {
  * Check if the turkey's feet are on the ground.
  */
 export function isTurkeyOnGround(turkey) {
-    const groundY = getGroundYAt(PLAYER_START_X);
+    const sampleX = turkey.x + PLAYER_RENDER_WIDTH / 2;
+    const groundY = getGroundYAt(sampleX);
     return turkey.y + FEET_Y >= groundY;
 }
 

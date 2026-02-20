@@ -12,6 +12,8 @@ import {
     DEATH_SETTLE_VY_THRESHOLD, DEATH_STEAM_HOLD_SECONDS,
     DEATH_FORWARD_DRIFT_SPEED, DEATH_FORWARD_BOUNCE_DAMPING,
     DEATH_BOUNCE_DAMPING, DEATH_BOUNCE_MIN_IMPACT_VY,
+    BIOME_BEACH_START, BIOME_GRASS_START, BIOME_MOUNTAIN_START,
+    BIOME_MOON_START, BIOME_SPIRITUAL_START,
     DEBUG_LASER_TEST, LASER_PATTERN_PAUSE
 } from './config.js';
 import { initRenderer, clear, getCtx, getCanvas } from './renderer.js';
@@ -33,11 +35,12 @@ import {
     loadBirdAnimations, BIRD_ANIM_COUNT,
     loadFoodAnimations, FOOD_ANIM_COUNT,
     loadLaserAnimations, LASER_ANIM_COUNT,
-    loadBlockerAnimations, BLOCKER_ANIM_COUNT
+    loadBlockerAnimations, BLOCKER_ANIM_COUNT,
+    loadBackgroundDecorAnimations, BACKGROUND_DECOR_ANIM_COUNT
 } from './animation.js';
 import { applyPhysics, applyGravityPhysics } from './physics.js';
 import { loadAll } from './sprites.js';
-import { createWorld, updateWorld, renderWorld, renderWorldTerrain, getDistanceMeters, getDistancePixels } from './world.js';
+import { createWorld, updateWorld, renderWorld, renderWorldTerrain, getDistanceMeters, getDistancePixels, setDistanceMeters } from './world.js';
 import { renderHud, isPauseButtonClick, isMuteButtonClick } from './hud.js';
 import { loadMusic, playMusic, pauseMusic, stopMusic, toggleMute, playSfx, playGobble } from './audio.js';
 import { renderGroundHazard, checkGroundHazardCollision, isIguana, punchHazard } from './hazards/groundHazard.js';
@@ -45,7 +48,7 @@ import { renderSkyBlocker, checkSkyBlockerCollision } from './hazards/skyBlocker
 import { renderZapper, checkZapperCollision } from './hazards/zapper.js';
 import { renderBird, checkBirdCollision } from './hazards/bird.js';
 import { renderLaser, checkLaserCollision } from './hazards/laser.js';
-import { loadPatterns, resetSpawner, updateSpawner, getHazards, getZappers, getBirds, getLasers, getSkyBlockers } from './spawner.js';
+import { loadPatterns, resetSpawner, updateSpawner, getHazards, getZappers, getBirds, getLasers, getSkyBlockers, jumpSpawnerToDistance } from './spawner.js';
 import { loadTerrainTiles } from './terrainTiles.js';
 import { resetCollectibles, updateCollectibles, renderAllFood, getCoins } from './collectible.js';
 import {
@@ -62,7 +65,7 @@ import {
     purchaseNode, getPurchasedNodes, deriveGadgetLevels, derivePassiveTiers,
     deriveMilestones, getGadgetSlotCount, getLoadout, setLoadout
 } from './save.js';
-import { setDebugBiomeOverride, getDebugBiomeOverride } from './biome.js';
+import { clearDebugBiomeOverride } from './biome.js';
 import {
     initShop, updateShopCoins, updateShopPurchased,
     renderShop, onShopPointerDown, onShopPointerMove, onShopPointerUp,
@@ -123,9 +126,17 @@ const loadProgress = { loaded: 0, total: 0 };
 const EGG_FALL_GRAVITY = 800;
 const EGG_WOBBLE_DURATION = 0.6;
 const HATCH_PAUSE_AFTER = 0.4;
+const SECOND_CHANCE_STEP_METERS = 500;
 let hatchPhase = 'falling';
 let hatchTimer = 0;
 let eggVy = 0;
+const DEBUG_SECTION_STARTS = [
+    BIOME_BEACH_START,
+    BIOME_GRASS_START,
+    BIOME_MOUNTAIN_START,
+    BIOME_MOON_START,
+    BIOME_SPIRITUAL_START
+];
 
 // ---------------------------------------------------------------------------
 // Collision detection (uses hitbox, not render rect)
@@ -178,7 +189,7 @@ function startHatching() {
     createWorld();
     resetSpawner();
     resetCollectibles();
-    secondChanceNextDist = 500;
+    secondChanceNextDist = SECOND_CHANCE_STEP_METERS;
     secondChanceInvulnTimer = 0;
     laserGraceActive = false;
     resetEffects();
@@ -347,8 +358,19 @@ function applyMetaProgression() {
     resetBounty();
 }
 
+function jumpToDebugSection(sectionNumber) {
+    const sectionIdx = sectionNumber - 1;
+    if (sectionIdx < 0 || sectionIdx >= DEBUG_SECTION_STARTS.length) return;
+
+    const targetMeters = DEBUG_SECTION_STARTS[sectionIdx];
+    setDistanceMeters(targetMeters);
+    jumpSpawnerToDistance(getDistancePixels());
+    clearDebugBiomeOverride();
+    secondChanceNextDist = Math.floor(targetMeters / SECOND_CHANCE_STEP_METERS + 1) * SECOND_CHANCE_STEP_METERS;
+}
+
 // Second Chance passive: invuln pulse tracking
-let secondChanceNextDist = 500;
+let secondChanceNextDist = SECOND_CHANCE_STEP_METERS;
 let secondChanceInvulnTimer = 0;
 
 // Thick Skin: laser grace countdown tracking
@@ -485,9 +507,9 @@ function update(dt) {
             return;
         }
 
-        // Debug: keys 1-5 force a biome
+        // Debug: keys 1-5 jump to section starts (natural progression state).
         const dbg = consumeDebugBiome();
-        if (dbg > 0) setDebugBiomeOverride(dbg);
+        if (dbg > 0) jumpToDebugSection(dbg);
 
         applyPhysics(turkey, dt, isPressed());
         updateTurkeyAnimation(turkey, dt, isPressed());
@@ -519,7 +541,7 @@ function update(dt) {
         // Second Chance gadget: invuln pulse every 500m
         if (isSecondChanceEquipped() && getDistanceMeters() >= secondChanceNextDist) {
             secondChanceInvulnTimer = getSecondChanceDuration();
-            secondChanceNextDist += 500;
+            secondChanceNextDist += SECOND_CHANCE_STEP_METERS;
             startCountdown('secondChance', 'SAFE', secondChanceInvulnTimer, '#44FF44');
             announce('SECOND CHANCE!', '#44FF44');
         }
@@ -871,7 +893,8 @@ function onVisibilityChange() {
 // ---------------------------------------------------------------------------
 
 function loadWithProgress() {
-    loadProgress.total = TURKEY_ANIM_COUNT + BIRD_ANIM_COUNT + FOOD_ANIM_COUNT + LASER_ANIM_COUNT + BLOCKER_ANIM_COUNT + 4;
+    loadProgress.total = TURKEY_ANIM_COUNT + BIRD_ANIM_COUNT + FOOD_ANIM_COUNT
+        + LASER_ANIM_COUNT + BLOCKER_ANIM_COUNT + BACKGROUND_DECOR_ANIM_COUNT + 4;
     loadProgress.loaded = 0;
 
     const spritePromise = loadAll().then(() => { loadProgress.loaded++; });
@@ -881,6 +904,7 @@ function loadWithProgress() {
     const foodAnimPromise = loadFoodAnimations(() => { loadProgress.loaded++; });
     const laserAnimPromise = loadLaserAnimations(() => { loadProgress.loaded++; });
     const blockerAnimPromise = loadBlockerAnimations(() => { loadProgress.loaded++; });
+    const decorAnimPromise = loadBackgroundDecorAnimations(() => { loadProgress.loaded++; });
     const musicPromise = loadMusic().then(() => { loadProgress.loaded++; });
     const terrainPromise = loadTerrainTiles().then(() => { loadProgress.loaded++; });
 
@@ -892,6 +916,7 @@ function loadWithProgress() {
         foodAnimPromise,
         laserAnimPromise,
         blockerAnimPromise,
+        decorAnimPromise,
         musicPromise,
         terrainPromise
     ]);

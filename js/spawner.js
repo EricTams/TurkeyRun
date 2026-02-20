@@ -11,9 +11,9 @@ import {
     CANVAS_WIDTH, GROUND_Y, PIXELS_PER_METER,
     ZAPPER_GAP_MARGIN,
     SPAWNER_GRACE_DISTANCE, SPAWNER_BASE_GAP, SPAWNER_MIN_GAP,
-    SPAWNER_GAP_SHRINK_RATE, SPAWNER_EASY_COUNT,
+    SPAWNER_GAP_SHRINK_RATE,
     SPAWNER_HARD_FROM, SPAWNER_EXTREME_FROM, SPAWNER_EXTREME_DOMINANT, BIRD_HEIGHT,
-    PATH_COIN_SPACING, FOOD_SIZE, PLAYER_START_X
+    PATH_COIN_SPACING, FOOD_SIZE, PLAYER_START_X, BOAR_PATTERN_CHANCE
 } from './config.js';
 import {
     createGroundHazard, updateGroundHazard, isOffScreen
@@ -82,6 +82,11 @@ function pickRandom(arr) {
 function randomBirdY() {
     const margin = 20;
     return margin + Math.random() * (GROUND_Y - BIRD_HEIGHT - 2 * margin);
+}
+
+function selectBirdTypeForPattern(tier) {
+    if (tier !== 'hard' && tier !== 'extreme') return 'grackle';
+    return Math.random() < BOAR_PATTERN_CHANCE ? 'boar' : 'grackle';
 }
 
 const BIOME_NOODLE_ANIM = {
@@ -170,12 +175,12 @@ function maybeSpawnLaserSection(tier) {
 }
 
 // ---------------------------------------------------------------------------
-// Tier selection -- first N patterns are easy, then ramps through tiers
+// Tier selection -- ramps by run distance
 // ---------------------------------------------------------------------------
 
-function selectTier(distanceMeters, patternCount) {
-    // First SPAWNER_EASY_COUNT patterns are always easy
-    if (patternCount < SPAWNER_EASY_COUNT) {
+function selectTier(distanceMeters) {
+    // Early run starts easy by distance, then ramps through tiers.
+    if (distanceMeters < SPAWNER_HARD_FROM * 0.25) {
         return 'easy';
     }
 
@@ -257,7 +262,7 @@ function spawnElement(elem, groundArr, zapperArr, skyArr) {
 // Spawn a full pattern: obstacles, coins on path, birds
 // ---------------------------------------------------------------------------
 
-function spawnPattern(pattern) {
+function spawnPattern(pattern, tier) {
     // Spawn terrain elevation segment
     if (pattern.elevation && pattern.elevation.length > 0) {
         addTerrainSegment(pattern.elevation, CANVAS_WIDTH);
@@ -276,8 +281,9 @@ function spawnPattern(pattern) {
 
     // Spawn birds from pattern bird definitions
     if (pattern.birds) {
+        const birdType = selectBirdTypeForPattern(tier);
         for (const _birdDef of pattern.birds) {
-            birds.push(createBird(randomBirdY()));
+            birds.push(createBird(randomBirdY(), birdType));
         }
     }
 }
@@ -299,7 +305,6 @@ let hazards = [];
 let zappers = [];
 let birds = [];
 let skyBlockers = [];
-let patternCount = 0;
 
 export function resetSpawner() {
     nextSpawnDistancePx = SPAWNER_GRACE_DISTANCE;
@@ -307,7 +312,6 @@ export function resetSpawner() {
     zappers = [];
     birds = [];
     skyBlockers = [];
-    patternCount = 0;
     currentDistanceMeters = 0;
     stopLaserPattern();
     resetTerrain();
@@ -323,18 +327,16 @@ export function updateSpawner(dt, distancePx, turkeyCenterX, turkeyCenterY) {
 
     // Spawn next pattern when distance threshold is reached
     if (distancePx >= nextSpawnDistancePx) {
-        const tier = selectTier(distanceMeters, patternCount);
+        const tier = selectTier(distanceMeters);
         const laserPattern = maybeSpawnLaserSection(tier);
         if (laserPattern) {
-            patternCount++;
             const width = getLaserSectionDistancePx(laserPattern);
             nextSpawnDistancePx = distancePx + width + getGapForDistance(distanceMeters);
         } else {
             const pool = POOL_BY_TIER[tier];
             if (pool.length > 0) {
                 const pattern = pickRandom(pool);
-                spawnPattern(pattern);
-                patternCount++;
+                spawnPattern(pattern, tier);
                 const width = getPatternWidth(pattern);
                 nextSpawnDistancePx = distancePx + width + getGapForDistance(distanceMeters);
             }
@@ -369,6 +371,21 @@ export function updateSpawner(dt, distancePx, turkeyCenterX, turkeyCenterY) {
         updateBird(b, dt, turkeyCenterX, turkeyCenterY);
     }
     birds = birds.filter(b => !isBirdOffScreen(b));
+}
+
+export function jumpSpawnerToDistance(distancePx) {
+    const clampedDistancePx = Math.max(0, distancePx);
+    const distanceMeters = Math.floor(clampedDistancePx / PIXELS_PER_METER);
+    currentDistanceMeters = distanceMeters;
+
+    hazards = [];
+    zappers = [];
+    birds = [];
+    skyBlockers = [];
+    stopLaserPattern();
+    resetTerrain();
+
+    nextSpawnDistancePx = clampedDistancePx + getGapForDistance(distanceMeters);
 }
 
 export function getHazards() {

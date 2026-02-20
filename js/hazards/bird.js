@@ -7,8 +7,9 @@
 
 import {
     CANVAS_WIDTH, GROUND_Y,
-    BIRD_WIDTH, BIRD_HEIGHT, BIRD_SPEED, BIRD_X_SPEED, BIRD_TURN_RATE,
-    BIRD_WARNING_DURATION, BIRD_TRACKING_DURATION
+    BIRD_WIDTH, BIRD_HEIGHT, BIRD_SPEED, BIRD_X_SPEED, GRACKLE_TURN_RATE,
+    BIRD_WARNING_DURATION, BIRD_TRACKING_DURATION, GRACKLE_TRACKING_DURATION,
+    BOAR_VERTICAL_TRACK_SPEED, BOAR_DASH_X_SPEED
 } from '../config.js';
 import { createAnimator, setAnimation, updateAnimator, drawAnimator, hasAnimation } from '../animation.js';
 import { rectsOverlap } from '../collision.js';
@@ -22,6 +23,8 @@ const WARNING_ARROW_X = 12;            // inset from right edge
 const STATE_WARNING = 'warning';
 const STATE_ACTIVE = 'active';
 const STATE_PUNCHED = 'punched';
+const BIRD_TYPE_GRACKLE = 'grackle';
+const BIRD_TYPE_BOAR = 'boar';
 
 let punchedBirds = [];
 
@@ -45,8 +48,8 @@ export function updatePunchedBirds(dt) {
 }
 
 export function renderPunchedBirds(ctx) {
-    const useAnim = hasAnimation('birdFly');
     for (const b of punchedBirds) {
+        const useAnim = b.animator && hasAnimation(b.animator.currentAnim);
         ctx.save();
         const cx = b.x + BIRD_WIDTH / 2;
         const cy = b.y + BIRD_HEIGHT / 2;
@@ -89,8 +92,9 @@ export function resetPunchedBirds() {
 // Create / update / cull
 // -----------------------------------------------------------------------
 
-export function createBird(targetY) {
+export function createBird(targetY, type = BIRD_TYPE_GRACKLE) {
     const bird = {
+        type,
         x: CANVAS_WIDTH + BIRD_WIDTH,
         y: targetY,
         angle: Math.PI,   // facing left (toward the player)
@@ -99,21 +103,29 @@ export function createBird(targetY) {
         trackingTimer: 0,  // time spent actively tracking (stops at BIRD_TRACKING_DURATION)
         animator: createAnimator()
     };
-    setAnimation(bird.animator, 'birdStart', { loop: true });
+    if (bird.type === BIRD_TYPE_BOAR) {
+        setAnimation(bird.animator, 'boarFly', { loop: true });
+    } else {
+        setAnimation(bird.animator, 'birdStart', { loop: true });
+    }
     return bird;
 }
 
 export function updateBird(bird, dt, turkeyCenterX, turkeyCenterY) {
     if (bird.state === STATE_PUNCHED) return;
 
-    updateAnimator(bird.animator, dt);
+    if (shouldLockGrackleStartFrame(bird)) {
+        bird.animator.frameIndex = 0;
+        bird.animator.elapsed = 0;
+    } else {
+        updateAnimator(bird.animator, dt);
+    }
 
     if (bird.state === STATE_WARNING) {
         bird.warningTimer -= dt;
         if (bird.warningTimer <= 0) {
             bird.state = STATE_ACTIVE;
             bird.trackingTimer = 0;
-            setAnimation(bird.animator, 'birdFly', { loop: true });
         }
         return;
     }
@@ -121,8 +133,13 @@ export function updateBird(bird, dt, turkeyCenterX, turkeyCenterY) {
     // Track how long we've been steering
     bird.trackingTimer += dt;
 
+    if (bird.type === BIRD_TYPE_BOAR) {
+        updateBoarMovement(bird, dt, turkeyCenterY);
+        return;
+    }
+
     // Only steer toward the player while within the tracking window
-    if (bird.trackingTimer < BIRD_TRACKING_DURATION) {
+    if (bird.trackingTimer < GRACKLE_TRACKING_DURATION) {
         const birdCX = bird.x + BIRD_WIDTH / 2;
         const birdCY = bird.y + BIRD_HEIGHT / 2;
         const dx = turkeyCenterX - birdCX;
@@ -133,12 +150,14 @@ export function updateBird(bird, dt, turkeyCenterX, turkeyCenterY) {
         while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
         while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
 
-        const maxTurn = BIRD_TURN_RATE * dt;
+        const maxTurn = GRACKLE_TURN_RATE * dt;
         if (Math.abs(angleDiff) <= maxTurn) {
             bird.angle = desiredAngle;
         } else {
             bird.angle += Math.sign(angleDiff) * maxTurn;
         }
+    } else if (bird.animator.currentAnim !== 'birdFly') {
+        setAnimation(bird.animator, 'birdFly', { loop: true });
     }
     // After tracking duration expires: heading is locked, bird flies straight.
 
@@ -146,6 +165,31 @@ export function updateBird(bird, dt, turkeyCenterX, turkeyCenterY) {
     bird.x -= BIRD_X_SPEED * dt;
     // Vertical movement from the aiming angle (original steering system)
     bird.y += Math.sin(bird.angle) * BIRD_SPEED * dt;
+}
+
+function updateBoarMovement(bird, dt, turkeyCenterY) {
+    if (bird.trackingTimer < BIRD_TRACKING_DURATION) {
+        const desiredY = turkeyCenterY - BIRD_HEIGHT / 2;
+        const dy = desiredY - bird.y;
+        const maxStep = BOAR_VERTICAL_TRACK_SPEED * dt;
+        if (Math.abs(dy) <= maxStep) {
+            bird.y = desiredY;
+        } else {
+            bird.y += Math.sign(dy) * maxStep;
+        }
+        const minY = 0;
+        const maxY = GROUND_Y - BIRD_HEIGHT;
+        bird.y = Math.max(minY, Math.min(bird.y, maxY));
+        return;
+    }
+    bird.x -= BOAR_DASH_X_SPEED * dt;
+}
+
+function shouldLockGrackleStartFrame(bird) {
+    if (bird.type !== BIRD_TYPE_GRACKLE) return false;
+    if (bird.animator.currentAnim !== 'birdStart') return false;
+    if (bird.state === STATE_WARNING) return true;
+    return bird.state === STATE_ACTIVE && bird.trackingTimer < GRACKLE_TRACKING_DURATION;
 }
 
 export function isBirdOffScreen(bird) {
@@ -174,7 +218,7 @@ export function checkBirdCollision(turkeyRect, bird) {
 // -----------------------------------------------------------------------
 
 export function renderBird(ctx, bird, punchable) {
-    const useAnim = hasAnimation('birdFly');
+    const useAnim = bird.animator && hasAnimation(bird.animator.currentAnim);
 
     if (bird.state === STATE_WARNING) {
         renderWarningIndicator(ctx, bird, punchable);
@@ -198,7 +242,9 @@ export function renderBird(ctx, bird, punchable) {
         const cy = bird.y + BIRD_HEIGHT / 2;
         ctx.translate(cx, cy);
         ctx.scale(-1, 1);
-        ctx.rotate(-(bird.angle - Math.PI));
+        if (bird.type !== BIRD_TYPE_BOAR) {
+            ctx.rotate(-(bird.angle - Math.PI));
+        }
         drawAnimator(ctx, bird.animator, -BIRD_WIDTH / 2, -BIRD_HEIGHT / 2, BIRD_WIDTH, BIRD_HEIGHT);
         ctx.restore();
     } else {

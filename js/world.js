@@ -7,11 +7,14 @@ import {
     AUTO_RUN_SPEED, PIXELS_PER_METER,
     FAR_BG_PARALLAX, NEAR_BG_PARALLAX,
     TILE_SIZE, TILE_ROW_Y,
-    DEBUG_SHOW_HITBOX
+    DEBUG_SHOW_HITBOX,
+    BIOME_BEACH_START, BIOME_GRASS_START, BIOME_MOUNTAIN_START,
+    BIOME_MOON_START, BIOME_SPIRITUAL_START
 } from './config.js';
 import { getBiomeColors, getSpiritualBlend, getCurrentBiomeName } from './biome.js';
 import { getVisibleTileColumns, getGroundYAt } from './terrain.js';
 import { getTile } from './terrainTiles.js';
+import { drawAnimationFrame } from './animation.js';
 
 // Scrolling offsets (wrap around their respective layer widths)
 let farOffset = 0;
@@ -32,11 +35,43 @@ const GROUND_STRIPE_SPACING = 80;
 const GROUND_STRIPE_WIDTH = 4;
 const GROUND_HEIGHT = CANVAS_HEIGHT - GROUND_Y;
 
+// Decorative background elements (non-interactive)
+const SIGN_WIDTH = 64;
+const SIGN_HEIGHT = 76;
+const SIGN_BASE_Y = GROUND_Y - SIGN_HEIGHT + 10;
+
+const PALM_WIDTH = 128;
+const PALM_HEIGHT = 256;
+const PALM_SPACING_MIN = 220;
+const PALM_SPACING_MAX = 360;
+const PALM_COVERAGE_BUFFER = 420;
+const PALM_OFFSCREEN_MARGIN = 140;
+const PALM_FAR_PARALLAX = 0.14;
+const PALM_NEAR_PARALLAX = 0.35;
+
+const signDecor = [
+    { worldX: BIOME_BEACH_START * PIXELS_PER_METER, key: 'signBeach' },
+    { worldX: BIOME_GRASS_START * PIXELS_PER_METER, key: 'signGrass' },
+    { worldX: BIOME_MOUNTAIN_START * PIXELS_PER_METER, key: 'signMountain' },
+    { worldX: BIOME_MOON_START * PIXELS_PER_METER, key: 'signMoon' },
+    { worldX: BIOME_SPIRITUAL_START * PIXELS_PER_METER, key: 'signRealm' },
+];
+
+let farPalmDecor = [];
+let nearPalmDecor = [];
+let nextFarPalmWorldX = 0;
+let nextNearPalmWorldX = 0;
+
+function wrapOffset(value, width) {
+    return ((value % width) + width) % width;
+}
+
 export function createWorld() {
     farOffset = 0;
     nearOffset = 0;
     groundOffset = 0;
     distancePixels = 0;
+    resetDecor();
 }
 
 export function getDistanceMeters() {
@@ -47,28 +82,43 @@ export function getDistancePixels() {
     return distancePixels;
 }
 
+export function setDistanceMeters(distanceMeters) {
+    const clampedMeters = Math.max(0, distanceMeters);
+    distancePixels = clampedMeters * PIXELS_PER_METER;
+    farOffset = wrapOffset(distancePixels * FAR_BG_PARALLAX, FAR_HILL_WIDTH);
+    nearOffset = wrapOffset(distancePixels * NEAR_BG_PARALLAX, NEAR_HILL_WIDTH);
+    groundOffset = wrapOffset(distancePixels, TILE_SIZE);
+    resetDecor();
+}
+
 export function updateWorld(dt) {
     const scrollPx = AUTO_RUN_SPEED * dt;
     distancePixels += scrollPx;
     farOffset = (farOffset + scrollPx * FAR_BG_PARALLAX) % FAR_HILL_WIDTH;
     nearOffset = (nearOffset + scrollPx * NEAR_BG_PARALLAX) % NEAR_HILL_WIDTH;
     groundOffset = (groundOffset + scrollPx) % TILE_SIZE;
+
+    ensurePalmCoverage();
+    cullPalmDecor(farPalmDecor);
+    cullPalmDecor(nearPalmDecor);
 }
 
 export function renderWorld(ctx) {
     const distMeters = Math.floor(distancePixels / PIXELS_PER_METER);
     const colors = getBiomeColors(distMeters);
+    const spiritBlend = getSpiritualBlend(distMeters);
 
     renderSky(ctx, colors.sky);
-    renderFarHills(ctx, colors.farBg);
-    renderNearHills(ctx, colors.nearBg);
-    renderGroundBase(ctx, colors.ground);
-
-    // Spiritual realm: floating geometry fades in during transition
-    const spiritBlend = getSpiritualBlend(distMeters);
+    // Draw crazy lvl5 backdrop first so all parallax/decor/terrain layers sit above it.
     if (spiritBlend > 0) {
         renderSpiritualEffects(ctx, spiritBlend);
     }
+    renderFarHills(ctx, colors.farBg);
+    renderPalmDecor(ctx, farPalmDecor);
+    renderNearHills(ctx, colors.nearBg);
+    renderPalmDecor(ctx, nearPalmDecor);
+    renderBiomeSigns(ctx);
+    renderGroundBase(ctx, colors.ground);
 }
 
 export function renderWorldTerrain(ctx) {
@@ -160,6 +210,135 @@ function renderGroundTerrain(ctx) {
         ctx.stroke();
         ctx.setLineDash([]);
         ctx.restore();
+    }
+}
+
+function resetDecor() {
+    farPalmDecor = [];
+    nearPalmDecor = [];
+    nextFarPalmWorldX = -CANVAS_WIDTH * 0.6;
+    nextNearPalmWorldX = -CANVAS_WIDTH * 0.3;
+    ensurePalmCoverage();
+}
+
+function hash01(value) {
+    const s = Math.sin(value * 12.9898 + 78.233) * 43758.5453;
+    return s - Math.floor(s);
+}
+
+function lerp(a, b, t) {
+    return a + (b - a) * t;
+}
+
+function getPalmKeyForBiome(biomeName) {
+    // One assigned palm style per biome (non-random mapping).
+    if (biomeName === 'beach') return 'palmDefault';
+    if (biomeName === 'grass') return 'palmDefault';
+    if (biomeName === 'mountain') return 'palmSnow';
+    if (biomeName === 'moon') return 'palmDome';
+    if (biomeName === 'spiritual') return 'palmInverted';
+    return 'palmDefault';
+}
+
+function createPalmDecor(worldX, lane) {
+    const isFar = lane === 'far';
+    const biome = getCurrentBiomeName(Math.floor(worldX / PIXELS_PER_METER));
+    const key = getPalmKeyForBiome(biome);
+
+    const scale = isFar ? 0.5 : 1.0;
+
+    const h = Math.round(PALM_HEIGHT * scale);
+    const w = Math.round(PALM_WIDTH * scale);
+    const yJitter = Math.round(lerp(-8, 10, hash01(worldX * 0.01 + (isFar ? 1.0 : 3.0))));
+    const y = GROUND_Y - h + (isFar ? -10 : 10) + yJitter;
+
+    return {
+        worldX,
+        key,
+        width: w,
+        height: h,
+        y,
+        parallax: isFar ? PALM_FAR_PARALLAX : PALM_NEAR_PARALLAX,
+        alpha: isFar ? 0.72 : 0.9,
+    };
+}
+
+function nextPalmSpacing(worldX, lane) {
+    const t = hash01(worldX * 0.008 + (lane === 'far' ? 1.7 : 9.4));
+    return Math.round(lerp(PALM_SPACING_MIN, PALM_SPACING_MAX, t));
+}
+
+function getPalmTargetWorldX(parallax) {
+    return distancePixels * parallax + CANVAS_WIDTH + PALM_COVERAGE_BUFFER;
+}
+
+function ensurePalmCoverage() {
+    const farTarget = getPalmTargetWorldX(PALM_FAR_PARALLAX);
+    const nearTarget = getPalmTargetWorldX(PALM_NEAR_PARALLAX);
+
+    while (nextFarPalmWorldX < farTarget) {
+        farPalmDecor.push(createPalmDecor(nextFarPalmWorldX, 'far'));
+        nextFarPalmWorldX += nextPalmSpacing(nextFarPalmWorldX, 'far');
+    }
+    while (nextNearPalmWorldX < nearTarget) {
+        nearPalmDecor.push(createPalmDecor(nextNearPalmWorldX, 'near'));
+        nextNearPalmWorldX += nextPalmSpacing(nextNearPalmWorldX, 'near');
+    }
+}
+
+function getDecorScreenX(worldX, parallax) {
+    return worldX - distancePixels * parallax;
+}
+
+function cullPalmDecor(palms) {
+    while (palms.length > 0) {
+        const first = palms[0];
+        const x = getDecorScreenX(first.worldX, first.parallax);
+        if (x + first.width < -PALM_OFFSCREEN_MARGIN) {
+            palms.shift();
+            continue;
+        }
+        break;
+    }
+}
+
+function renderPalmDecor(ctx, palms) {
+    for (const palm of palms) {
+        const x = getDecorScreenX(palm.worldX, palm.parallax);
+        if (x > CANVAS_WIDTH + PALM_OFFSCREEN_MARGIN) continue;
+        if (x + palm.width < -PALM_OFFSCREEN_MARGIN) continue;
+
+        ctx.save();
+        ctx.globalAlpha = palm.alpha;
+        drawAnimationFrame(
+            ctx,
+            palm.key,
+            0,
+            Math.round(x),
+            Math.round(palm.y),
+            palm.width,
+            palm.height
+        );
+        ctx.restore();
+    }
+}
+
+function renderBiomeSigns(ctx) {
+    for (const sign of signDecor) {
+        const x = sign.worldX - distancePixels;
+        if (x > CANVAS_WIDTH + 24) continue;
+        if (x + SIGN_WIDTH < -24) continue;
+        const signGroundY = getGroundYAt(x + SIGN_WIDTH / 2);
+        const signY = Math.round(signGroundY - SIGN_HEIGHT + 10);
+        drawAnimationFrame(
+            ctx,
+            sign.key,
+            0,
+            Math.round(x),
+            signY,
+            SIGN_WIDTH,
+            SIGN_HEIGHT
+        );
     }
 }
 
