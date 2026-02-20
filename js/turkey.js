@@ -155,7 +155,23 @@ export function playHatchAnimation(turkey, onComplete) {
     });
 }
 
+let invulnTime = 0;
+
+export function updateInvulnEffect(dt, isInvuln) {
+    if (isInvuln) {
+        invulnTime += dt;
+    } else {
+        invulnTime = 0;
+    }
+}
+
 export function renderTurkey(ctx, turkey) {
+    const invuln = invulnTime > 0;
+    if (invuln) {
+        const blink = Math.sin(invulnTime * 16) * 0.5 + 0.5;
+        ctx.globalAlpha = 0.4 + blink * 0.6;
+    }
+
     if (turkey.animator.currentAnim) {
         drawAnimator(ctx, turkey.animator,
             turkey.x, turkey.y,
@@ -163,6 +179,14 @@ export function renderTurkey(ctx, turkey) {
     } else {
         ctx.fillStyle = TURKEY_COLOR;
         ctx.fillRect(turkey.x, turkey.y, PLAYER_RENDER_WIDTH, PLAYER_RENDER_HEIGHT);
+    }
+
+    if (invuln) {
+        const pulse = Math.sin(invulnTime * 8) * 0.3 + 0.3;
+        ctx.globalAlpha = pulse;
+        ctx.fillStyle = '#44FFFF';
+        ctx.fillRect(turkey.x, turkey.y, PLAYER_RENDER_WIDTH, PLAYER_RENDER_HEIGHT);
+        ctx.globalAlpha = 1;
     }
 
     if (DEBUG_SHOW_HITBOX) {

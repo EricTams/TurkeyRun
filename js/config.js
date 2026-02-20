@@ -106,11 +106,12 @@ export const SMALL_ASTEROID_SIZE = 36;
 export const MEDIUM_ASTEROID_SIZE = 50;
 export const LARGE_ASTEROID_SIZE = 72;
 export const PUFFERFISH_SIZE = 180;
-export const PUFFERFISH_ROTATE_SPEED = 0.4; // radians per second
+export const PUFFERFISH_ROTATE_SPEED = 0.4;  // radians per second
+export const ASTEROID_ROTATE_SPEED = 0.8;    // radians per second (faster tumble)
 
-// Sky blocker (pufferfish) Y bounds (used by generator, kept here for reference)
-export const PUFFERFISH_Y_MIN = 20;
-export const PUFFERFISH_Y_MAX = 250;
+// Sky blocker Y bounds (used by generator only, kept here for reference)
+export const SKY_BLOCKER_Y_MIN = 20;
+export const SKY_BLOCKER_Y_MAX = 330;
 
 // Biome progression (distance in meters)
 export const BIOME_BEACH_START = 0;

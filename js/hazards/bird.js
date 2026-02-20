@@ -21,6 +21,69 @@ const WARNING_ARROW_X = 12;            // inset from right edge
 
 const STATE_WARNING = 'warning';
 const STATE_ACTIVE = 'active';
+const STATE_PUNCHED = 'punched';
+
+let punchedBirds = [];
+
+export function punchBird(bird) {
+    bird.state = STATE_PUNCHED;
+    bird.punchVY = -600;
+    bird.punchSpin = 0;
+    bird.punchTimer = 0;
+    punchedBirds.push(bird);
+}
+
+export function updatePunchedBirds(dt) {
+    for (const b of punchedBirds) {
+        b.punchTimer += dt;
+        b.punchVY += 1200 * dt;
+        b.y += b.punchVY * dt;
+        b.x += 60 * dt;
+        b.punchSpin += 12 * dt;
+    }
+    punchedBirds = punchedBirds.filter(b => b.y < GROUND_Y + 400);
+}
+
+export function renderPunchedBirds(ctx) {
+    const useAnim = hasAnimation('birdFly');
+    for (const b of punchedBirds) {
+        ctx.save();
+        const cx = b.x + BIRD_WIDTH / 2;
+        const cy = b.y + BIRD_HEIGHT / 2;
+        ctx.translate(cx, cy);
+        ctx.rotate(b.punchSpin);
+        const scale = 1 + b.punchTimer * 0.5;
+        ctx.scale(scale, scale);
+        ctx.globalAlpha = Math.max(0, 1 - b.punchTimer * 0.6);
+        if (useAnim) {
+            drawAnimator(ctx, b.animator, -BIRD_WIDTH / 2, -BIRD_HEIGHT / 2, BIRD_WIDTH, BIRD_HEIGHT);
+        } else {
+            ctx.fillStyle = BIRD_COLOR;
+            ctx.fillRect(-BIRD_WIDTH / 2, -BIRD_HEIGHT / 2, BIRD_WIDTH, BIRD_HEIGHT);
+        }
+        ctx.restore();
+
+        // "PUNCHED!" text that follows the tumbling bird
+        const alpha = Math.max(0, 1 - b.punchTimer * 0.6);
+        if (alpha > 0) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+            ctx.font = 'bold 16px monospace';
+            ctx.fillStyle = '#FF6600';
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 3;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            ctx.strokeText('PUNCHED!', b.x + BIRD_WIDTH / 2, b.y - 4);
+            ctx.fillText('PUNCHED!', b.x + BIRD_WIDTH / 2, b.y - 4);
+            ctx.restore();
+        }
+    }
+}
+
+export function resetPunchedBirds() {
+    punchedBirds = [];
+}
 
 // -----------------------------------------------------------------------
 // Create / update / cull
@@ -41,6 +104,8 @@ export function createBird(targetY) {
 }
 
 export function updateBird(bird, dt, turkeyCenterX, turkeyCenterY) {
+    if (bird.state === STATE_PUNCHED) return;
+
     updateAnimator(bird.animator, dt);
 
     if (bird.state === STATE_WARNING) {
@@ -85,6 +150,7 @@ export function updateBird(bird, dt, turkeyCenterX, turkeyCenterY) {
 
 export function isBirdOffScreen(bird) {
     if (bird.state === STATE_WARNING) return false;
+    if (bird.state === STATE_PUNCHED) return true;
     return bird.x + BIRD_WIDTH < -80 ||
            bird.x > CANVAS_WIDTH + 200 ||
            bird.y + BIRD_HEIGHT < -120 ||
@@ -107,13 +173,11 @@ export function checkBirdCollision(turkeyRect, bird) {
 // Rendering
 // -----------------------------------------------------------------------
 
-export function renderBird(ctx, bird) {
+export function renderBird(ctx, bird, punchable) {
     const useAnim = hasAnimation('birdFly');
 
     if (bird.state === STATE_WARNING) {
-        renderWarningIndicator(ctx, bird);
-        // Draw the bird start animation peeking in from the right edge, flipped
-        // so the beak points left (toward the player).
+        renderWarningIndicator(ctx, bird, punchable);
         if (useAnim) {
             const peekX = CANVAS_WIDTH - 10;
             const peekY = bird.y;
@@ -126,10 +190,9 @@ export function renderBird(ctx, bird) {
         return;
     }
 
+    if (bird.state === STATE_PUNCHED) return;
+
     if (useAnim) {
-        // Draw the flying bird rotated to match its heading angle.
-        // The sprite art faces right; scale(-1,1) flips it to face left,
-        // then rotation adjusts from that leftward baseline.
         ctx.save();
         const cx = bird.x + BIRD_WIDTH / 2;
         const cy = bird.y + BIRD_HEIGHT / 2;
@@ -139,22 +202,34 @@ export function renderBird(ctx, bird) {
         drawAnimator(ctx, bird.animator, -BIRD_WIDTH / 2, -BIRD_HEIGHT / 2, BIRD_WIDTH, BIRD_HEIGHT);
         ctx.restore();
     } else {
-        // Fallback colored rectangle
         ctx.fillStyle = BIRD_COLOR;
         ctx.fillRect(bird.x, bird.y, BIRD_WIDTH, BIRD_HEIGHT);
     }
+
+    if (punchable) {
+        ctx.save();
+        ctx.font = 'bold 20px monospace';
+        ctx.fillStyle = '#FF6600';
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 3;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        const starX = bird.x + BIRD_WIDTH / 2;
+        const starY = bird.y - 2;
+        ctx.strokeText('*', starX, starY);
+        ctx.fillText('*', starX, starY);
+        ctx.restore();
+    }
 }
 
-function renderWarningIndicator(ctx, bird) {
-    // Flash on/off using a sine wave
+function renderWarningIndicator(ctx, bird, punchable) {
     const flash = Math.sin(bird.warningTimer * WARNING_FLASH_RATE * Math.PI * 2);
-    if (flash < 0) return; // invisible half of cycle
+    if (flash < 0) return;
 
     const centerY = bird.y + BIRD_HEIGHT / 2;
     const arrowTipX = CANVAS_WIDTH - WARNING_ARROW_X;
 
-    // Red triangle pointing left (indicating incoming threat)
-    ctx.fillStyle = WARNING_COLOR;
+    ctx.fillStyle = punchable ? '#FF6600' : WARNING_COLOR;
     ctx.beginPath();
     ctx.moveTo(arrowTipX, centerY);
     ctx.lineTo(arrowTipX - WARNING_ARROW_SIZE, centerY - WARNING_ARROW_SIZE);
@@ -162,9 +237,8 @@ function renderWarningIndicator(ctx, bird) {
     ctx.closePath();
     ctx.fill();
 
-    // Exclamation mark beside arrow
     ctx.font = 'bold 16px monospace';
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
-    ctx.fillText('!', arrowTipX - WARNING_ARROW_SIZE - 4, centerY);
+    ctx.fillText(punchable ? '*' : '!', arrowTipX - WARNING_ARROW_SIZE - 4, centerY);
 }

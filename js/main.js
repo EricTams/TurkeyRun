@@ -24,7 +24,8 @@ import {
     createTurkey, resetTurkey, renderTurkey,
     getTurkeyHitbox, updateTurkeyAnimation,
     playDeathAnimation, setEggState, playHatchAnimation,
-    setTurkeyFallAnimation, isTurkeyOnGround
+    setTurkeyFallAnimation, isTurkeyOnGround,
+    updateInvulnEffect
 } from './turkey.js';
 import {
     updateAnimator,
@@ -39,7 +40,7 @@ import { loadAll } from './sprites.js';
 import { createWorld, updateWorld, renderWorld, renderWorldTerrain, getDistanceMeters, getDistancePixels } from './world.js';
 import { renderHud, isPauseButtonClick, isMuteButtonClick } from './hud.js';
 import { loadMusic, playMusic, pauseMusic, stopMusic, toggleMute, playSfx, playGobble } from './audio.js';
-import { renderGroundHazard, checkGroundHazardCollision } from './hazards/groundHazard.js';
+import { renderGroundHazard, checkGroundHazardCollision, isIguana, punchHazard } from './hazards/groundHazard.js';
 import { renderSkyBlocker, checkSkyBlockerCollision } from './hazards/skyBlocker.js';
 import { renderZapper, checkZapperCollision } from './hazards/zapper.js';
 import { renderBird, checkBirdCollision } from './hazards/bird.js';
@@ -72,19 +73,18 @@ import {
     setEquippedGadgets, setGadgetLevels, resetGadgetRunState,
     hasShieldHit, consumeShieldHit, isShieldInvulnerable, shieldHitsRemaining,
     trySecondWind,
-    getTotalCoinMultiplier, getStreakTotalBonus,
-    rollGemologist, rollJackpot,
-    onFoodCollected,
-    updateGadgetTimers, isFlashInvulnerable, getLaserGraceTime,
-    getAdrenalineMult
+    hasIguanaPunch, consumeIguanaPunch,
+    isSecondChanceEquipped, getSecondChanceDuration,
+    getTotalCoinMultiplier,
+    updateGadgetTimers, isFlashInvulnerable, getLaserGraceTime
 } from './meta/gadgets.js';
 import {
     setPassiveTiers, getToughFeathersTier, computePassiveBonusCoins,
-    getSecondChanceTier, getSecondChanceDuration,
     getNestEggBonusPct, getPartingGiftPct,
     getHitboxShrinkFactor, getMagnetMultiplier, doesFoodDrift,
     getCoinDoublerMult, getCompoundMult, updateCompound,
-    updateMoneyGrubber, getMoneyGrubberTotal, resetCompound, resetMoneyGrubber
+    updateMoneyGrubber, getMoneyGrubberTotal, resetCompound, resetMoneyGrubber,
+    getStreakTotalBonus, resetStreak, resetBounty
 } from './meta/passives.js';
 import { announce, startCountdown, stopCountdown, updateEffects, renderEffects, resetEffects, setPlayerPos } from './meta/gadgetEffects.js';
 import {
@@ -135,6 +135,11 @@ function checkCollisions() {
     const turkeyRect = getTurkeyHitbox(turkey);
     for (const hazard of getHazards()) {
         if (checkGroundHazardCollision(turkeyRect, hazard)) {
+            if (isIguana(hazard) && hasIguanaPunch()) {
+                consumeIguanaPunch();
+                punchHazard(hazard);
+                continue;
+            }
             return true;
         }
     }
@@ -239,7 +244,6 @@ function finishDeathSequence() {
 
     const coinDoublerM = getCoinDoublerMult();
     const compoundM = getCompoundMult();
-    const adrenalineM = getAdrenalineMult();
     const nestPct = getNestEggBonusPct();
 
     if (coinDoublerM > 1) {
@@ -251,11 +255,6 @@ function finishDeathSequence() {
         const before = running;
         running = Math.floor(running * compoundM);
         runBreakdown.push({ label: 'Compound', value: running - before, color: '#88DDFF', prefix: '+', note: `x${compoundM.toFixed(1)}` });
-    }
-    if (adrenalineM > 1) {
-        const before = running;
-        running = Math.floor(running * adrenalineM);
-        runBreakdown.push({ label: 'Adrenaline', value: running - before, color: '#FF4444', prefix: '+', note: `x${adrenalineM}` });
     }
     if (nestPct > 0) {
         const nestBonus = Math.floor(running * nestPct / 100);
@@ -344,6 +343,8 @@ function applyMetaProgression() {
     resetGadgetRunState(getToughFeathersTier());
     resetCompound();
     resetMoneyGrubber();
+    resetStreak();
+    resetBounty();
 }
 
 // Second Chance passive: invuln pulse tracking
@@ -502,7 +503,7 @@ function update(dt) {
         updateEffects(dt);
 
         // Money Grubber: passive coin generation (tracked in passives.js)
-        const grubberEarned = updateMoneyGrubber(dt);
+        const grubberEarned = updateMoneyGrubber(dt, isTurkeyOnGround(turkey));
         if (grubberEarned > 0) {
             announce(`+${grubberEarned} GRUB`, '#88DDFF');
         }
@@ -515,9 +516,8 @@ function update(dt) {
             announce(`COMPOUND +${(newCompound - prevCompound).toFixed(1)}x`, '#88DDFF');
         }
 
-        // Second Chance passive: invuln pulse every 500m
-        const scTier = getSecondChanceTier();
-        if (scTier > 0 && getDistanceMeters() >= secondChanceNextDist) {
+        // Second Chance gadget: invuln pulse every 500m
+        if (isSecondChanceEquipped() && getDistanceMeters() >= secondChanceNextDist) {
             secondChanceInvulnTimer = getSecondChanceDuration();
             secondChanceNextDist += 500;
             startCountdown('secondChance', 'SAFE', secondChanceInvulnTimer, '#44FF44');
@@ -546,18 +546,18 @@ function update(dt) {
             }
         }
 
+        const isInvuln = secondChanceInvulnTimer > 0 || isFlashInvulnerable() || isShieldInvulnerable();
+        updateInvulnEffect(dt, isInvuln);
+
         if (checkCollisions()) {
-            if (secondChanceInvulnTimer > 0 || isFlashInvulnerable() || isShieldInvulnerable()) {
+            if (isInvuln) {
                 // Invulnerable -- skip death (i-frames active)
             } else if (hasShieldHit()) {
                 consumeShieldHit();
                 playSfx('crunch');
                 const remaining = shieldHitsRemaining();
-                if (remaining > 0) {
-                    announce(`SHIELD! ${remaining} LEFT`, '#44AAFF');
-                } else {
-                    announce('LAST SHIELD!', '#FF4444');
-                }
+                const noun = remaining === 1 ? 'Shield' : 'Shields';
+                announce(`${remaining} ${noun} Left`, remaining === 0 ? '#FF4444' : '#44AAFF');
                 startCountdown('shieldIframes', 'IMMUNE', 1.0, '#44AAFF');
             } else if (trySecondWind()) {
                 // announce fires inside trySecondWind()
@@ -803,14 +803,15 @@ function render() {
 
     if (gameState === PLAYING || gameState === PAUSED ||
         gameState === DYING || gameState === DEAD) {
+        const canPunch = hasIguanaPunch();
         for (const hazard of getHazards()) {
-            renderGroundHazard(ctx, hazard);
+            renderGroundHazard(ctx, hazard, canPunch);
         }
         for (const sb of getSkyBlockers()) {
             renderSkyBlocker(ctx, sb);
         }
         for (const bird of getBirds()) {
-            renderBird(ctx, bird);
+            renderBird(ctx, bird, false);
         }
         for (const laser of getLasers()) {
             renderLaser(ctx, laser);

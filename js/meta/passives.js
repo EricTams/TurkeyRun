@@ -1,6 +1,8 @@
 // Passive upgrade runtime. Passives are always active once purchased.
 // Tiers are derived from purchasedNodes in save data.
 
+import { announce } from './gadgetEffects.js';
+
 let passiveTiers = {};  // passiveId -> current tier (1-indexed, 0 = not owned)
 
 export function setPassiveTiers(tiers) {
@@ -35,16 +37,6 @@ export function getToughFeathersTier() {
     return getTier('toughFeathers'); // 0/1/2/3
 }
 
-// --- Second Chance: invuln pulse every 500m ---
-export function getSecondChanceTier() {
-    return getTier('secondChance'); // 0/1/2/3
-}
-
-export function getSecondChanceDuration() {
-    const t = getTier('secondChance');
-    if (t === 0) return 0;
-    return [0, 2, 3, 4][t];
-}
 
 // --- Ezy-Dodge: hitbox shrink ---
 export function getHitboxShrinkFactor() {
@@ -99,10 +91,11 @@ export function resetCompound() {
 let moneyGrubberTimer = 0;
 let moneyGrubberTotal = 0;
 
-export function updateMoneyGrubber(dt) {
+export function updateMoneyGrubber(dt, onGround) {
     const t = getTier('moneyGrubber');
     if (t === 0) return 0;
-    const interval = [0, 3, 2, 1.5][t];
+    if (!onGround) return 0;
+    const interval = [0, 1.5, 1, 0.75][t];
     moneyGrubberTimer += dt;
     let earned = 0;
     while (moneyGrubberTimer >= interval) {
@@ -123,6 +116,105 @@ export function getMoneyGrubberTotal() {
 export function resetMoneyGrubber() {
     moneyGrubberTimer = 0;
     moneyGrubberTotal = 0;
+}
+
+// --- Gemologist: chance for high-value food ---
+export function rollGemologist() {
+    const t = getTier('gemologist');
+    if (t === 0) return 1;
+    const chance = [0, 0.05, 0.10, 0.15][t];
+    const mult = t >= 3 ? 8 : 5;
+    const hit = Math.random() < chance;
+    if (hit) {
+        console.log(`[Gemologist] Proc! Food worth ${mult}x`);
+        announce(`GEM! ${mult}x`, '#FF44FF');
+    }
+    return hit ? mult : 1;
+}
+
+// --- Streak Master: rolling 5s window bonus on consecutive food pickups ---
+const STREAK_WINDOW = 5;
+let streakCount = 0;
+let streakTotalBonus = 0;
+let streakRecentCoins = [];
+
+export function onFoodCollected(coinValue) {
+    const now = performance.now() / 1000;
+    streakRecentCoins.push({ value: coinValue, time: now });
+    streakRecentCoins = streakRecentCoins.filter(e => now - e.time <= STREAK_WINDOW);
+    streakCount++;
+
+    const windowTotal = streakRecentCoins.reduce((s, e) => s + e.value, 0);
+    const t = getTier('streakMaster');
+    if (t === 0) return 0;
+
+    const threshold = [0, 10, 7, 5][t];
+    if (streakCount >= threshold) {
+        const bonusPct = t >= 3 ? 0.5 : 0.25;
+        const bonus = Math.floor(windowTotal * bonusPct);
+        streakTotalBonus += bonus;
+        console.log(`[Streak Master] FIRED — ${threshold}-streak! +${bonus}`);
+        announce(`${threshold} STREAK! +${bonus}`, '#FFDD44');
+        streakCount = 0;
+        return bonus;
+    }
+    return 0;
+}
+
+export function onFoodMissed() {
+    streakCount = 0;
+}
+
+export function getStreakTotalBonus() {
+    return streakTotalBonus;
+}
+
+export function resetStreak() {
+    streakCount = 0;
+    streakTotalBonus = 0;
+    streakRecentCoins = [];
+}
+
+// --- Bounty Hunter: near-miss coin rewards ---
+let lastNearMissTime = 0;
+let nearMissChain = 0;
+
+export function onNearMiss(currentTime) {
+    const t = getTier('bountyHunter');
+    if (t === 0) return 0;
+    const basePayout = [0, 2, 4, 4][t];
+    if (t >= 3 && currentTime - lastNearMissTime < 2) {
+        nearMissChain++;
+    } else {
+        nearMissChain = 1;
+    }
+    lastNearMissTime = currentTime;
+    const payout = basePayout * nearMissChain;
+    if (nearMissChain > 1) {
+        announce(`BOUNTY x${nearMissChain}! +${payout}`, '#FFAA00');
+    } else {
+        announce(`+${payout} BOUNTY`, '#FFAA00');
+    }
+    return payout;
+}
+
+export function resetBounty() {
+    lastNearMissTime = 0;
+    nearMissChain = 0;
+}
+
+// --- Jackpot: chance for massive food payout ---
+export function rollJackpot() {
+    const t = getTier('jackpot');
+    if (t === 0) return 1;
+    const chance = [0, 0.03, 0.05, 0.07][t];
+    const mult = t >= 3 ? 30 : 20;
+    const hit = Math.random() < chance;
+    if (hit) {
+        console.log(`[Jackpot] JACKPOT! ${mult}x payout!`);
+        announce(`JACKPOT! ${mult}x`, '#FFD700');
+    }
+    return hit ? mult : 1;
 }
 
 // Compute bonus coins from passives at end of run

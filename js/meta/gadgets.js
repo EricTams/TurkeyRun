@@ -11,11 +11,7 @@ let gadgetLevels = {};    // gadgetId -> 0-based level (0=Lv1, 1=Lv2, 2=Lv3)
 let shieldHits = 0;
 let shieldInvulnTimer = 0;
 const SHIELD_INVULN_DURATION = 1.0; // 1 second of i-frames after absorbing a hit
-let streakCount = 0;
-let streakTotalBonus = 0;
-let streakRecentCoins = [];  // { value, time } — rolling 5s window, never manually cleared
-let adrenalineTimer = 0;
-let adrenalineMult = 1;
+let iguanaPunches = 0;
 let decoyTimer = 0;
 let flashInvulnTimer = 0;
 let secondWindUsed = false;
@@ -49,15 +45,12 @@ export function resetGadgetRunState(toughFeathersTier) {
     const shieldLv = equippedLevel('shield');
     shieldHits = (shieldLv >= 0 ? shieldLv + 1 : 0) + toughFeathersTier;
     shieldInvulnTimer = 0;
-    streakCount = 0;
-    streakTotalBonus = 0;
-    streakRecentCoins = [];
-    adrenalineTimer = 0;
-    adrenalineMult = 1;
     decoyTimer = 0;
     flashInvulnTimer = 0;
     secondWindUsed = false;
-    console.log(`[Gadgets] Run start — shield hits: ${shieldHits}, equipped: [${equippedGadgets.join(', ')}]`);
+    const punchLv = equippedLevel('iguanaPuncher');
+    iguanaPunches = punchLv >= 0 ? [10, 20, Infinity][punchLv] : 0;
+    console.log(`[Gadgets] Run start — shield hits: ${shieldHits}, iguana punches: ${iguanaPunches}, equipped: [${equippedGadgets.join(', ')}]`);
 }
 
 // --- Shield ---
@@ -75,13 +68,6 @@ export function consumeShieldHit() {
         shieldHits--;
         shieldInvulnTimer = SHIELD_INVULN_DURATION;
         console.log(`[Shield] Hit absorbed! ${shieldHits} hits remaining, ${SHIELD_INVULN_DURATION}s i-frames`);
-        const adLv = equippedLevel('adrenaline');
-        if (adLv >= 0) {
-            adrenalineTimer = [3, 4, 5][adLv];
-            adrenalineMult = adLv >= 2 ? 3 : 2;
-            console.log(`[Adrenaline] Triggered: ${adrenalineMult}x coins for ${adrenalineTimer}s`);
-            announce(`ADRENALINE ${adrenalineMult}x`, '#FF4444');
-        }
         return true;
     }
     return false;
@@ -89,6 +75,18 @@ export function consumeShieldHit() {
 
 export function isShieldInvulnerable() {
     return shieldInvulnTimer > 0;
+}
+
+// --- Second Chance (distance-based invuln pulse) ---
+
+export function getSecondChanceDuration() {
+    const lv = equippedLevel('secondChance');
+    if (lv < 0) return 0;
+    return [16, 24, 32][lv];
+}
+
+export function isSecondChanceEquipped() {
+    return equippedLevel('secondChance') >= 0;
 }
 
 // --- Second Wind (revive chance) ---
@@ -109,100 +107,25 @@ export function trySecondWind() {
     return false;
 }
 
-// --- Gemologist ---
+// --- Iguana Puncher ---
 
-export function rollGemologist() {
-    const lv = equippedLevel('gemologist');
-    if (lv < 0) return 1;
-    const chance = [0.05, 0.10, 0.15][lv];
-    const mult = lv >= 2 ? 8 : 5;
-    const hit = Math.random() < chance;
-    if (hit) {
-        console.log(`[Gemologist] Proc! Food worth ${mult}x`);
-        announce(`GEM! ${mult}x`, '#FF44FF');
-    }
-    return hit ? mult : 1;
+export function hasIguanaPunch() {
+    return iguanaPunches > 0;
 }
 
-// --- Streak Master ---
-// Rolling 5-second window tracks coin values. When the consecutive-collect
-// threshold is reached, bonus = percentage of everything in that window.
-// The window is NEVER manually cleared — it self-manages via time pruning.
-
-const STREAK_WINDOW = 5;
-
-export function onFoodCollected(coinValue) {
-    const now = performance.now() / 1000;
-    streakRecentCoins.push({ value: coinValue, time: now });
-    streakRecentCoins = streakRecentCoins.filter(e => now - e.time <= STREAK_WINDOW);
-    streakCount++;
-
-    const windowTotal = streakRecentCoins.reduce((s, e) => s + e.value, 0);
-    const windowCount = streakRecentCoins.length;
-    console.log(`[Streak] food +${coinValue}, streak: ${streakCount}, window: ${windowCount} items / ${windowTotal} coins (last ${STREAK_WINDOW}s), lv: ${equippedLevel('streakMaster')}`);
-
-    const lv = equippedLevel('streakMaster');
-    if (lv < 0) return 0;
-
-    const threshold = [10, 7, 5][lv];
-    if (streakCount >= threshold) {
-        const bonusPct = lv >= 2 ? 0.5 : 0.25;
-        const bonus = Math.floor(windowTotal * bonusPct);
-        streakTotalBonus += bonus;
-        console.log(`[Streak Master] FIRED — ${threshold}-streak! ${Math.round(bonusPct * 100)}% of ${windowTotal} coins (${windowCount} items in window) = +${bonus}, runTotal now ${streakTotalBonus}`);
-        announce(`${threshold} STREAK! +${bonus}`, '#FFDD44');
-        streakCount = 0;
-        return bonus;
-    }
-    return 0;
+export function iguanaPunchesRemaining() {
+    return iguanaPunches;
 }
 
-export function onFoodMissed() {
-    console.log(`[Streak] MISSED — streak broken at ${streakCount}`);
-    streakCount = 0;
-}
-
-export function getStreakTotalBonus() {
-    return streakTotalBonus;
-}
-
-// --- Bounty Hunter (near-miss coins) ---
-
-let lastNearMissTime = 0;
-let nearMissChain = 0;
-
-export function onNearMiss(currentTime) {
-    const lv = equippedLevel('bountyHunter');
-    if (lv < 0) return 0;
-    const basePayout = [2, 4, 4][lv];
-    if (lv >= 2 && currentTime - lastNearMissTime < 2) {
-        nearMissChain++;
-    } else {
-        nearMissChain = 1;
+export function consumeIguanaPunch() {
+    if (iguanaPunches > 0) {
+        if (iguanaPunches !== Infinity) iguanaPunches--;
+        const remaining = iguanaPunches === Infinity ? '∞' : iguanaPunches;
+        console.log(`[Iguana Puncher] PUNCH! ${remaining} punches remaining`);
+        announce('IGUANA PUNCH!', '#FF6600');
+        return true;
     }
-    lastNearMissTime = currentTime;
-    const payout = basePayout * nearMissChain;
-    if (nearMissChain > 1) {
-        announce(`BOUNTY x${nearMissChain}! +${payout}`, '#FFAA00');
-    } else {
-        announce(`+${payout} BOUNTY`, '#FFAA00');
-    }
-    return payout;
-}
-
-// --- Jackpot ---
-
-export function rollJackpot() {
-    const lv = equippedLevel('jackpot');
-    if (lv < 0) return 1;
-    const chance = [0.03, 0.05, 0.07][lv];
-    const mult = lv >= 2 ? 30 : 20;
-    const hit = Math.random() < chance;
-    if (hit) {
-        console.log(`[Jackpot] JACKPOT! ${mult}x payout!`);
-        announce(`JACKPOT! ${mult}x`, '#FFD700');
-    }
-    return hit ? mult : 1;
+    return false;
 }
 
 // --- Hazard Jammer ---
@@ -258,18 +181,10 @@ export function tryDeployDecoy() {
     return { destroys };
 }
 
-// --- Adrenaline ---
-
-export function getAdrenalineMult() {
-    if (adrenalineTimer <= 0) return 1;
-    return adrenalineMult;
-}
-
 // --- Timers update (call each frame) ---
 
 export function updateGadgetTimers(dt) {
     if (shieldInvulnTimer > 0) shieldInvulnTimer -= dt;
-    if (adrenalineTimer > 0) adrenalineTimer -= dt;
     if (decoyTimer > 0) decoyTimer -= dt;
     if (flashInvulnTimer > 0) flashInvulnTimer -= dt;
 }
@@ -280,6 +195,5 @@ export function getTotalCoinMultiplier() {
     let mult = 1.0;
     mult *= getCoinDoublerMult();
     mult *= getCompoundMult();
-    mult *= getAdrenalineMult();
     return mult;
 }

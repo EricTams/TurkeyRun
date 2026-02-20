@@ -10,8 +10,7 @@ import { rectsOverlap } from './collision.js';
 import { getDistanceMeters } from './world.js';
 import { getBiomeFoodTypes } from './biome.js';
 import { playSfx } from './audio.js';
-import { rollGemologist, rollJackpot, onFoodCollected, onFoodMissed } from './meta/gadgets.js';
-import { getMagnetMultiplier, doesFoodDrift } from './meta/passives.js';
+import { getMagnetMultiplier, doesFoodDrift, rollGemologist, rollJackpot, onFoodCollected, onFoodMissed } from './meta/passives.js';
 
 let foods = [];
 let coins = 0;

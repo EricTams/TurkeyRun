@@ -12,7 +12,6 @@ import {
     WEIRD_PILLAR_WIDTH, WEIRD_PILLAR_HEIGHT,
     OLD_IGUANA_WIDTH, OLD_IGUANA_HEIGHT,
     TIE_DYE_IGUANA_WIDTH, TIE_DYE_IGUANA_HEIGHT,
-    SMALL_ASTEROID_SIZE, MEDIUM_ASTEROID_SIZE, LARGE_ASTEROID_SIZE
 } from '../config.js';
 import { drawSprite } from '../sprites.js';
 import {
@@ -86,27 +85,14 @@ const HAZARD_DEFS = {
     oldIguana: {
         animKey: 'oldIguanaIdle',
         w: OLD_IGUANA_WIDTH, h: OLD_IGUANA_HEIGHT,
-        fallbackColor: '#3A7D44', hitShape: 'rect'
+        fallbackColor: '#3A7D44', hitShape: 'rect',
+        flipX: true, drawScale: 1.5
     },
     tieDyeIguana: {
         animKey: 'tieDyeIguanaIdle',
         w: TIE_DYE_IGUANA_WIDTH, h: TIE_DYE_IGUANA_HEIGHT,
-        fallbackColor: '#FF44CC', hitShape: 'rect'
-    },
-    smallAsteroid: {
-        animKey: 'smallAsteroidIdle',
-        w: SMALL_ASTEROID_SIZE, h: SMALL_ASTEROID_SIZE,
-        fallbackColor: '#808080', hitShape: 'circle'
-    },
-    mediumAsteroid: {
-        animKey: 'mediumAsteroidIdle',
-        w: MEDIUM_ASTEROID_SIZE, h: MEDIUM_ASTEROID_SIZE,
-        fallbackColor: '#6A6A6A', hitShape: 'circle'
-    },
-    largeAsteroid: {
-        animKey: 'largeAsteroidIdle',
-        w: LARGE_ASTEROID_SIZE, h: LARGE_ASTEROID_SIZE,
-        fallbackColor: '#5A5A5A', hitShape: 'circle'
+        fallbackColor: '#FF44CC', hitShape: 'rect',
+        flipX: true, drawScale: 1.5
     },
 };
 
@@ -115,6 +101,7 @@ export function createGroundHazard(typeKey) {
     if (!def) throw new Error(`Unknown ground hazard type: ${typeKey}`);
 
     const hazard = {
+        typeKey,
         x: CANVAS_WIDTH,
         y: GROUND_Y - def.h,
         w: def.w,
@@ -123,7 +110,10 @@ export function createGroundHazard(typeKey) {
         animKey: def.animKey || null,
         fallbackColor: def.fallbackColor,
         hitShape: def.hitShape,
-        animator: null
+        flipX: def.flipX || false,
+        drawScale: def.drawScale || 1,
+        animator: null,
+        punched: false
     };
 
     if (def.animKey) {
@@ -135,6 +125,14 @@ export function createGroundHazard(typeKey) {
 }
 
 export function updateGroundHazard(hazard, dt) {
+    if (hazard.punched) {
+        hazard.punchTimer += dt;
+        hazard.punchVY += 1400 * dt;
+        hazard.y += hazard.punchVY * dt;
+        hazard.x += hazard.punchVX * dt;
+        hazard.punchSpin += 10 * dt;
+        return;
+    }
     hazard.x -= AUTO_RUN_SPEED * dt;
     hazard.y = getGroundYAt(hazard.x + hazard.w / 2) - hazard.h;
     if (hazard.animator) {
@@ -154,20 +152,82 @@ export function getGroundHazardHitCircle(hazard) {
     };
 }
 
+export function isIguana(hazard) {
+    return hazard.typeKey === 'oldIguana' || hazard.typeKey === 'tieDyeIguana';
+}
+
+export function punchHazard(hazard) {
+    hazard.punched = true;
+    hazard.punchVY = -500;
+    hazard.punchVX = 80;
+    hazard.punchSpin = 0;
+    hazard.punchTimer = 0;
+}
+
 export function checkGroundHazardCollision(turkeyRect, hazard) {
+    if (hazard.punched) return false;
     if (hazard.hitShape === 'circle') {
         return circleRectOverlap(getGroundHazardHitCircle(hazard), turkeyRect);
     }
-    // Default AABB -- inlined for performance (same as rectsOverlap)
     return turkeyRect.x < hazard.x + hazard.w &&
            turkeyRect.x + turkeyRect.w > hazard.x &&
            turkeyRect.y < hazard.y + hazard.h &&
            turkeyRect.y + turkeyRect.h > hazard.y;
 }
 
-export function renderGroundHazard(ctx, hazard) {
+export function renderGroundHazard(ctx, hazard, punchable) {
+    if (hazard.punched) {
+        const alpha = Math.max(0, 1 - hazard.punchTimer * 0.6);
+        if (alpha <= 0) return;
+        ctx.save();
+        const cx = hazard.x + hazard.w / 2;
+        const cy = hazard.y + hazard.h / 2;
+        ctx.translate(cx, cy);
+        ctx.rotate(hazard.punchSpin);
+        const scale = 1 + hazard.punchTimer * 0.4;
+        ctx.scale(scale, scale);
+        ctx.globalAlpha = alpha;
+        if (hazard.animator && hasAnimation(hazard.animKey)) {
+            const s = hazard.drawScale;
+            const dw = hazard.w * s;
+            const dh = hazard.h * s;
+            if (hazard.flipX) ctx.scale(-1, 1);
+            drawAnimator(ctx, hazard.animator, -dw / 2, -dh / 2, dw, dh);
+        } else {
+            ctx.fillStyle = hazard.fallbackColor;
+            ctx.fillRect(-hazard.w / 2, -hazard.h / 2, hazard.w, hazard.h);
+        }
+        ctx.restore();
+
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.font = 'bold 16px monospace';
+        ctx.fillStyle = '#FF6600';
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 3;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.strokeText('PUNCHED!', hazard.x + hazard.w / 2, hazard.y - 4);
+        ctx.fillText('PUNCHED!', hazard.x + hazard.w / 2, hazard.y - 4);
+        ctx.restore();
+        return;
+    }
+
     if (hazard.animator && hasAnimation(hazard.animKey)) {
-        drawAnimator(ctx, hazard.animator, hazard.x, hazard.y, hazard.w, hazard.h);
+        if (hazard.flipX || hazard.drawScale !== 1) {
+            ctx.save();
+            const cx = hazard.x + hazard.w / 2;
+            const cy = hazard.y + hazard.h / 2;
+            const s = hazard.drawScale;
+            const dw = hazard.w * s;
+            const dh = hazard.h * s;
+            ctx.translate(cx, cy);
+            if (hazard.flipX) ctx.scale(-1, 1);
+            drawAnimator(ctx, hazard.animator, -dw / 2, -dh / 2, dw, dh);
+            ctx.restore();
+        } else {
+            drawAnimator(ctx, hazard.animator, hazard.x, hazard.y, hazard.w, hazard.h);
+        }
     } else if (hazard.spriteKey) {
         drawSprite(ctx, hazard.spriteKey, hazard.x, hazard.y, hazard.w, hazard.h, hazard.fallbackColor);
     } else {
@@ -182,6 +242,21 @@ export function renderGroundHazard(ctx, hazard) {
             ctx.fillStyle = hazard.fallbackColor;
             ctx.fillRect(hazard.x, hazard.y, hazard.w, hazard.h);
         }
+    }
+
+    if (punchable && isIguana(hazard)) {
+        ctx.save();
+        ctx.font = 'bold 18px monospace';
+        ctx.fillStyle = '#FF6600';
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 3;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        const starX = hazard.x + hazard.w / 2;
+        const starY = hazard.y - 2;
+        ctx.strokeText('*', starX, starY);
+        ctx.fillText('*', starX, starY);
+        ctx.restore();
     }
 
     if (DEBUG_SHOW_HITBOX) {

@@ -35,35 +35,15 @@ export const GADGETS = {
         { desc: 'Lasers take +0.5s to kill',               cost: 700  },
         { desc: '+0.7s + warning flash on contact',        cost: 1050 },
     ]},
-    adrenaline:   { name: 'Adrenaline',   category: 'survival', levels: [
-        { desc: 'After a hit: 2x coins for 3s',           cost: 450  },
-        { desc: 'After a hit: 2x coins for 4s',           cost: 900  },
-        { desc: 'After a hit: 3x coins for 5s',           cost: 1350 },
+    iguanaPuncher:{ name: 'Iguana Punch', category: 'survival', levels: [
+        { desc: 'Punch 10 iguanas per run',                cost: 350  },
+        { desc: 'Punch 20 iguanas per run',                cost: 700  },
+        { desc: 'Unlimited iguana punches',                cost: 1050 },
     ]},
-    gemologist:   { name: 'Gemologist',   category: 'economy', levels: [
-        { desc: '5% chance food is worth 5x',              cost: 600  },
-        { desc: '10% chance food is worth 5x',             cost: 1200 },
-        { desc: '15% chance food is worth 8x',             cost: 1800 },
-    ]},
-    streakMaster: { name: 'Streak',       category: 'economy', levels: [
-        { desc: '10 food streak: +25% coins 5s',          cost: 400  },
-        { desc: '7 food streak: +25% coins 5s',           cost: 800  },
-        { desc: '5 food streak: +50% coins 5s',           cost: 1200 },
-    ]},
-    tokenGift:    { name: 'Token Gift',   category: 'economy', levels: [
-        { desc: '3% chance to find a spin token',          cost: 700  },
-        { desc: '5% chance to find a spin token',          cost: 1400 },
-        { desc: '8% chance to find a spin token',          cost: 2100 },
-    ]},
-    bountyHunter: { name: 'Bounty',       category: 'economy', levels: [
-        { desc: 'Earn coins for near-misses',              cost: 350  },
-        { desc: 'Increased near-miss payout',              cost: 700  },
-        { desc: 'Chain near-misses for multiplier',        cost: 1050 },
-    ]},
-    jackpot:      { name: 'Jackpot',      category: 'economy', levels: [
-        { desc: '3% chance food gives 20x payout',        cost: 600  },
-        { desc: '5% chance food gives 20x payout',        cost: 1200 },
-        { desc: '7% chance food gives 30x payout',        cost: 1800 },
+    secondChance: { name: '2nd Chance',  category: 'survival', levels: [
+        { desc: 'Every 500m: 16s invulnerability',         cost: 250  },
+        { desc: 'Every 500m: 24s invulnerability',         cost: 450  },
+        { desc: 'Every 500m: 32s invulnerability',         cost: 810  },
     ]},
 };
 
@@ -94,11 +74,6 @@ export const PASSIVES = {
         { desc: 'Start with 2 free shield hits', cost: 360 },
         { desc: 'Start with 3 free shield hits', cost: 650 },
     ]},
-    secondChance: { name: '2nd Chance',     category: 'survival', tiers: [
-        { desc: 'Every 500m: 2s invulnerability', cost: 250 },
-        { desc: 'Every 500m: 3s invulnerability', cost: 450 },
-        { desc: 'Every 500m: 4s invulnerability', cost: 810 },
-    ]},
     ezyDodge:     { name: 'Ezy-Dodge',    category: 'survival', tiers: [
         { desc: 'Hitbox shrinks 15%',  cost: 300  },
         { desc: 'Hitbox shrinks 25%',  cost: 600  },
@@ -120,9 +95,34 @@ export const PASSIVES = {
         { desc: '+0.15x coin mult per 400m',  cost: 1500 },
     ]},
     moneyGrubber: { name: 'Grubber',     category: 'economy',  tiers: [
-        { desc: 'Earn 1 coin every 3s while running',   cost: 400  },
-        { desc: 'Earn 1 coin every 2s while running',   cost: 800  },
-        { desc: 'Earn 1 coin every 1.5s while running', cost: 1200 },
+        { desc: 'Earn 1 coin every 1.5s on ground',   cost: 400  },
+        { desc: 'Earn 1 coin every 1s on ground',     cost: 800  },
+        { desc: 'Earn 1 coin every 0.75s on ground',  cost: 1200 },
+    ]},
+    gemologist:   { name: 'Gemologist',  category: 'economy',  tiers: [
+        { desc: '5% chance food is worth 5x',   cost: 600  },
+        { desc: '10% chance food is worth 5x',  cost: 1200 },
+        { desc: '15% chance food is worth 8x',  cost: 1800 },
+    ]},
+    streakMaster: { name: 'Streak',      category: 'economy',  tiers: [
+        { desc: '10 food streak: +25% coins',   cost: 400  },
+        { desc: '7 food streak: +25% coins',    cost: 800  },
+        { desc: '5 food streak: +50% coins',    cost: 1200 },
+    ]},
+    tokenGift:    { name: 'Token Gift',  category: 'economy',  tiers: [
+        { desc: '3% chance to find a spin token',  cost: 700  },
+        { desc: '5% chance to find a spin token',  cost: 1400 },
+        { desc: '8% chance to find a spin token',  cost: 2100 },
+    ]},
+    bountyHunter: { name: 'Bounty',      category: 'economy',  tiers: [
+        { desc: 'Earn coins for near-misses',        cost: 350  },
+        { desc: 'Increased near-miss payout',         cost: 700  },
+        { desc: 'Chain near-misses for multiplier',   cost: 1050 },
+    ]},
+    jackpot:      { name: 'Jackpot',     category: 'economy',  tiers: [
+        { desc: '3% chance food gives 20x payout',  cost: 600  },
+        { desc: '5% chance food gives 20x payout',  cost: 1200 },
+        { desc: '7% chance food gives 30x payout',  cost: 1800 },
     ]},
 };
 
@@ -184,13 +184,10 @@ export const TREE_NODES = [
     gadgetNode('shield_3',    'shield', 2, 0, -6),
     gadgetNode('hazJam_1',    'hazardJammer', 0, 0, -7),
 
-    // Branch right from shield_1: Tough Feathers + Adrenaline (row -1)
+    // Branch right from shield_1: Tough Feathers (row -1)
     passiveNode('toughFthr_1', 'toughFeathers', 0, 1, -1),
     passiveNode('toughFthr_2', 'toughFeathers', 1, 2, -1),
     passiveNode('toughFthr_3', 'toughFeathers', 2, 3, -1),
-    gadgetNode('adrenaline_1', 'adrenaline', 0, 4, -1),
-    gadgetNode('adrenaline_2', 'adrenaline', 1, 5, -1),
-    gadgetNode('adrenaline_3', 'adrenaline', 2, 6, -1),
 
     // Branch left from ezyDodge_1: Flash (row -3, 2 empty rows after shield fork)
     gadgetNode('flash_1',     'flash', 0, -1, -3),
@@ -198,14 +195,19 @@ export const TREE_NODES = [
     gadgetNode('flash_3',     'flash', 2, -3, -3),
 
     // Branch right from ezyDodge_1: Second Chance passive (row -3)
-    passiveNode('secondCh_1', 'secondChance', 0, 1, -3),
-    passiveNode('secondCh_2', 'secondChance', 1, 2, -3),
-    passiveNode('secondCh_3', 'secondChance', 2, 3, -3),
+    gadgetNode('secondCh_1', 'secondChance', 0, 1, -3),
+    gadgetNode('secondCh_2', 'secondChance', 1, 2, -3),
+    gadgetNode('secondCh_3', 'secondChance', 2, 3, -3),
 
     // Branch left from ezyDodge_3: Decoy (row -5, 2 empty rows after flash fork)
     gadgetNode('decoy_1',     'decoy', 0, -1, -5),
     gadgetNode('decoy_2',     'decoy', 1, -2, -5),
     gadgetNode('decoy_3',     'decoy', 2, -3, -5),
+
+    // Branch right from ezyDodge_3: Iguana Puncher (row -5)
+    gadgetNode('igPunch_1',   'iguanaPuncher', 0, 1, -5),
+    gadgetNode('igPunch_2',   'iguanaPuncher', 1, 2, -5),
+    gadgetNode('igPunch_3',   'iguanaPuncher', 2, 3, -5),
 
     // Branch left from hazJam_1: Hzd Jammer upgrades (row -7)
     gadgetNode('hazJam_2',     'hazardJammer', 1, -1, -7),
@@ -242,12 +244,12 @@ export const TREE_NODES = [
     passiveNode('nestEgg_5',   'nestEgg', 4, 5, 1),
 
     // Branch left from coinDoub_1: Bounty + Streak (row 3, 2 empty rows gap)
-    gadgetNode('bounty_1',     'bountyHunter', 0, -1, 3),
-    gadgetNode('bounty_2',     'bountyHunter', 1, -2, 3),
-    gadgetNode('bounty_3',     'bountyHunter', 2, -3, 3),
-    gadgetNode('streak_1',     'streakMaster', 0, -4, 3),
-    gadgetNode('streak_2',     'streakMaster', 1, -5, 3),
-    gadgetNode('streak_3',     'streakMaster', 2, -6, 3),
+    passiveNode('bounty_1',     'bountyHunter', 0, -1, 3),
+    passiveNode('bounty_2',     'bountyHunter', 1, -2, 3),
+    passiveNode('bounty_3',     'bountyHunter', 2, -3, 3),
+    passiveNode('streak_1',     'streakMaster', 0, -4, 3),
+    passiveNode('streak_2',     'streakMaster', 1, -5, 3),
+    passiveNode('streak_3',     'streakMaster', 2, -6, 3),
 
     // Branch right from coinDoub_1: Parting Gift passive (row 3)
     passiveNode('partGift_1',  'partingGift', 0, 1, 3),
@@ -262,9 +264,9 @@ export const TREE_NODES = [
     passiveNode('bargain_3',   'bargainHunter', 2, 3, 4),
 
     // Branch left from coinDoub_3: Gemologist (row 5, 2 empty rows gap)
-    gadgetNode('gem_1',        'gemologist', 0, -1, 5),
-    gadgetNode('gem_2',        'gemologist', 1, -2, 5),
-    gadgetNode('gem_3',        'gemologist', 2, -3, 5),
+    passiveNode('gem_1',        'gemologist', 0, -1, 5),
+    passiveNode('gem_2',        'gemologist', 1, -2, 5),
+    passiveNode('gem_3',        'gemologist', 2, -3, 5),
 
     // Branch right from coinDoub_3: Compound Interest (row 5)
     passiveNode('compound_1',   'compoundInterest', 0, 1, 5),
@@ -272,18 +274,18 @@ export const TREE_NODES = [
     passiveNode('compound_3',   'compoundInterest', 2, 3, 5),
 
     // Continue trunk: deeper economy
-    gadgetNode('jackpot_1',    'jackpot', 0, 0, 6),
-    gadgetNode('jackpot_2',    'jackpot', 1, 0, 7),
-    gadgetNode('jackpot_3',    'jackpot', 2, 0, 8),
+    passiveNode('jackpot_1',    'jackpot', 0, 0, 6),
+    passiveNode('jackpot_2',    'jackpot', 1, 0, 7),
+    passiveNode('jackpot_3',    'jackpot', 2, 0, 8),
 
     // Branch right from jackpot_1: 3rd/4th slot milestones (row 6)
     milestoneNode('thirdSlot',  'thirdSlot',  1, 6),
     milestoneNode('fourthSlot', 'fourthSlot', 2, 6),
 
     // Branch left from jackpot_3: Token Gift (row 8)
-    gadgetNode('token_1',      'tokenGift', 0, -1, 8),
-    gadgetNode('token_2',      'tokenGift', 1, -2, 8),
-    gadgetNode('token_3',      'tokenGift', 2, -3, 8),
+    passiveNode('token_1',      'tokenGift', 0, -1, 8),
+    passiveNode('token_2',      'tokenGift', 1, -2, 8),
+    passiveNode('token_3',      'tokenGift', 2, -3, 8),
 
     // Milestones at branch tips
     milestoneNode('gadgetSynergy', 'gadgetSynergy', -7, 3),  // past streak

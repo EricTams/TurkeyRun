@@ -20,6 +20,7 @@ const NOODLE_NATIVE_W = 32;
 const NOODLE_NATIVE_H = 96;
 const TILE_W = ZAPPER_WIDTH;
 const TILE_H = ZAPPER_WIDTH * (NOODLE_NATIVE_H / NOODLE_NATIVE_W);
+const TILE_STEP = TILE_H - 8;
 
 // -----------------------------------------------------------------------
 // Factory functions
@@ -91,7 +92,7 @@ function drawNoodlesUp(ctx, animator, x, anchorY) {
     ctx.rect(x, 0, TILE_W, anchorY);
     ctx.clip();
 
-    for (let y = anchorY - TILE_H; y >= -TILE_H; y -= TILE_H) {
+    for (let y = anchorY - TILE_H; y >= -TILE_H; y -= TILE_STEP) {
         drawAnimator(ctx, animator, x, y, TILE_W, TILE_H);
     }
 
@@ -116,7 +117,7 @@ function drawNoodlesDown(ctx, animator, x, anchorY) {
     ctx.rect(x, anchorY, TILE_W, CANVAS_HEIGHT - anchorY);
     ctx.clip();
 
-    for (let y = anchorY; y < CANVAS_HEIGHT; y += TILE_H) {
+    for (let y = anchorY; y < CANVAS_HEIGHT; y += TILE_STEP) {
         drawAnimator(ctx, animator, x, y, TILE_W, TILE_H);
     }
 

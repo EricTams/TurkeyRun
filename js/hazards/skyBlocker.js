@@ -1,6 +1,8 @@
 import {
     CANVAS_WIDTH, AUTO_RUN_SPEED, DEBUG_SHOW_HITBOX,
-    PUFFERFISH_SIZE, PUFFERFISH_ROTATE_SPEED
+    PUFFERFISH_SIZE, PUFFERFISH_ROTATE_SPEED,
+    SMALL_ASTEROID_SIZE, MEDIUM_ASTEROID_SIZE, LARGE_ASTEROID_SIZE,
+    ASTEROID_ROTATE_SPEED
 } from '../config.js';
 import {
     createAnimator, setAnimation, updateAnimator, drawAnimator, hasAnimation
@@ -12,7 +14,26 @@ const SKY_BLOCKER_DEFS = {
         animKey: 'pufferfishIdle',
         size: PUFFERFISH_SIZE,
         fallbackColor: '#FFD700',
-    }
+        rotateSpeed: PUFFERFISH_ROTATE_SPEED,
+    },
+    smallAsteroid: {
+        animKey: 'smallAsteroidIdle',
+        size: SMALL_ASTEROID_SIZE,
+        fallbackColor: '#808080',
+        rotateSpeed: ASTEROID_ROTATE_SPEED,
+    },
+    mediumAsteroid: {
+        animKey: 'mediumAsteroidIdle',
+        size: MEDIUM_ASTEROID_SIZE,
+        fallbackColor: '#6A6A6A',
+        rotateSpeed: ASTEROID_ROTATE_SPEED,
+    },
+    largeAsteroid: {
+        animKey: 'largeAsteroidIdle',
+        size: LARGE_ASTEROID_SIZE,
+        fallbackColor: '#5A5A5A',
+        rotateSpeed: ASTEROID_ROTATE_SPEED,
+    },
 };
 
 export function createSkyBlocker(typeKey, y) {
@@ -25,7 +46,8 @@ export function createSkyBlocker(typeKey, y) {
         size: def.size,
         animKey: def.animKey,
         fallbackColor: def.fallbackColor,
-        angle: 0,
+        rotateSpeed: def.rotateSpeed * (0.8 + Math.random() * 0.4),
+        angle: Math.random() * Math.PI * 2,
         animator: createAnimator()
     };
     setAnimation(blocker.animator, def.animKey, { loop: true });
@@ -34,7 +56,7 @@ export function createSkyBlocker(typeKey, y) {
 
 export function updateSkyBlocker(blocker, dt) {
     blocker.x -= AUTO_RUN_SPEED * dt;
-    blocker.angle += PUFFERFISH_ROTATE_SPEED * dt;
+    blocker.angle += blocker.rotateSpeed * dt;
     updateAnimator(blocker.animator, dt);
 }
 

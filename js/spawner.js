@@ -229,8 +229,7 @@ function spawnElement(elem, groundArr, zapperArr, skyArr) {
         groundArr.push(hazard);
         return;
     }
-    if (elem.type === 'skyBlocker') {
-        // Only spawn if the current biome has sky blockers defined
+    if (elem.type === 'skyBlocker' || elem.type === 'skyBlockerSmall') {
         const biomeSky = getBiomeSkyBlockers(currentDistanceMeters);
         if (biomeSky.length > 0) {
             const blocker = createSkyBlocker(pickRandom(biomeSky), elem.y);

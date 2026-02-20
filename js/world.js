@@ -110,49 +110,38 @@ function drawHill(ctx, cx, baseY, halfWidth, height) {
 }
 
 function renderGroundBase(ctx, groundColor) {
-    const distMeters = Math.floor(distancePixels / PIXELS_PER_METER);
-    const biome = getCurrentBiomeName(distMeters);
-
-    // 1) Solid fill below the tile row to canvas bottom
     ctx.fillStyle = groundColor;
-    ctx.fillRect(0, TILE_ROW_Y + TILE_SIZE, CANVAS_WIDTH, CANVAS_HEIGHT - TILE_ROW_Y - TILE_SIZE);
-
-    // 2) Draw scrolling default ground (Flat-Low tiles) across the full width
-    const tileCount = Math.ceil(CANVAS_WIDTH / TILE_SIZE) + 2;
-    const defaultTile = getTile(biome, 'flatLow');
-    if (defaultTile) {
-        for (let i = 0; i < tileCount; i++) {
-            const x = i * TILE_SIZE - groundOffset;
-            ctx.drawImage(defaultTile, x, TILE_ROW_Y, TILE_SIZE, TILE_SIZE);
-        }
-    }
-
-    // 3) Draw Full tiles below the default ground row
-    const fullTile = getTile(biome, 'full');
-    if (fullTile) {
-        for (let i = 0; i < tileCount; i++) {
-            const x = i * TILE_SIZE - groundOffset;
-            ctx.drawImage(fullTile, x, TILE_ROW_Y + TILE_SIZE, TILE_SIZE, TILE_SIZE);
-        }
-    }
+    ctx.fillRect(0, GROUND_Y, CANVAS_WIDTH, CANVAS_HEIGHT - GROUND_Y);
 }
 
 function renderGroundTerrain(ctx) {
     const distMeters = Math.floor(distancePixels / PIXELS_PER_METER);
     const biome = getCurrentBiomeName(distMeters);
 
-    // Overdraw section terrain tiles on top
+    const tileCount = Math.ceil(CANVAS_WIDTH / TILE_SIZE) + 2;
+    const defaultTile = getTile(biome, 'flatLow');
+    const fullTile = getTile(biome, 'full');
+
+    // Default scrolling ground: surface tile + Full tile directly below it
+    for (let i = 0; i < tileCount; i++) {
+        const x = i * TILE_SIZE - groundOffset;
+        if (fullTile) {
+            ctx.drawImage(fullTile, x, TILE_ROW_Y + TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        }
+        if (defaultTile) {
+            ctx.drawImage(defaultTile, x, TILE_ROW_Y, TILE_SIZE, TILE_SIZE);
+        }
+    }
+
+    // Overdraw section terrain tiles on top (with Full tile below each)
     const columns = getVisibleTileColumns();
     for (const col of columns) {
+        if (fullTile) {
+            ctx.drawImage(fullTile, col.screenX, TILE_ROW_Y + TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        }
         const tile = getTile(biome, col.tileType);
         if (tile) {
             ctx.drawImage(tile, col.screenX, TILE_ROW_Y, TILE_SIZE, TILE_SIZE);
-        }
-        if (col.tileType !== 'flatLow') {
-            const ft = getTile(biome, 'full');
-            if (ft) {
-                ctx.drawImage(ft, col.screenX, TILE_ROW_Y + TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            }
         }
     }
 

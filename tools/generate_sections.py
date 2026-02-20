@@ -51,22 +51,33 @@ SMALL_ASTEROID_SIZE = 36
 MEDIUM_ASTEROID_SIZE = 50
 LARGE_ASTEROID_SIZE = 72
 
-# Sky blocker (pufferfish) -- must match js/config.js
+# Sky blocker sizes -- must match js/config.js
 PUFFERFISH_SIZE = 180
-PUFFERFISH_Y_MIN = 20
-PUFFERFISH_Y_MAX = 250
+SKY_BLOCKER_SIZES = {
+    "pufferfish": PUFFERFISH_SIZE,
+    "smallAsteroid": SMALL_ASTEROID_SIZE,
+    "mediumAsteroid": MEDIUM_ASTEROID_SIZE,
+    "largeAsteroid": LARGE_ASTEROID_SIZE,
+}
+# Large sky blocker size (pufferfish) -- for corridor clearance in early biomes
+LARGE_SKY_BLOCKER_SIZE = PUFFERFISH_SIZE
+# Small sky blocker size (largest asteroid) -- for corridor clearance in later biomes
+SMALL_SKY_BLOCKER_SIZE = LARGE_ASTEROID_SIZE
+
+# Sky blocker Y bounds (any sky blocker can float in this range)
+SKY_BLOCKER_Y_MIN = 20
+SKY_BLOCKER_Y_MAX = 330  # allows blockers near ground (GROUND_Y - largest - margin)
 
 # Worst-case ground hazard footprint across all biomes (used for corridor
 # clearance so patterns are safe no matter which biome swaps in its hazards).
+# Asteroids are sky blockers now, not ground hazards.
 MAX_GROUND_HAZARD_WIDTH = max(
     POOL_NOODLE_WIDTH, SAND_CASTLE_WIDTH,
     OLD_IGUANA_WIDTH, TIE_DYE_IGUANA_WIDTH,
-    SMALL_ASTEROID_SIZE, MEDIUM_ASTEROID_SIZE, LARGE_ASTEROID_SIZE
 )
 MAX_GROUND_HAZARD_HEIGHT = max(
     POOL_NOODLE_HEIGHT, SAND_CASTLE_HEIGHT,
     OLD_IGUANA_HEIGHT, TIE_DYE_IGUANA_HEIGHT,
-    SMALL_ASTEROID_SIZE, MEDIUM_ASTEROID_SIZE, LARGE_ASTEROID_SIZE
 )
 
 LASER_BEAM_THICKNESS = 16
@@ -128,7 +139,7 @@ TIER_PARAMS = {
         "section_length_max": 600,
         "obstacle_count_min": 3,
         "obstacle_count_max": 7,
-        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen", "skyBlocker"],
+        "obstacle_types": ["ground", "zapper", "zapper", "zapperBottomOpen", "skyBlockerSmall", "skyBlockerSmall", "skyBlockerSmall"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.5,
         "elevation_chance": 0.6,
@@ -144,7 +155,7 @@ TIER_PARAMS = {
         "section_length_max": 650,
         "obstacle_count_min": 4,
         "obstacle_count_max": 8,
-        "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen", "skyBlocker"],
+        "obstacle_types": ["ground", "zapper", "zapper", "zapperBottomOpen", "skyBlockerSmall", "skyBlockerSmall", "skyBlockerSmall", "skyBlockerSmall"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.7,
         "elevation_chance": 0.7,
@@ -426,52 +437,39 @@ def place_bottom_open_zapper(path, params, occupied_xs, elevation=None):
     return None
 
 
-def place_sky_blocker(path, params, occupied_xs, elevation=None):
-    """Place a sky blocker (pufferfish) at a Y that avoids the corridor.
-
-    The blocker is a circle of diameter PUFFERFISH_SIZE.  We sample the
-    corridor at the candidate x and pick a Y above or below it within the
-    allowed sky region [PUFFERFISH_Y_MIN, PUFFERFISH_Y_MAX].
-    At most one sky blocker per pattern (enforced by occupied_xs spacing).
-    """
+def _place_sky_blocker_impl(path, params, occupied_xs, size, elem_type):
+    """Place a sky blocker at a Y that avoids the corridor."""
     section_end = path[-1]["x"]
-    size = PUFFERFISH_SIZE
-    buffer = 30  # clearance between blocker edge and corridor edge
+    buffer = 40
 
     for _ in range(40):
         offset_x = random.randint(40, max(40, int(section_end) - size))
 
-        # Wide spacing -- sky blockers are large
         if any(abs(offset_x - ox) < size + 40 for ox in occupied_xs):
             continue
 
-        # Sample the corridor across the blocker's width
         corridor_top = float("inf")
         corridor_bottom = float("-inf")
-        for sx in range(max(0, offset_x), offset_x + size + 1, max(1, size // 6)):
+        for sx in range(max(0, offset_x), offset_x + size + 1, 10):
             center_y, w = interpolate_path(path, sx)
             corridor_top = min(corridor_top, center_y - w / 2)
             corridor_bottom = max(corridor_bottom, center_y + w / 2)
 
-        # Find valid Y ranges (blocker top-left corner Y)
         candidates = []
 
-        # Above corridor
         above_max_y = corridor_top - buffer - size
-        if above_max_y >= PUFFERFISH_Y_MIN:
-            candidates.append((PUFFERFISH_Y_MIN, above_max_y))
+        if above_max_y >= SKY_BLOCKER_Y_MIN:
+            candidates.append((SKY_BLOCKER_Y_MIN, above_max_y))
 
-        # Below corridor
         below_min_y = corridor_bottom + buffer
-        if below_min_y + size <= PUFFERFISH_Y_MAX + size:
-            candidates.append((below_min_y, min(PUFFERFISH_Y_MAX, GROUND_Y - size - 10)))
+        below_max_y = min(SKY_BLOCKER_Y_MAX, GROUND_Y - size - 10)
+        if below_min_y <= below_max_y:
+            candidates.append((below_min_y, below_max_y))
 
-        # Filter out degenerate ranges
         candidates = [(lo, hi) for lo, hi in candidates if hi >= lo]
         if not candidates:
             continue
 
-        # Pick a range weighted by span
         total = sum(hi - lo for lo, hi in candidates)
         pick = random.random() * total
         chosen_y = None
@@ -485,17 +483,28 @@ def place_sky_blocker(path, params, occupied_xs, elevation=None):
             chosen_y = candidates[-1][0]
 
         chosen_y = round(chosen_y, 1)
-        # Reserve the full width so other obstacles don't land inside
         occupied_xs.append(offset_x)
         occupied_xs.append(offset_x + size // 2)
         occupied_xs.append(offset_x + size)
         return {
-            "type": "skyBlocker",
+            "type": elem_type,
             "offsetX": offset_x,
             "y": chosen_y,
         }
 
     return None
+
+
+def place_sky_blocker(path, params, occupied_xs, elevation=None):
+    """Place a large sky blocker (pufferfish-sized clearance)."""
+    return _place_sky_blocker_impl(path, params, occupied_xs,
+                                   LARGE_SKY_BLOCKER_SIZE, "skyBlocker")
+
+
+def place_sky_blocker_small(path, params, occupied_xs, elevation=None):
+    """Place a small sky blocker (asteroid-sized clearance)."""
+    return _place_sky_blocker_impl(path, params, occupied_xs,
+                                   SMALL_SKY_BLOCKER_SIZE, "skyBlockerSmall")
 
 
 OBSTACLE_PLACERS = {
@@ -505,6 +514,7 @@ OBSTACLE_PLACERS = {
     "laserStatic": place_static_laser,
     "laserSweep": place_sweep_laser,
     "skyBlocker": place_sky_blocker,
+    "skyBlockerSmall": place_sky_blocker_small,
 }
 
 
@@ -755,16 +765,18 @@ def validate_patterns(patterns):
                         issues += 1
 
                 # Check sky blockers don't overlap corridor
-                if elem["type"] == "skyBlocker":
+                if elem["type"] in ("skyBlocker", "skyBlockerSmall"):
+                    sz = LARGE_SKY_BLOCKER_SIZE if elem["type"] == "skyBlocker" else SMALL_SKY_BLOCKER_SIZE
                     blocker_y = elem["y"]
-                    blocker_bottom = blocker_y + PUFFERFISH_SIZE
-                    for sx in range(max(0, elem["offsetX"]), elem["offsetX"] + PUFFERFISH_SIZE + 1,
-                                    max(1, PUFFERFISH_SIZE // 6)):
+                    blocker_bottom = blocker_y + sz
+                    for sx in range(max(0, elem["offsetX"]),
+                                    elem["offsetX"] + sz + 1,
+                                    10):
                         center_y, w = interpolate_path(path, sx)
                         ct = center_y - w / 2
                         cb = center_y + w / 2
                         if blocker_bottom > ct and blocker_y < cb:
-                            print(f"  WARNING: {tier}[{i}] skyBlocker at x={elem['offsetX']} "
+                            print(f"  WARNING: {tier}[{i}] {elem['type']} at x={elem['offsetX']} "
                                   f"y={blocker_y:.0f} overlaps corridor")
                             issues += 1
                             break
