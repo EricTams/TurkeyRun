@@ -68,16 +68,22 @@ SMALL_SKY_BLOCKER_SIZE = LARGE_ASTEROID_SIZE
 SKY_BLOCKER_Y_MIN = 20
 SKY_BLOCKER_Y_MAX = 330  # allows blockers near ground (GROUND_Y - largest - margin)
 
+# Pool tube -- must match config.js
+POOL_TUBE_SIZE = 64
+POOL_TUBE_BOUNCE_HEIGHT = int(POOL_TUBE_SIZE * 0.85)  # how high it bounces
+
 # Worst-case ground hazard footprint across all biomes (used for corridor
 # clearance so patterns are safe no matter which biome swaps in its hazards).
-# Asteroids are sky blockers now, not ground hazards.
+# Includes pool tube height + its bounce height for corridor safety.
 MAX_GROUND_HAZARD_WIDTH = max(
     POOL_NOODLE_WIDTH, SAND_CASTLE_WIDTH,
     OLD_IGUANA_WIDTH, TIE_DYE_IGUANA_WIDTH,
+    POOL_TUBE_SIZE,
 )
 MAX_GROUND_HAZARD_HEIGHT = max(
     POOL_NOODLE_HEIGHT, SAND_CASTLE_HEIGHT,
     OLD_IGUANA_HEIGHT, TIE_DYE_IGUANA_HEIGHT,
+    POOL_TUBE_SIZE + POOL_TUBE_BOUNCE_HEIGHT,
 )
 
 LASER_BEAM_THICKNESS = 16
@@ -105,8 +111,8 @@ TIER_PARAMS = {
         "x_step_max": 190,         # max px between waypoints
         "section_length_min": 280, # min total section width in px
         "section_length_max": 450, # max total section width in px
-        "obstacle_count_min": 1,
-        "obstacle_count_max": 3,
+        "obstacle_count_min": 2,
+        "obstacle_count_max": 5,
         "obstacle_types": ["ground", "skyBlocker"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.0,
@@ -121,8 +127,8 @@ TIER_PARAMS = {
         "x_step_max": 170,
         "section_length_min": 300,
         "section_length_max": 550,
-        "obstacle_count_min": 2,
-        "obstacle_count_max": 5,
+        "obstacle_count_min": 3,
+        "obstacle_count_max": 8,
         "obstacle_types": ["ground", "ground", "zapper", "zapper", "zapperBottomOpen", "skyBlocker"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.3,
@@ -137,8 +143,8 @@ TIER_PARAMS = {
         "x_step_max": 150,
         "section_length_min": 350,
         "section_length_max": 600,
-        "obstacle_count_min": 3,
-        "obstacle_count_max": 7,
+        "obstacle_count_min": 5,
+        "obstacle_count_max": 11,
         "obstacle_types": ["ground", "zapper", "zapper", "zapperBottomOpen", "skyBlockerSmall", "skyBlockerSmall", "skyBlockerSmall"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.5,
@@ -153,8 +159,8 @@ TIER_PARAMS = {
         "x_step_max": 120,
         "section_length_min": 400,
         "section_length_max": 650,
-        "obstacle_count_min": 4,
-        "obstacle_count_max": 8,
+        "obstacle_count_min": 6,
+        "obstacle_count_max": 12,
         "obstacle_types": ["ground", "zapper", "zapper", "zapperBottomOpen", "skyBlockerSmall", "skyBlockerSmall", "skyBlockerSmall", "skyBlockerSmall"],
         "ground_types": ["poolNoodle", "sandCastle"],
         "bird_chance": 0.7,

@@ -260,6 +260,9 @@ export function loadBlockerAnimations(onItemLoaded) {
         ['mediumAsteroidIdle', 'Medium Asteroid-Idle'],
         ['largeAsteroidIdle',  'Large Asteroid-Idle'],
         ['tieDyeIguanaIdle',   'Tie Dye Iguana-Idle'],
+        ['poolTube1Idle',      'Pool Tube-1'],
+        ['poolTube2Idle',      'Pool Tube-2'],
+        ['poolTube3Idle',      'Pool Tube-3'],
         ['poolNoodleSpin1',    'Pool Noodle-Spin1'],
         ['poolNoodleSpin2',    'Pool Noodle-Spin2'],
         ['poolNoodleSpin3',    'Pool Noodle-Spin3'],
@@ -271,7 +274,7 @@ export function loadBlockerAnimations(onItemLoaded) {
 }
 
 /** Number of animation assets loaded by loadBlockerAnimations. */
-export const BLOCKER_ANIM_COUNT = 9;
+export const BLOCKER_ANIM_COUNT = 12;
 
 /**
  * Load decorative background sprites (biome signs + palms). Returns a promise.

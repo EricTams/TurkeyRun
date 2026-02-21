@@ -29,7 +29,7 @@ import {
 } from './hazards/skyBlocker.js';
 import { spawnCoinsAtPositions } from './collectible.js';
 import { generateCoinsOnPath } from './sectionPath.js';
-import { getBiomeGroundHazards, getBiomeSkyBlockers, getCurrentBiomeName } from './biome.js';
+import { getBiomeGroundHazards, getBiomeSkyBlockers } from './biome.js';
 import {
     updateLaserPattern,
     isLaserPatternActive,
@@ -89,17 +89,10 @@ function selectBirdTypeForPattern(tier) {
     return Math.random() < BOAR_PATTERN_CHANCE ? 'boar' : 'grackle';
 }
 
-const BIOME_NOODLE_ANIM = {
-    beach:     'poolNoodleSpin3',
-    grass:     'poolNoodleSpin1',
-    mountain:  'poolNoodleSpin1',
-    moon:      'poolNoodleSpin3',
-    spiritual: 'poolNoodleSpin2',
-};
+const NOODLE_ANIMS = ['poolNoodleSpin1', 'poolNoodleSpin2', 'poolNoodleSpin3'];
 
 function getNoodleAnimKey() {
-    const biome = getCurrentBiomeName(currentDistanceMeters);
-    return BIOME_NOODLE_ANIM[biome] || 'poolNoodleSpin1';
+    return pickRandom(NOODLE_ANIMS);
 }
 
 function getLaserSectionChance(tier) {

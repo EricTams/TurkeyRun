@@ -12,6 +12,8 @@ import {
     WEIRD_PILLAR_WIDTH, WEIRD_PILLAR_HEIGHT,
     OLD_IGUANA_WIDTH, OLD_IGUANA_HEIGHT,
     TIE_DYE_IGUANA_WIDTH, TIE_DYE_IGUANA_HEIGHT,
+    POOL_TUBE_SIZE, POOL_TUBE_GRAVITY,
+    POOL_TUBE_BOUNCE_RATIO, POOL_TUBE_SQUISH_DURATION,
 } from '../config.js';
 import { drawSprite } from '../sprites.js';
 import {
@@ -94,11 +96,24 @@ const HAZARD_DEFS = {
         fallbackColor: '#FF44CC', hitShape: 'rect',
         flipX: true, drawScale: 1.5
     },
+
+    // --- Pool tube (bouncing, random color) ---
+
+    poolTube: {
+        randomAnimKeys: ['poolTube1Idle', 'poolTube2Idle', 'poolTube3Idle'],
+        w: POOL_TUBE_SIZE, h: POOL_TUBE_SIZE,
+        fallbackColor: '#FF6EC7', hitShape: 'circle',
+        bounce: true,
+    },
 };
 
 export function createGroundHazard(typeKey) {
     const def = HAZARD_DEFS[typeKey];
     if (!def) throw new Error(`Unknown ground hazard type: ${typeKey}`);
+
+    const chosenAnimKey = def.randomAnimKeys
+        ? def.randomAnimKeys[Math.floor(Math.random() * def.randomAnimKeys.length)]
+        : (def.animKey || null);
 
     const hazard = {
         typeKey,
@@ -107,18 +122,37 @@ export function createGroundHazard(typeKey) {
         w: def.w,
         h: def.h,
         spriteKey: def.spriteKey || null,
-        animKey: def.animKey || null,
+        animKey: chosenAnimKey,
         fallbackColor: def.fallbackColor,
         hitShape: def.hitShape,
         flipX: def.flipX || false,
         drawScale: def.drawScale || 1,
         animator: null,
-        punched: false
+        punched: false,
+        bounce: !!def.bounce,
+        bounceOffsetY: 0,
+        bounceVY: 0,
+        squishTimer: 0,
+        squishScaleX: 1,
+        squishScaleY: 1,
+        angle: 0,
+        spinSpeed: 0,
     };
 
-    if (def.animKey) {
+    if (chosenAnimKey) {
         hazard.animator = createAnimator();
-        setAnimation(hazard.animator, def.animKey, { loop: true });
+        setAnimation(hazard.animator, chosenAnimKey, { loop: true });
+    }
+
+    if (hazard.bounce) {
+        const maxH = POOL_TUBE_BOUNCE_RATIO * def.h;
+        const launchSpeed = Math.sqrt(2 * POOL_TUBE_GRAVITY * maxH);
+        const flightTime = 2 * launchSpeed / POOL_TUBE_GRAVITY;
+        const t = Math.random() * flightTime;
+        hazard.bounceOffsetY = -(launchSpeed * t - 0.5 * POOL_TUBE_GRAVITY * t * t);
+        hazard.bounceVY = -launchSpeed + POOL_TUBE_GRAVITY * t;
+        hazard.angle = Math.random() * Math.PI * 2;
+        hazard.spinSpeed = (1.5 + Math.random() * 3) * (Math.random() < 0.5 ? 1 : -1);
     }
 
     return hazard;
@@ -134,7 +168,39 @@ export function updateGroundHazard(hazard, dt) {
         return;
     }
     hazard.x -= AUTO_RUN_SPEED * dt;
-    hazard.y = getGroundYAt(hazard.x + hazard.w / 2) - hazard.h;
+    const baseY = getGroundYAt(hazard.x + hazard.w / 2) - hazard.h;
+
+    if (hazard.bounce) {
+        if (hazard.squishTimer > 0) {
+            hazard.squishTimer -= dt;
+            const progress = 1 - hazard.squishTimer / POOL_TUBE_SQUISH_DURATION;
+            const squish = Math.sin(progress * Math.PI);
+            hazard.squishScaleY = 1 - 0.3 * squish;
+            hazard.squishScaleX = 1 + 0.2 * squish;
+            hazard.bounceOffsetY = 0;
+
+            if (hazard.squishTimer <= 0) {
+                hazard.squishScaleX = 1;
+                hazard.squishScaleY = 1;
+                const maxH = POOL_TUBE_BOUNCE_RATIO * hazard.h;
+                hazard.bounceVY = -Math.sqrt(2 * POOL_TUBE_GRAVITY * maxH);
+            }
+        } else {
+            hazard.bounceVY += POOL_TUBE_GRAVITY * dt;
+            hazard.bounceOffsetY += hazard.bounceVY * dt;
+
+            if (hazard.bounceOffsetY >= 0) {
+                hazard.bounceOffsetY = 0;
+                hazard.bounceVY = 0;
+                hazard.squishTimer = POOL_TUBE_SQUISH_DURATION;
+            }
+        }
+        hazard.y = baseY + hazard.bounceOffsetY;
+        hazard.angle += hazard.spinSpeed * dt;
+    } else {
+        hazard.y = baseY;
+    }
+
     if (hazard.animator) {
         updateAnimator(hazard.animator, dt);
     }
@@ -214,7 +280,16 @@ export function renderGroundHazard(ctx, hazard, punchable) {
     }
 
     if (hazard.animator && hasAnimation(hazard.animKey)) {
-        if (hazard.flipX || hazard.drawScale !== 1) {
+        if (hazard.bounce) {
+            ctx.save();
+            const cx = hazard.x + hazard.w / 2;
+            const cy = hazard.y + hazard.h / 2;
+            ctx.translate(cx, cy);
+            ctx.rotate(hazard.angle);
+            ctx.scale(hazard.squishScaleX, hazard.squishScaleY);
+            drawAnimator(ctx, hazard.animator, -hazard.w / 2, -hazard.h / 2, hazard.w, hazard.h);
+            ctx.restore();
+        } else if (hazard.flipX || hazard.drawScale !== 1) {
             ctx.save();
             const cx = hazard.x + hazard.w / 2;
             const cy = hazard.y + hazard.h / 2;
