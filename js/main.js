@@ -48,7 +48,7 @@ import {
 } from './animation.js';
 import { applyPhysics, applyGravityPhysics } from './physics.js';
 import { loadAll } from './sprites.js';
-import { createWorld, updateWorld, renderWorld, renderWorldTerrain, getDistanceMeters, getDistancePixels, setDistanceMeters } from './world.js';
+import { createWorld, updateWorld, renderWorld, renderWorldTerrain, getDistanceMeters, getDistancePixels, setDistanceMeters, setPalmDecorSuppressed } from './world.js';
 import { renderHud, isPauseButtonClick, isMuteButtonClick } from './hud.js';
 import { loadMusic, playMusic, pauseMusic, stopMusic, playVictoryMusic, stopVictoryMusic, toggleMute, playSfx, playGobble } from './audio.js';
 import { renderGroundHazard, checkGroundHazardCollision, isIguana, punchHazard } from './hazards/groundHazard.js';
@@ -153,6 +153,7 @@ const BOSS_PHASE_BITE = 'bite';
 const BOSS_PHASE_EXIT = 'exit';
 const BOSS_PHASE_VICTORY_FALL = 'victoryFall';
 const BOSS_PHASE_VICTORY_IDLE = 'victoryIdle';
+const BOSS_APPROACH_MIN_SCREEN_X = 50;
 
 let bossPhase = BOSS_PHASE_NONE;
 let bossX = ENDGAME_BOSS_START_X;
@@ -161,6 +162,8 @@ let bossAnim = 'bossFinger';
 let bossTimer = 0;
 let bossShakeTimer = 0;
 let victorySettleTimer = 0;
+let bossDistanceCapMeters = 0;
+const BOSS_RENDER_SCALE = 2;
 
 // ---------------------------------------------------------------------------
 // Collision detection (uses hitbox, not render rect)
@@ -258,6 +261,8 @@ function resetBossSequence() {
     bossTimer = 0;
     bossShakeTimer = 0;
     victorySettleTimer = 0;
+    bossDistanceCapMeters = 0;
+    setPalmDecorSuppressed(false);
     stopVictoryMusic();
 }
 
@@ -266,11 +271,14 @@ function isBossSequenceActive() {
 }
 
 function getBossRect() {
+    const drawSize = ENDGAME_BOSS_SIZE * BOSS_RENDER_SCALE;
+    const insetX = ENDGAME_BOSS_HITBOX_INSET_X * BOSS_RENDER_SCALE;
+    const insetY = ENDGAME_BOSS_HITBOX_INSET_Y * BOSS_RENDER_SCALE;
     return {
-        x: bossX + ENDGAME_BOSS_HITBOX_INSET_X,
-        y: bossY + ENDGAME_BOSS_HITBOX_INSET_Y,
-        w: ENDGAME_BOSS_SIZE - ENDGAME_BOSS_HITBOX_INSET_X * 2,
-        h: ENDGAME_BOSS_SIZE - ENDGAME_BOSS_HITBOX_INSET_Y * 2
+        x: bossX + insetX,
+        y: bossY + insetY,
+        w: drawSize - insetX * 2,
+        h: drawSize - insetY * 2
     };
 }
 
@@ -294,6 +302,8 @@ function startBossSequence() {
     bossTimer = 0;
     bossShakeTimer = 0;
     victorySettleTimer = 0;
+    bossDistanceCapMeters = getDistanceMeters() + 50;
+    setPalmDecorSuppressed(true);
     // Endgame sequence runs cleanly without procedural patterns/hazards.
     jumpSpawnerToDistance(getDistancePixels());
     resetCollectibles();
@@ -308,10 +318,11 @@ function jumpToBossDebugSequence() {
 }
 
 function updateBossSequence(dt) {
+    const drawSize = ENDGAME_BOSS_SIZE * BOSS_RENDER_SCALE;
     if (bossShakeTimer > 0) bossShakeTimer -= dt;
 
     if (bossPhase === BOSS_PHASE_APPROACH) {
-        bossX -= ENDGAME_BOSS_APPROACH_SPEED * dt;
+        bossX = Math.max(BOSS_APPROACH_MIN_SCREEN_X, bossX - ENDGAME_BOSS_APPROACH_SPEED * dt);
         if (checkBossCollision()) {
             bossPhase = BOSS_PHASE_BITE;
             bossAnim = 'bossFingerEaten';
@@ -338,7 +349,7 @@ function updateBossSequence(dt) {
         bossY += ENDGAME_BOSS_EXIT_SPEED_Y * dt;
         applyGravityPhysics(turkey, dt, 1.0);
         updateAnimator(turkey.animator, dt);
-        if (bossX > CANVAS_WIDTH + ENDGAME_BOSS_SIZE || bossY + ENDGAME_BOSS_SIZE < -60) {
+        if (bossX > CANVAS_WIDTH + drawSize || bossY + drawSize < -60) {
             bossPhase = BOSS_PHASE_VICTORY_FALL;
         }
         return;
@@ -351,7 +362,8 @@ function updateBossSequence(dt) {
             victorySettleTimer += dt;
             if (victorySettleTimer >= ENDGAME_VICTORY_SETTLE_SECONDS) {
                 turkey.vy = 0;
-                setAnimation(turkey.animator, 'fallDown');
+                turkey.animState = 'run';
+                setAnimation(turkey.animator, 'run');
                 playVictoryMusic();
                 bossPhase = BOSS_PHASE_VICTORY_IDLE;
                 consumeClick();
@@ -364,6 +376,7 @@ function updateBossSequence(dt) {
     }
 
     if (bossPhase === BOSS_PHASE_VICTORY_IDLE) {
+        updateAnimator(turkey.animator, dt);
         const click = consumeClick();
         const press = consumeJustPressed();
         if (click || press) {
@@ -674,7 +687,10 @@ function update(dt) {
             applyPhysics(turkey, dt, isPressed());
             updateTurkeyAnimation(turkey, dt, isPressed());
         }
-        updateWorld(dt);
+        const shouldAdvanceWorld = !isBossSequenceActive() || getDistanceMeters() < bossDistanceCapMeters;
+        if (shouldAdvanceWorld) {
+            updateWorld(dt);
+        }
         const hitbox = getTurkeyHitbox(turkey);
         const turkeyCX = hitbox.x + PLAYER_WIDTH / 2;
         const turkeyCY = hitbox.y + PLAYER_HEIGHT / 2;
@@ -686,59 +702,73 @@ function update(dt) {
         if (!isBossSequenceActive()) {
             updateCollectibles(dt, hitbox);
         }
-        updateGadgetTimers(dt);
-        updateEffects(dt);
+        const bossDefeated = isBossSequenceActive() && bossPhase !== BOSS_PHASE_APPROACH;
+        if (!bossDefeated) {
+            updateGadgetTimers(dt);
+            updateEffects(dt);
+        }
 
         if (!isBossSequenceActive() && getDistanceMeters() >= ENDGAME_BOSS_TRIGGER_METERS) {
             startBossSequence();
         }
 
-        // Money Grubber: passive coin generation (tracked in passives.js)
-        const grubberEarned = updateMoneyGrubber(dt, isTurkeyOnGround(turkey));
-        if (grubberEarned > 0) {
-            announce(`+${grubberEarned} GRUB`, '#88DDFF');
-        }
-
-        // Compound Interest: update multiplier based on distance
-        const prevCompound = getCompoundMult();
-        updateCompound(getDistanceMeters());
-        const newCompound = getCompoundMult();
-        if (newCompound > prevCompound) {
-            announce(`COMPOUND +${(newCompound - prevCompound).toFixed(1)}x`, '#88DDFF');
-        }
-
-        // Second Chance gadget: invuln pulse every 500m
-        if (isSecondChanceEquipped() && getDistanceMeters() >= secondChanceNextDist) {
-            secondChanceInvulnTimer = getSecondChanceDuration();
-            secondChanceNextDist += SECOND_CHANCE_STEP_METERS;
-            startCountdown('secondChance', 'SAFE', secondChanceInvulnTimer, '#44FF44');
-            announce('SECOND CHANCE!', '#44FF44');
-        }
-        if (secondChanceInvulnTimer > 0) {
-            secondChanceInvulnTimer -= dt;
-            if (secondChanceInvulnTimer <= 0) stopCountdown('secondChance');
-        }
-
-        // Thick Skin: show countdown while in laser
-        const graceTime = getLaserGraceTime();
-        if (graceTime > 0) {
-            let inLaser = false;
-            for (const laser of getLasers()) {
-                if (checkLaserCollision(hitbox, laser)) { inLaser = true; break; }
+        // Disable all passives/gadgets once the boss is defeated.
+        let isInvuln = false;
+        if (!bossDefeated) {
+            // Money Grubber: passive coin generation (tracked in passives.js)
+            const grubberEarned = updateMoneyGrubber(dt, isTurkeyOnGround(turkey));
+            if (grubberEarned > 0) {
+                announce(`+${grubberEarned} GRUB`, '#88DDFF');
             }
-            if (!inLaser && checkLaserPatternCollision(hitbox)) inLaser = true;
 
-            if (inLaser && !laserGraceActive) {
-                laserGraceActive = true;
-                startCountdown('thickSkin', 'SAFE', graceTime, '#FF6644');
-            } else if (!inLaser && laserGraceActive) {
-                laserGraceActive = false;
-                stopCountdown('thickSkin');
+            // Compound Interest: update multiplier based on distance
+            const prevCompound = getCompoundMult();
+            updateCompound(getDistanceMeters());
+            const newCompound = getCompoundMult();
+            if (newCompound > prevCompound) {
+                announce(`COMPOUND +${(newCompound - prevCompound).toFixed(1)}x`, '#88DDFF');
             }
-        }
 
-        const isInvuln = secondChanceInvulnTimer > 0 || isFlashInvulnerable() || isShieldInvulnerable();
-        updateInvulnEffect(dt, isInvuln);
+            // Second Chance gadget: invuln pulse every 500m
+            if (isSecondChanceEquipped() && getDistanceMeters() >= secondChanceNextDist) {
+                secondChanceInvulnTimer = getSecondChanceDuration();
+                secondChanceNextDist += SECOND_CHANCE_STEP_METERS;
+                startCountdown('secondChance', 'SAFE', secondChanceInvulnTimer, '#44FF44');
+                announce('SECOND CHANCE!', '#44FF44');
+            }
+            if (secondChanceInvulnTimer > 0) {
+                secondChanceInvulnTimer -= dt;
+                if (secondChanceInvulnTimer <= 0) stopCountdown('secondChance');
+            }
+
+            // Thick Skin: show countdown while in laser
+            const graceTime = getLaserGraceTime();
+            if (graceTime > 0) {
+                let inLaser = false;
+                for (const laser of getLasers()) {
+                    if (checkLaserCollision(hitbox, laser)) { inLaser = true; break; }
+                }
+                if (!inLaser && checkLaserPatternCollision(hitbox)) inLaser = true;
+
+                if (inLaser && !laserGraceActive) {
+                    laserGraceActive = true;
+                    startCountdown('thickSkin', 'SAFE', graceTime, '#FF6644');
+                } else if (!inLaser && laserGraceActive) {
+                    laserGraceActive = false;
+                    stopCountdown('thickSkin');
+                }
+            }
+
+            isInvuln = secondChanceInvulnTimer > 0 || isFlashInvulnerable() || isShieldInvulnerable();
+            updateInvulnEffect(dt, isInvuln);
+        } else {
+            secondChanceInvulnTimer = 0;
+            laserGraceActive = false;
+            stopCountdown('secondChance');
+            stopCountdown('thickSkin');
+            stopCountdown('shieldIframes');
+            updateInvulnEffect(dt, false);
+        }
 
         if (isBossSequenceActive()) {
             updateBossSequence(dt);
@@ -949,14 +979,15 @@ function renderLaserTestHud(ctx) {
 
 function renderBoss(ctx) {
     if (!isBossSequenceActive()) return;
+    const drawSize = ENDGAME_BOSS_SIZE * BOSS_RENDER_SCALE;
     drawAnimationFrame(
         ctx,
         bossAnim,
         0,
         Math.round(bossX),
         Math.round(bossY),
-        ENDGAME_BOSS_SIZE,
-        ENDGAME_BOSS_SIZE
+        drawSize,
+        drawSize
     );
 }
 

@@ -61,6 +61,7 @@ let farPalmDecor = [];
 let nearPalmDecor = [];
 let nextFarPalmWorldX = 0;
 let nextNearPalmWorldX = 0;
+let suppressPalmDecor = false;
 
 function wrapOffset(value, width) {
     return ((value % width) + width) % width;
@@ -114,11 +115,19 @@ export function renderWorld(ctx) {
         renderSpiritualEffects(ctx, spiritBlend);
     }
     renderFarHills(ctx, colors.farBg);
-    renderPalmDecor(ctx, farPalmDecor);
+    if (!suppressPalmDecor) {
+        renderPalmDecor(ctx, farPalmDecor);
+    }
     renderNearHills(ctx, colors.nearBg);
-    renderPalmDecor(ctx, nearPalmDecor);
+    if (!suppressPalmDecor) {
+        renderPalmDecor(ctx, nearPalmDecor);
+    }
     renderBiomeSigns(ctx);
     renderGroundBase(ctx, colors.ground);
+}
+
+export function setPalmDecorSuppressed(suppressed) {
+    suppressPalmDecor = !!suppressed;
 }
 
 export function renderWorldTerrain(ctx) {

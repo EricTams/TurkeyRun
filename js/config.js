@@ -186,15 +186,15 @@ export const BIRD_VOLLEY_DELAY = 0.5;       // seconds between volley birds
 export const ENDGAME_BOSS_TRIGGER_METERS = 2500; // 500m into Spiritual Realm
 export const ENDGAME_BOSS_SIZE = 256;
 export const ENDGAME_BOSS_START_X = CANVAS_WIDTH + 140;
-export const ENDGAME_BOSS_START_Y = 88;
+export const ENDGAME_BOSS_START_Y = -140; // keep top-right sprite corner offscreen
 export const ENDGAME_BOSS_APPROACH_SPEED = 70;
 export const ENDGAME_BOSS_EXIT_SPEED_X = 300;
 export const ENDGAME_BOSS_EXIT_SPEED_Y = -220;
 export const ENDGAME_BOSS_BITE_HOLD_SECONDS = 0.22;
 export const ENDGAME_BOSS_SHAKE_SECONDS = 0.65;
 export const ENDGAME_BOSS_SHAKE_PX = 8;
-export const ENDGAME_BOSS_HITBOX_INSET_X = 96;
-export const ENDGAME_BOSS_HITBOX_INSET_Y = 86;
+export const ENDGAME_BOSS_HITBOX_INSET_X = 20;
+export const ENDGAME_BOSS_HITBOX_INSET_Y = 40;
 export const ENDGAME_VICTORY_SETTLE_SECONDS = 0.5;
 
 // Lasers (telegraphed beams)
