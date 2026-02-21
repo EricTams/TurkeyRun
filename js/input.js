@@ -126,7 +126,7 @@ function onTouchEnd(e) {
     }
 }
 
-// Returns biome number 1-5 if a debug key was pressed, or 0.
+// Returns debug section number 1-6 if a debug key was pressed, or 0.
 export function consumeDebugBiome() {
     const val = debugBiomeKey;
     debugBiomeKey = 0;
@@ -170,8 +170,8 @@ function onKeyDown(e) {
     if (e.code === 'Escape') {
         escapeJustPressed = true;
     }
-    // Debug: keys 1-5 force a biome
-    if (e.code >= 'Digit1' && e.code <= 'Digit5') {
+    // Debug: keys 1-6 jump to progression checkpoints.
+    if (e.code >= 'Digit1' && e.code <= 'Digit6') {
         debugBiomeKey = parseInt(e.code.charAt(5), 10);
     }
 }

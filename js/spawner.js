@@ -36,6 +36,7 @@ import {
     startLaserPattern,
     stopLaserPattern,
     getSafeCenterBandsAtTime,
+    doesLaserPatternHitRectAtTime,
 } from './laserPattern.js';
 import { LASER_PATTERNS_BY_TIER } from './data/laserPatterns.js';
 import { addTerrainSegment, updateTerrain, resetTerrain } from './terrain.js';
@@ -77,6 +78,15 @@ function resolveGapY(gapCenter, gapH) {
 
 function pickRandom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function shuffledCopy(arr) {
+    const copy = arr.slice();
+    for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
 }
 
 function randomBirdY() {
@@ -153,13 +163,44 @@ function generateCoinsForLaserPattern(pattern) {
     return coins;
 }
 
+const LASER_BLOCKER_CHECK_DT = 0.1;
+let usedLaserPatternIds = new Set();
+
+function blockerRectAtTime(blocker, t) {
+    return {
+        x: blocker.x - AUTO_RUN_SPEED * t,
+        y: blocker.y,
+        w: blocker.size,
+        h: blocker.size,
+    };
+}
+
+function laserPatternOverlapsSkyBlockers(pattern, blockers) {
+    if (!blockers || blockers.length === 0) return false;
+    const maxT = Math.max(0, pattern.duration);
+    const steps = Math.max(1, Math.ceil(maxT / LASER_BLOCKER_CHECK_DT));
+    for (let i = 0; i <= steps; i++) {
+        const t = Math.min(maxT, i * LASER_BLOCKER_CHECK_DT);
+        for (const blocker of blockers) {
+            const rect = blockerRectAtTime(blocker, t);
+            if (doesLaserPatternHitRectAtTime(pattern, t, rect)) return true;
+        }
+    }
+    return false;
+}
+
 function maybeSpawnLaserSection(tier) {
     const pool = LASER_PATTERNS_BY_TIER[tier] || [];
     if (pool.length === 0) return null;
     if (isLaserPatternActive()) return null;
     if (Math.random() >= getLaserSectionChance(tier)) return null;
-    const pattern = pickRandom(pool);
+    const available = pool.filter(pattern => !usedLaserPatternIds.has(pattern.id));
+    if (available.length === 0) return null;
+    const candidates = shuffledCopy(available);
+    const pattern = candidates.find(candidate => !laserPatternOverlapsSkyBlockers(candidate, skyBlockers));
+    if (!pattern) return null;
     startLaserPattern(pattern);
+    usedLaserPatternIds.add(pattern.id);
     const coinPositions = generateCoinsForLaserPattern(pattern);
     if (coinPositions.length > 0) {
         spawnCoinsAtPositions(coinPositions);
@@ -306,6 +347,7 @@ export function resetSpawner() {
     birds = [];
     skyBlockers = [];
     currentDistanceMeters = 0;
+    usedLaserPatternIds = new Set();
     stopLaserPattern();
     resetTerrain();
 }
@@ -375,6 +417,7 @@ export function jumpSpawnerToDistance(distancePx) {
     zappers = [];
     birds = [];
     skyBlockers = [];
+    usedLaserPatternIds = new Set();
     stopLaserPattern();
     resetTerrain();
 

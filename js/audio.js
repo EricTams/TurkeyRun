@@ -4,11 +4,15 @@
 
 const MUSIC_PATH = 'assets/music/Mushroom Escape.mp3';
 const MUSIC_VOLUME = 0.075; // Keep it low so it doesn't overpower gameplay
+const VICTORY_PATH = 'assets/sound/Win.m4a';
+const VICTORY_VOLUME = 0.6;
 const MUTE_STORAGE_KEY = 'turkeyrun_muted';
 
 let musicElement = null;
 let muted = false;
 let musicReady = false;
+let victoryElement = null;
+let victoryReady = false;
 
 // Web Audio API context (created lazily on first user gesture)
 let audioCtx = null;
@@ -21,6 +25,7 @@ const SFX_MANIFEST = [
     { name: 'gobble2',  path: 'assets/sound/Gobble2.m4a',   gain: 1.0 },
     { name: 'gobble3',  path: 'assets/sound/Gobble3.m4a',   gain: 1.0 },
     { name: 'gobble4',  path: 'assets/sound/Gobble4.m4a',   gain: 1.0 },
+    { name: 'fingerEat', path: 'assets/sound/Finger Eat.m4a', gain: 2.4 },
 ];
 
 /** Ensure the AudioContext exists. */
@@ -76,10 +81,29 @@ export function loadMusic() {
         musicElement.load();
     });
 
+    const victoryPromise = new Promise((resolve) => {
+        victoryElement = new Audio(VICTORY_PATH);
+        victoryElement.loop = false;
+        victoryElement.volume = muted ? 0 : VICTORY_VOLUME;
+        victoryElement.preload = 'auto';
+
+        victoryElement.addEventListener('canplaythrough', () => {
+            victoryReady = true;
+            resolve();
+        }, { once: true });
+
+        victoryElement.addEventListener('error', () => {
+            console.warn('Failed to load victory music:', VICTORY_PATH);
+            resolve();
+        }, { once: true });
+
+        victoryElement.load();
+    });
+
     ensureAudioCtx();
     const sfxPromises = SFX_MANIFEST.map(loadSfx);
 
-    return Promise.all([musicPromise, ...sfxPromises]);
+    return Promise.all([musicPromise, victoryPromise, ...sfxPromises]);
 }
 
 /** Start or resume the background music. */
@@ -100,6 +124,22 @@ export function stopMusic() {
     if (!musicElement) return;
     musicElement.pause();
     musicElement.currentTime = 0;
+}
+
+/** Start the victory music from the beginning. */
+export function playVictoryMusic() {
+    if (!victoryElement || !victoryReady) return;
+    stopMusic();
+    victoryElement.currentTime = 0;
+    victoryElement.volume = muted ? 0 : VICTORY_VOLUME;
+    victoryElement.play().catch(() => {});
+}
+
+/** Stop the victory music and reset to start. */
+export function stopVictoryMusic() {
+    if (!victoryElement) return;
+    victoryElement.pause();
+    victoryElement.currentTime = 0;
 }
 
 /**
@@ -134,6 +174,9 @@ export function toggleMute() {
     muted = !muted;
     if (musicElement) {
         musicElement.volume = muted ? 0 : MUSIC_VOLUME;
+    }
+    if (victoryElement) {
+        victoryElement.volume = muted ? 0 : VICTORY_VOLUME;
     }
     try {
         localStorage.setItem(MUTE_STORAGE_KEY, muted ? 'true' : 'false');

@@ -39,12 +39,28 @@ let dragStartY = 0;
 let panStartX = 0;
 let panStartY = 0;
 let hasDragged = false;
+let pendingAction = null;
+let lastRecenterAtMs = 0;
 
 let selectedNodeId = null; // for popup
 
 let purchasedNodes = new Set();
 let totalCoins = 0;
 let onPurchaseCallback = null;
+const RECENTER_DEBOUNCE_MS = 180;
+
+function isInsideBtn(x, y, btn) {
+    return x >= btn.x && x <= btn.x + btn.w &&
+        y >= btn.y && y <= btn.y + btn.h;
+}
+
+function tryQueueRecenter() {
+    const now = performance.now();
+    if (now - lastRecenterAtMs < RECENTER_DEBOUNCE_MS) return false;
+    lastRecenterAtMs = now;
+    pendingAction = 'recenter';
+    return true;
+}
 
 // --- Public API ---
 
@@ -56,6 +72,10 @@ export function initShop(purchased, coins, onPurchase) {
     selectedNodeId = null;
     panX = 0;
     panY = 0;
+    isDragging = false;
+    hasDragged = false;
+    pendingAction = null;
+    lastRecenterAtMs = 0;
 }
 
 export function updateShopCoins(coins) {
@@ -90,6 +110,12 @@ function gridToScreen(col, row) {
 // --- Input handling ---
 
 export function onShopPointerDown(x, y) {
+    // Recenter should be robust even when multi-touch up/down ordering
+    // causes us to miss the matching pointer-up.
+    if (isInsideBtn(x, y, RECENTER_BTN)) {
+        tryQueueRecenter();
+        return;
+    }
     isDragging = true;
     hasDragged = false;
     dragStartX = x;
@@ -108,9 +134,25 @@ export function onShopPointerMove(x, y) {
 }
 
 export function onShopPointerUp(x, y) {
-    if (!isDragging) return; // no matching pointerDown — ignore stale event
+    if (!isDragging) {
+        // Handle up-only recenter taps from touch ordering quirks.
+        if (isInsideBtn(x, y, RECENTER_BTN)) {
+            tryQueueRecenter();
+        }
+        return;
+    }
     isDragging = false;
     if (hasDragged) return; // was a drag, not a tap
+
+    // Bottom-bar actions should only trigger on tap release (not on pointer-down).
+    if (isInsideBtn(x, y, BACK_BTN)) {
+        pendingAction = 'back';
+        return;
+    }
+    if (isInsideBtn(x, y, RECENTER_BTN)) {
+        tryQueueRecenter();
+        return;
+    }
 
     // Check popup buttons first
     if (selectedNodeId) {
@@ -146,6 +188,12 @@ export function onShopPointerUp(x, y) {
 export function onShopRecenter() {
     panX = 0;
     panY = 0;
+}
+
+export function consumeShopAction() {
+    const action = pendingAction;
+    pendingAction = null;
+    return action;
 }
 
 function attemptPurchase(nodeId) {
@@ -471,14 +519,3 @@ function drawRecenterBtn(ctx) {
     ctx.fillText('RECENTER', RECENTER_BTN.x + RECENTER_BTN.w / 2, RECENTER_BTN.y + RECENTER_BTN.h / 2);
 }
 
-export function getShopAction(x, y) {
-    if (x >= BACK_BTN.x && x <= BACK_BTN.x + BACK_BTN.w &&
-        y >= BACK_BTN.y && y <= BACK_BTN.y + BACK_BTN.h) {
-        return 'back';
-    }
-    if (x >= RECENTER_BTN.x && x <= RECENTER_BTN.x + RECENTER_BTN.w &&
-        y >= RECENTER_BTN.y && y <= RECENTER_BTN.y + RECENTER_BTN.h) {
-        return 'recenter';
-    }
-    return null;
-}

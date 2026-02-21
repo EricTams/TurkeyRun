@@ -474,8 +474,32 @@ export function renderRunSummary(ctx, distance, coinsEarned, totalCoins, bestDis
 
     // Breakdown lines with count-up animation
     const hasBreakdown = breakdown && breakdown.length > 0;
-    const lineH = 24;
-    let y = 135;
+    const DEFAULT_LINE_H = 24;
+    const MIN_LINE_H = 12;
+    const BREAKDOWN_START_Y = 135;
+    const MIN_BREAKDOWN_START_Y = 118;
+    const TOTAL_EXTRA_H = 18; // divider + total + post-gap
+    const CONTENT_BOTTOM_LIMIT = DEAD_BTN_Y - 12; // keep text clear of buttons
+
+    let lineH = DEFAULT_LINE_H;
+    let startY = BREAKDOWN_START_Y;
+    if (hasBreakdown) {
+        // Fit all breakdown rows + total row into the vertical space above buttons.
+        const rowsIncludingTotal = breakdown.length + 1;
+        const maxLineH = Math.floor((CONTENT_BOTTOM_LIMIT - startY - TOTAL_EXTRA_H) / rowsIncludingTotal);
+        lineH = Math.max(MIN_LINE_H, Math.min(DEFAULT_LINE_H, maxLineH));
+
+        const projectedBottom = startY + rowsIncludingTotal * lineH + TOTAL_EXTRA_H;
+        const overflow = Math.max(0, projectedBottom - CONTENT_BOTTOM_LIMIT);
+        if (overflow > 0) {
+            startY = Math.max(MIN_BREAKDOWN_START_Y, startY - overflow);
+        }
+    }
+    const labelFontSize = Math.max(11, Math.floor((16 * lineH) / DEFAULT_LINE_H));
+    const noteFontSize = Math.max(10, Math.floor((14 * lineH) / DEFAULT_LINE_H));
+    const totalFontSize = Math.max(14, Math.floor((20 * lineH) / DEFAULT_LINE_H));
+    const savingsFontSize = Math.max(12, Math.floor((14 * lineH) / DEFAULT_LINE_H));
+    let y = startY;
 
     if (hasBreakdown) {
         let runningDisplayTotal = 0;
@@ -499,7 +523,7 @@ export function renderRunSummary(ctx, distance, coinsEarned, totalCoins, bestDis
             ctx.globalAlpha = fadeAlpha;
 
             // Label on the left, value on the right
-            ctx.font = '16px monospace';
+            ctx.font = `${labelFontSize}px monospace`;
             ctx.textAlign = 'left';
             ctx.fillStyle = '#AAAAAA';
             ctx.fillText(b.label, sx - 150, y);
@@ -507,13 +531,13 @@ export function renderRunSummary(ctx, distance, coinsEarned, totalCoins, bestDis
             // Note (multiplier info) in the middle
             if (b.note) {
                 ctx.fillStyle = '#888888';
-                ctx.font = '14px monospace';
+                ctx.font = `${noteFontSize}px monospace`;
                 ctx.textAlign = 'center';
                 ctx.fillText(b.note, sx + 30, y);
             }
 
             // Value on the right
-            ctx.font = 'bold 16px monospace';
+            ctx.font = `bold ${labelFontSize}px monospace`;
             ctx.textAlign = 'right';
             ctx.fillStyle = b.color;
             ctx.fillText(`${b.prefix}${displayVal}`, sx + 150, y);
@@ -544,7 +568,7 @@ export function renderRunSummary(ctx, distance, coinsEarned, totalCoins, bestDis
             y += 14;
 
             // TOTAL line
-            ctx.font = 'bold 20px monospace';
+            ctx.font = `bold ${totalFontSize}px monospace`;
             ctx.textAlign = 'left';
             ctx.fillStyle = '#FFD700';
             ctx.fillText('TOTAL', sx - 150, y);
@@ -564,7 +588,7 @@ export function renderRunSummary(ctx, distance, coinsEarned, totalCoins, bestDis
             ctx.save();
             ctx.globalAlpha = savFade;
 
-            ctx.font = '14px monospace';
+            ctx.font = `${savingsFontSize}px monospace`;
             ctx.textAlign = 'center';
             ctx.fillStyle = '#CCCCFF';
             ctx.fillText(`Bank: ${totalCoins}    Best: ${bestDistance}m`, sx, y);

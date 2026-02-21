@@ -59,7 +59,8 @@ export function getActivePatternDuration() { return activePattern ? activePatter
 // -----------------------------------------------------------------------
 
 function sampleLaser(laser, elapsed) {
-    const { keyframes, loop } = laser;
+    const keyframes = laser.keyframes;
+    const loop = laser.loop !== false;
     const n = keyframes.length;
     if (n === 0) return null;
 
@@ -251,6 +252,16 @@ export function checkLaserPatternCollision(turkeyRect) {
         const s = sampleLaser(laser, laser.elapsed);
         if (!s || s.state !== 'active') continue;
         if (beamHitsRect(s.x1, s.y1, s.x2, s.y2, turkeyRect)) return true;
+    }
+    return false;
+}
+
+export function doesLaserPatternHitRectAtTime(patternDef, elapsed, rect) {
+    if (!patternDef || !patternDef.lasers) return false;
+    for (const laser of patternDef.lasers) {
+        const sample = sampleLaser(laser, elapsed);
+        if (!sample || sample.state !== 'active') continue;
+        if (beamHitsRect(sample.x1, sample.y1, sample.x2, sample.y2, rect)) return true;
     }
     return false;
 }

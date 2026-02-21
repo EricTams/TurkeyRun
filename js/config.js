@@ -100,11 +100,15 @@ export const WEIRD_PILLAR_HEIGHT = 60;
 // Animated blocker dimensions (render size in-game)
 export const OLD_IGUANA_WIDTH = 50;
 export const OLD_IGUANA_HEIGHT = 50;
+export const ICE_IGUANA_WIDTH = 64;
+export const ICE_IGUANA_HEIGHT = 64;
 export const TIE_DYE_IGUANA_WIDTH = 56;
 export const TIE_DYE_IGUANA_HEIGHT = 28;
 export const SMALL_ASTEROID_SIZE = 36;
 export const MEDIUM_ASTEROID_SIZE = 50;
 export const LARGE_ASTEROID_SIZE = 72;
+export const UFO_SIZE = 128;
+export const THOUGHT_BUBBLE_SIZE = 48;
 export const POOL_TUBE_SIZE = 64;
 export const POOL_TUBE_GRAVITY = 600;        // px/s²
 export const POOL_TUBE_BOUNCE_RATIO = 0.85;  // bounce height as fraction of tube size
@@ -121,9 +125,9 @@ export const SKY_BLOCKER_Y_MAX = 330;
 // Biome progression (distance in meters)
 export const BIOME_BEACH_START = 0;
 export const BIOME_GRASS_START = 500;
-export const BIOME_MOUNTAIN_START = 1200;
-export const BIOME_MOON_START = 2200;
-export const BIOME_SPIRITUAL_START = 3500;
+export const BIOME_MOUNTAIN_START = 1000;
+export const BIOME_MOON_START = 1500;
+export const BIOME_SPIRITUAL_START = 2000;
 export const BIOME_TRANSITION_METERS = 150;   // color lerp zone before each boundary
 
 // Zappers
@@ -157,8 +161,8 @@ export const FOOD_Y_BOTTOM_MARGIN = 30; // margin above GROUND_Y for food placem
 // chunk 8 is that horizontal speed is pinned to BIRD_X_SPEED so arrival time
 // is deterministic: (CANVAS_WIDTH - PLAYER_START_X) / BIRD_X_SPEED.
 // Y-movement still comes from the angle/turn-rate system (sin(angle) * BIRD_SPEED).
-export const BIRD_WIDTH = 40;               // slightly wider for 64x48 art
-export const BIRD_HEIGHT = 30;              // slightly taller for 64x48 art
+export const BIRD_WIDTH = 60;               // 50% larger bird render/hitbox width
+export const BIRD_HEIGHT = 45;              // 50% larger bird render/hitbox height
 export const BIRD_SPEED = 400;              // px/s -- used for y-component of movement
 export const BIRD_X_SPEED = 380;            // px/s -- constant horizontal speed (overrides cos component)
 export const BIRD_TURN_RATE = 0.6;          // radians/s max steering (very limited, JJ-style)
@@ -177,6 +181,21 @@ export const BIRD_SPAWN_INTERVAL_DECAY = 0.8;// seconds reduction per 1000m trav
 export const BIRD_VOLLEY_CHANCE = 0.3;      // probability a spawn triggers a volley
 export const BIRD_VOLLEY_MAX = 3;           // max extra birds in a volley
 export const BIRD_VOLLEY_DELAY = 0.5;       // seconds between volley birds
+
+// Endgame boss sequence (screen-space finger encounter in Spiritual Realm)
+export const ENDGAME_BOSS_TRIGGER_METERS = 2500; // 500m into Spiritual Realm
+export const ENDGAME_BOSS_SIZE = 256;
+export const ENDGAME_BOSS_START_X = CANVAS_WIDTH + 140;
+export const ENDGAME_BOSS_START_Y = 88;
+export const ENDGAME_BOSS_APPROACH_SPEED = 70;
+export const ENDGAME_BOSS_EXIT_SPEED_X = 300;
+export const ENDGAME_BOSS_EXIT_SPEED_Y = -220;
+export const ENDGAME_BOSS_BITE_HOLD_SECONDS = 0.22;
+export const ENDGAME_BOSS_SHAKE_SECONDS = 0.65;
+export const ENDGAME_BOSS_SHAKE_PX = 8;
+export const ENDGAME_BOSS_HITBOX_INSET_X = 96;
+export const ENDGAME_BOSS_HITBOX_INSET_Y = 86;
+export const ENDGAME_VICTORY_SETTLE_SECONDS = 0.5;
 
 // Lasers (telegraphed beams)
 export const LASER_BEAM_THICKNESS = 16;             // active beam thickness in px

@@ -26,10 +26,11 @@ let pickerSlotIdx = -1;
 let pickerGadgets = [];
 
 const PICKER_HEADER_H = 50;
-const PICKER_ROW_H = 40;
+const PICKER_ROW_H = 56;
 const PICKER_PAD = 12;
 const PICKER_COLS = 2;
 const PICKER_COL_W = (CANVAS_WIDTH - PICKER_PAD * 2) / PICKER_COLS;
+const START_GADGET_IDS = ['startGrass', 'startMountain', 'startSpace', 'startRealm'];
 
 export function initLoadout(slots, gadgetLevels, currentLoadout) {
     slotCount = slots;
@@ -92,7 +93,14 @@ export function onLoadoutClick(x, y) {
 function openPicker(slotIdx) {
     pickerSlotIdx = slotIdx;
     const inUse = new Set(loadout.filter((g, i) => g && i !== slotIdx));
-    pickerGadgets = Object.keys(ownedGadgets).filter(gid => !inUse.has(gid));
+    pickerGadgets = Object.keys(ownedGadgets).filter(gid => {
+        if (inUse.has(gid)) return false;
+        if (!START_GADGET_IDS.includes(gid)) return true;
+        for (const equipped of inUse) {
+            if (START_GADGET_IDS.includes(equipped)) return false;
+        }
+        return true;
+    });
     pickerGadgets.unshift(null);
     pickerOpen = true;
 }
@@ -203,15 +211,26 @@ function renderPicker(ctx) {
             ctx.fillText('(Empty)', cx + 10, cy + PICKER_ROW_H / 2);
         } else {
             const g = GADGETS[gid];
+            const level = ownedGadgets[gid] || 0;
+            const levelData = g.levels[level];
+
             ctx.textAlign = 'left';
             ctx.font = '14px monospace';
             ctx.fillStyle = '#FFFFFF';
-            ctx.fillText(g.name, cx + 10, cy + PICKER_ROW_H / 2);
+            const maxNameW = PICKER_COL_W - 84;
+            ctx.fillText(ellipsize(ctx, g.name, maxNameW), cx + 10, cy + 18);
 
             ctx.textAlign = 'right';
             ctx.font = 'bold 12px monospace';
             ctx.fillStyle = '#AADDAA';
-            ctx.fillText(`Lv${(ownedGadgets[gid] || 0) + 1}`, cx + PICKER_COL_W - 10, cy + PICKER_ROW_H / 2);
+            ctx.fillText(`Lv${level + 1}`, cx + PICKER_COL_W - 10, cy + 18);
+
+            ctx.textAlign = 'left';
+            ctx.font = '10px monospace';
+            ctx.fillStyle = '#AAB2DD';
+            const maxDescW = PICKER_COL_W - 20;
+            const desc = levelData?.desc || '';
+            ctx.fillText(ellipsize(ctx, desc, maxDescW), cx + 10, cy + 38);
         }
     }
 }
@@ -231,4 +250,16 @@ function drawBtn(ctx, r, label, bg, border, textColor, font) {
 
 function inRect(px, py, r) {
     return px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h;
+}
+
+function ellipsize(ctx, text, maxW) {
+    if (!text) return '';
+    if (ctx.measureText(text).width <= maxW) return text;
+    const dots = '...';
+    const dotsW = ctx.measureText(dots).width;
+    let out = text;
+    while (out.length > 0 && ctx.measureText(out).width + dotsW > maxW) {
+        out = out.slice(0, -1);
+    }
+    return out + dots;
 }

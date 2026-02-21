@@ -255,10 +255,13 @@ export function loadBlockerAnimations(onItemLoaded) {
     const base = 'assets/sprites/Blockers/';
     const anims = [
         ['oldIguanaIdle',      'Old Iguana-Idle'],
+        ['iceIguanaIdle',      'Ice-Iguana'],
         ['pufferfishIdle',     'Pufferfish-Idle'],
         ['smallAsteroidIdle',  'Small Asteroid-Idle'],
         ['mediumAsteroidIdle', 'Medium Asteroid-Idle'],
         ['largeAsteroidIdle',  'Large Asteroid-Idle'],
+        ['ufoFly',             'UFO-Fly'],
+        ['thoughtBubbleSpin',  'Thought Bubble-Spin'],
         ['tieDyeIguanaIdle',   'Tie Dye Iguana-Idle'],
         ['poolTube1Idle',      'Pool Tube-1'],
         ['poolTube2Idle',      'Pool Tube-2'],
@@ -274,7 +277,7 @@ export function loadBlockerAnimations(onItemLoaded) {
 }
 
 /** Number of animation assets loaded by loadBlockerAnimations. */
-export const BLOCKER_ANIM_COUNT = 12;
+export const BLOCKER_ANIM_COUNT = 15;
 
 /**
  * Load decorative background sprites (biome signs + palms). Returns a promise.
@@ -302,3 +305,21 @@ export function loadBackgroundDecorAnimations(onItemLoaded) {
 
 /** Number of background decor assets loaded by loadBackgroundDecorAnimations. */
 export const BACKGROUND_DECOR_ANIM_COUNT = 9;
+
+/**
+ * Load endgame boss and victory-credit UI animations.
+ */
+export function loadBossAnimations(onItemLoaded) {
+    const anims = [
+        ['bossFinger',      'assets/sprites/Boss/Finger-Finger'],
+        ['bossFingerEaten', 'assets/sprites/Boss/Finger-Eaten'],
+        ['specialThanksArt','assets/sprites/UI_Images/Special Thanks-Art'],
+    ];
+    return Promise.all(anims.map(([name, base]) =>
+        loadAnimation(name, base + '.json', base + '.png')
+            .then(() => { if (onItemLoaded) onItemLoaded(); })
+    ));
+}
+
+/** Number of animation assets loaded by loadBossAnimations. */
+export const BOSS_ANIM_COUNT = 3;

@@ -9,6 +9,7 @@ import {
     CANVAS_WIDTH, GROUND_Y,
     BIRD_WIDTH, BIRD_HEIGHT, BIRD_SPEED, BIRD_X_SPEED, GRACKLE_TURN_RATE,
     BIRD_WARNING_DURATION, BIRD_TRACKING_DURATION, GRACKLE_TRACKING_DURATION,
+    DEBUG_SHOW_HITBOX,
     BOAR_VERTICAL_TRACK_SPEED, BOAR_DASH_X_SPEED
 } from '../config.js';
 import { createAnimator, setAnimation, updateAnimator, drawAnimator, hasAnimation } from '../animation.js';
@@ -264,6 +265,14 @@ export function renderBird(ctx, bird, punchable) {
         const starY = bird.y - 2;
         ctx.strokeText('*', starX, starY);
         ctx.fillText('*', starX, starY);
+        ctx.restore();
+    }
+
+    if (DEBUG_SHOW_HITBOX) {
+        ctx.save();
+        ctx.strokeStyle = '#00FFFF';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(bird.x, bird.y, BIRD_WIDTH, BIRD_HEIGHT);
         ctx.restore();
     }
 }

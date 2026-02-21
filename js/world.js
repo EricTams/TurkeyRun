@@ -244,7 +244,6 @@ function createPalmDecor(worldX, lane) {
     const isFar = lane === 'far';
     const biomeMeters = Math.floor(worldX / PIXELS_PER_METER);
     const biome = getCurrentBiomeName(biomeMeters);
-    const biomeColors = getBiomeColors(biomeMeters);
     const key = getPalmKeyForBiome(biome);
 
     const scale = isFar ? 0.5 : 1.0;
@@ -261,9 +260,6 @@ function createPalmDecor(worldX, lane) {
         height: h,
         y,
         parallax: isFar ? PALM_FAR_PARALLAX : PALM_NEAR_PARALLAX,
-        alpha: isFar ? 0.72 : 0.9,
-        tintColor: isFar ? biomeColors.farBg : biomeColors.nearBg,
-        tintAlpha: isFar ? 0.2 : 0.24,
     };
 }
 
@@ -311,25 +307,16 @@ function renderPalmDecor(ctx, palms) {
         const x = getDecorScreenX(palm.worldX, palm.parallax);
         if (x > CANVAS_WIDTH + PALM_OFFSCREEN_MARGIN) continue;
         if (x + palm.width < -PALM_OFFSCREEN_MARGIN) continue;
-        const drawX = Math.round(x);
-        const drawY = Math.round(palm.y);
 
-        ctx.save();
-        ctx.globalAlpha = palm.alpha;
         drawAnimationFrame(
             ctx,
             palm.key,
             0,
-            drawX,
-            drawY,
+            Math.round(x),
+            Math.round(palm.y),
             palm.width,
             palm.height
         );
-        ctx.globalCompositeOperation = 'source-atop';
-        ctx.globalAlpha = palm.tintAlpha;
-        ctx.fillStyle = palm.tintColor;
-        ctx.fillRect(drawX, drawY, palm.width, palm.height);
-        ctx.restore();
     }
 }
 

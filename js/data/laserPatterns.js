@@ -11,6 +11,25 @@ function hBeam(t, y, state) {
     return { t, x1: 0, y1: y, x2: CANVAS_WIDTH, y2: y, state };
 }
 
+function withStartupPad(keyframes, startupPad) {
+    if (startupPad <= 0 || !keyframes || keyframes.length === 0) return keyframes;
+    const first = keyframes[0];
+    const shifted = keyframes.map((k) => ({ ...k, t: k.t + startupPad }));
+    return [{ ...first, t: 0, state: 'off' }, ...shifted];
+}
+
+function withPatternStartupPad(pattern, startupPad) {
+    if (startupPad <= 0) return pattern;
+    return {
+        ...pattern,
+        duration: pattern.duration + startupPad,
+        lasers: pattern.lasers.map((laser) => ({
+            ...laser,
+            keyframes: withStartupPad(laser.keyframes, startupPad),
+        })),
+    };
+}
+
 function arcSweep(pivotX, pivotY, length, tStart, tEnd, angleStart, angleEnd, numSteps, state) {
     const kf = [];
     for (let i = 0; i <= numSteps; i++) {
@@ -35,7 +54,7 @@ function arcSweep(pivotX, pivotY, length, tStart, tEnd, angleStart, angleEnd, nu
 // Cycle: warn up 1.5s -> active up 1.25s -> warn down 1.5s -> active down 1.25s
 // -----------------------------------------------------------------------
 
-const H3 = {
+const H3_BASE = {
     id: 'H3',
     name: 'H3: Sky Lanes',
     tier: 'hard',
@@ -51,6 +70,7 @@ const H3 = {
         ],
     }],
 };
+const H3 = withPatternStartupPad(H3_BASE, 0.5);
 
 // -----------------------------------------------------------------------
 // M2: Crossing Edges
@@ -122,7 +142,7 @@ function isInWrappedWindow(p, start, end) {
     return p >= start || p < end;
 }
 
-const H4 = {
+const H4_BASE = {
     id: 'H4',
     name: 'H4: Orbit Cross',
     tier: 'hard',
@@ -132,6 +152,7 @@ const H4 = {
         { loop: true, keyframes: buildM2SquareOrbitKeyframes(0.25) }, // starts at top-right/bottom-left
     ],
 };
+const H4 = withPatternStartupPad(H4_BASE, 2.0);
 
 // -----------------------------------------------------------------------
 // Path-first helpers
@@ -233,7 +254,7 @@ function buildDownUpSineWaypoints({
 // -----------------------------------------------------------------------
 // H1: Ribbon Ride (gentle curved lane)
 // -----------------------------------------------------------------------
-const H1 = buildCorridorPattern({
+const H1_BASE = buildCorridorPattern({
     id: 'H1',
     name: 'H1: Serpent Run',
     tier: 'hard',
@@ -249,6 +270,7 @@ const H1 = buildCorridorPattern({
         period: 4.4,
     }),
 });
+const H1 = withPatternStartupPad(H1_BASE, 1.0);
 
 // -----------------------------------------------------------------------
 // H2: Double Curl (deeper curved lane)
@@ -262,7 +284,7 @@ const H2_WAYPOINTS = buildSineWaypoints({
     period: 2.6,
 });
 
-const H2 = {
+const H2_BASE = {
     id: 'H2',
     name: 'H2: Twin Arcs',
     tier: 'hard',
@@ -276,6 +298,7 @@ const H2 = {
         { loop: true, keyframes: buildCorridorBeamKeyframes(H2_WAYPOINTS, 300, 'bottom', 6.0) },
     ],
 };
+const H2 = withPatternStartupPad(H2_BASE, 1.0);
 
 // -----------------------------------------------------------------------
 // X1: Sine Corridor (moving safe path)
@@ -290,7 +313,7 @@ const X1_WAYPOINTS = buildDownUpSineWaypoints({
     trendAmplitude: 66,
 });
 
-const X1 = {
+const X1_BASE = {
     id: 'X1',
     name: 'X1: Cyclone Ribbon',
     tier: 'extreme',
@@ -302,11 +325,12 @@ const X1 = {
         { loop: true, keyframes: buildCorridorBeamKeyframes(X1_WAYPOINTS, 286, 'bottom', 6.0) },
     ],
 };
+const X1 = withPatternStartupPad(X1_BASE, 1.0);
 
 // -----------------------------------------------------------------------
 // X2: Pulse Matrix (original dense static rhythm puzzle)
 // -----------------------------------------------------------------------
-const X2 = buildTimedGatePattern({
+const X2_BASE = buildTimedGatePattern({
     id: 'X2',
     name: 'X2: Pulse Matrix',
     tier: 'extreme',
@@ -320,6 +344,7 @@ const X2 = buildTimedGatePattern({
         { y: 320, windows: [{ start: 1.0, end: 1.8 }, { start: 4.6, end: 5.4 }] },
     ],
 });
+const X2 = withPatternStartupPad(X2_BASE, 1.0);
 
 // -----------------------------------------------------------------------
 // X3: Gap Shift Matrix
@@ -352,7 +377,7 @@ function buildX3GapShiftKeyframes(laserIndex) {
     return X3_EVENTS.map((event) => hBeam(event.t, event.rows[laserIndex], event.state));
 }
 
-const X3 = {
+const X3_BASE = {
     id: 'X3',
     name: 'X3: Gap Shift Matrix',
     tier: 'extreme',
@@ -362,11 +387,12 @@ const X3 = {
         keyframes: buildX3GapShiftKeyframes(i),
     })),
 };
+const X3 = withPatternStartupPad(X3_BASE, 1.0);
 
 // -----------------------------------------------------------------------
 // Medium starters: easier than M1/M2
 // -----------------------------------------------------------------------
-const M1 = buildCorridorPattern({
+const M1_BASE = buildCorridorPattern({
     id: 'M1',
     name: 'M1: Breezy Bend',
     tier: 'medium',
@@ -382,6 +408,7 @@ const M1 = buildCorridorPattern({
         period: 3.4,
     }),
 });
+const M1 = withPatternStartupPad(M1_BASE, 1.0);
 
 const M2 = buildTimedGatePattern({
     id: 'M2',

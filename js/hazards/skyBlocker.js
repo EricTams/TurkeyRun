@@ -2,7 +2,8 @@ import {
     CANVAS_WIDTH, AUTO_RUN_SPEED, DEBUG_SHOW_HITBOX,
     PUFFERFISH_SIZE, PUFFERFISH_ROTATE_SPEED,
     SMALL_ASTEROID_SIZE, MEDIUM_ASTEROID_SIZE, LARGE_ASTEROID_SIZE,
-    ASTEROID_ROTATE_SPEED
+    ASTEROID_ROTATE_SPEED,
+    UFO_SIZE, THOUGHT_BUBBLE_SIZE
 } from '../config.js';
 import {
     createAnimator, setAnimation, updateAnimator, drawAnimator, hasAnimation
@@ -33,6 +34,18 @@ const SKY_BLOCKER_DEFS = {
         size: LARGE_ASTEROID_SIZE,
         fallbackColor: '#5A5A5A',
         rotateSpeed: ASTEROID_ROTATE_SPEED,
+    },
+    ufo: {
+        animKey: 'ufoFly',
+        size: UFO_SIZE,
+        fallbackColor: '#8B5CF6',
+        rotateSpeed: 0,
+    },
+    thoughtBubble: {
+        animKey: 'thoughtBubbleSpin',
+        size: THOUGHT_BUBBLE_SIZE,
+        fallbackColor: '#FFD700',
+        rotateSpeed: 0,
     },
 };
 

@@ -14,7 +14,13 @@ import {
     DEATH_BOUNCE_DAMPING, DEATH_BOUNCE_MIN_IMPACT_VY,
     BIOME_BEACH_START, BIOME_GRASS_START, BIOME_MOUNTAIN_START,
     BIOME_MOON_START, BIOME_SPIRITUAL_START,
-    DEBUG_LASER_TEST, LASER_PATTERN_PAUSE
+    DEBUG_LASER_TEST, LASER_PATTERN_PAUSE,
+    ENDGAME_BOSS_TRIGGER_METERS, ENDGAME_BOSS_SIZE,
+    ENDGAME_BOSS_START_X, ENDGAME_BOSS_START_Y,
+    ENDGAME_BOSS_APPROACH_SPEED, ENDGAME_BOSS_EXIT_SPEED_X, ENDGAME_BOSS_EXIT_SPEED_Y,
+    ENDGAME_BOSS_BITE_HOLD_SECONDS, ENDGAME_BOSS_SHAKE_SECONDS,
+    ENDGAME_BOSS_SHAKE_PX, ENDGAME_BOSS_HITBOX_INSET_X, ENDGAME_BOSS_HITBOX_INSET_Y,
+    ENDGAME_VICTORY_SETTLE_SECONDS
 } from './config.js';
 import { initRenderer, clear, getCtx, getCanvas } from './renderer.js';
 import {
@@ -36,13 +42,15 @@ import {
     loadFoodAnimations, FOOD_ANIM_COUNT,
     loadLaserAnimations, LASER_ANIM_COUNT,
     loadBlockerAnimations, BLOCKER_ANIM_COUNT,
-    loadBackgroundDecorAnimations, BACKGROUND_DECOR_ANIM_COUNT
+    loadBackgroundDecorAnimations, BACKGROUND_DECOR_ANIM_COUNT,
+    loadBossAnimations, BOSS_ANIM_COUNT,
+    setAnimation, drawAnimationFrame
 } from './animation.js';
 import { applyPhysics, applyGravityPhysics } from './physics.js';
 import { loadAll } from './sprites.js';
 import { createWorld, updateWorld, renderWorld, renderWorldTerrain, getDistanceMeters, getDistancePixels, setDistanceMeters } from './world.js';
 import { renderHud, isPauseButtonClick, isMuteButtonClick } from './hud.js';
-import { loadMusic, playMusic, pauseMusic, stopMusic, toggleMute, playSfx, playGobble } from './audio.js';
+import { loadMusic, playMusic, pauseMusic, stopMusic, playVictoryMusic, stopVictoryMusic, toggleMute, playSfx, playGobble } from './audio.js';
 import { renderGroundHazard, checkGroundHazardCollision, isIguana, punchHazard } from './hazards/groundHazard.js';
 import { renderSkyBlocker, checkSkyBlockerCollision } from './hazards/skyBlocker.js';
 import { renderZapper, checkZapperCollision } from './hazards/zapper.js';
@@ -69,7 +77,7 @@ import { clearDebugBiomeOverride } from './biome.js';
 import {
     initShop, updateShopCoins, updateShopPurchased,
     renderShop, onShopPointerDown, onShopPointerMove, onShopPointerUp,
-    onShopRecenter, getShopAction
+    onShopRecenter, consumeShopAction
 } from './meta/shop.js';
 import { initLoadout, getLoadoutResult, onLoadoutClick, renderLoadout } from './meta/loadout.js';
 import {
@@ -78,7 +86,7 @@ import {
     trySecondWind,
     hasIguanaPunch, consumeIguanaPunch,
     isSecondChanceEquipped, getSecondChanceDuration,
-    getTotalCoinMultiplier,
+    getTotalCoinMultiplier, getRunStartDistanceMeters,
     updateGadgetTimers, isFlashInvulnerable, getLaserGraceTime
 } from './meta/gadgets.js';
 import {
@@ -137,6 +145,22 @@ const DEBUG_SECTION_STARTS = [
     BIOME_MOON_START,
     BIOME_SPIRITUAL_START
 ];
+const DEBUG_BOSS_SECTION = 6;
+
+const BOSS_PHASE_NONE = 'none';
+const BOSS_PHASE_APPROACH = 'approach';
+const BOSS_PHASE_BITE = 'bite';
+const BOSS_PHASE_EXIT = 'exit';
+const BOSS_PHASE_VICTORY_FALL = 'victoryFall';
+const BOSS_PHASE_VICTORY_IDLE = 'victoryIdle';
+
+let bossPhase = BOSS_PHASE_NONE;
+let bossX = ENDGAME_BOSS_START_X;
+let bossY = ENDGAME_BOSS_START_Y;
+let bossAnim = 'bossFinger';
+let bossTimer = 0;
+let bossShakeTimer = 0;
+let victorySettleTimer = 0;
 
 // ---------------------------------------------------------------------------
 // Collision detection (uses hitbox, not render rect)
@@ -188,6 +212,11 @@ function checkCollisions() {
 function startHatching() {
     createWorld();
     resetSpawner();
+    const runStartMeters = getRunStartDistanceMeters();
+    if (runStartMeters > 0) {
+        setDistanceMeters(runStartMeters);
+        jumpSpawnerToDistance(getDistancePixels());
+    }
     resetCollectibles();
     secondChanceNextDist = SECOND_CHANCE_STEP_METERS;
     secondChanceInvulnTimer = 0;
@@ -203,6 +232,7 @@ function startHatching() {
     hatchPhase = 'falling';
     hatchTimer = 0;
     resetDeathState();
+    resetBossSequence();
     gameState = HATCHING;
     playMusic();
 }
@@ -218,6 +248,129 @@ function resetDeathState() {
     deathPhase = DEATH_PHASE_NONE;
     deathSteamTimer = 0;
     deathForwardSpeed = 0;
+}
+
+function resetBossSequence() {
+    bossPhase = BOSS_PHASE_NONE;
+    bossX = ENDGAME_BOSS_START_X;
+    bossY = ENDGAME_BOSS_START_Y;
+    bossAnim = 'bossFinger';
+    bossTimer = 0;
+    bossShakeTimer = 0;
+    victorySettleTimer = 0;
+    stopVictoryMusic();
+}
+
+function isBossSequenceActive() {
+    return bossPhase !== BOSS_PHASE_NONE;
+}
+
+function getBossRect() {
+    return {
+        x: bossX + ENDGAME_BOSS_HITBOX_INSET_X,
+        y: bossY + ENDGAME_BOSS_HITBOX_INSET_Y,
+        w: ENDGAME_BOSS_SIZE - ENDGAME_BOSS_HITBOX_INSET_X * 2,
+        h: ENDGAME_BOSS_SIZE - ENDGAME_BOSS_HITBOX_INSET_Y * 2
+    };
+}
+
+function checkBossCollision() {
+    const turkeyRect = getTurkeyHitbox(turkey);
+    const bossRect = getBossRect();
+    return !(
+        turkeyRect.x + turkeyRect.w <= bossRect.x ||
+        turkeyRect.x >= bossRect.x + bossRect.w ||
+        turkeyRect.y + turkeyRect.h <= bossRect.y ||
+        turkeyRect.y >= bossRect.y + bossRect.h
+    );
+}
+
+function startBossSequence() {
+    if (isBossSequenceActive()) return;
+    bossPhase = BOSS_PHASE_APPROACH;
+    bossX = ENDGAME_BOSS_START_X;
+    bossY = ENDGAME_BOSS_START_Y;
+    bossAnim = 'bossFinger';
+    bossTimer = 0;
+    bossShakeTimer = 0;
+    victorySettleTimer = 0;
+    // Endgame sequence runs cleanly without procedural patterns/hazards.
+    jumpSpawnerToDistance(getDistancePixels());
+    resetCollectibles();
+}
+
+function jumpToBossDebugSequence() {
+    setDistanceMeters(ENDGAME_BOSS_TRIGGER_METERS - 20);
+    jumpSpawnerToDistance(getDistancePixels());
+    clearDebugBiomeOverride();
+    secondChanceNextDist = Math.floor(ENDGAME_BOSS_TRIGGER_METERS / SECOND_CHANCE_STEP_METERS + 1) * SECOND_CHANCE_STEP_METERS;
+    startBossSequence();
+}
+
+function updateBossSequence(dt) {
+    if (bossShakeTimer > 0) bossShakeTimer -= dt;
+
+    if (bossPhase === BOSS_PHASE_APPROACH) {
+        bossX -= ENDGAME_BOSS_APPROACH_SPEED * dt;
+        if (checkBossCollision()) {
+            bossPhase = BOSS_PHASE_BITE;
+            bossAnim = 'bossFingerEaten';
+            bossTimer = ENDGAME_BOSS_BITE_HOLD_SECONDS;
+            bossShakeTimer = ENDGAME_BOSS_SHAKE_SECONDS;
+            stopMusic();
+            playSfx('fingerEat');
+            setTurkeyFallAnimation(turkey);
+            turkey.vy = 0;
+        }
+        return;
+    }
+
+    if (bossPhase === BOSS_PHASE_BITE) {
+        bossTimer -= dt;
+        if (bossTimer <= 0) {
+            bossPhase = BOSS_PHASE_EXIT;
+        }
+        return;
+    }
+
+    if (bossPhase === BOSS_PHASE_EXIT) {
+        bossX += ENDGAME_BOSS_EXIT_SPEED_X * dt;
+        bossY += ENDGAME_BOSS_EXIT_SPEED_Y * dt;
+        applyGravityPhysics(turkey, dt, 1.0);
+        updateAnimator(turkey.animator, dt);
+        if (bossX > CANVAS_WIDTH + ENDGAME_BOSS_SIZE || bossY + ENDGAME_BOSS_SIZE < -60) {
+            bossPhase = BOSS_PHASE_VICTORY_FALL;
+        }
+        return;
+    }
+
+    if (bossPhase === BOSS_PHASE_VICTORY_FALL) {
+        applyGravityPhysics(turkey, dt, 1.0);
+        updateAnimator(turkey.animator, dt);
+        if (isTurkeyOnGround(turkey)) {
+            victorySettleTimer += dt;
+            if (victorySettleTimer >= ENDGAME_VICTORY_SETTLE_SECONDS) {
+                turkey.vy = 0;
+                setAnimation(turkey.animator, 'fallDown');
+                playVictoryMusic();
+                bossPhase = BOSS_PHASE_VICTORY_IDLE;
+                consumeClick();
+                consumeJustPressed();
+            }
+        } else {
+            victorySettleTimer = 0;
+        }
+        return;
+    }
+
+    if (bossPhase === BOSS_PHASE_VICTORY_IDLE) {
+        const click = consumeClick();
+        const press = consumeJustPressed();
+        if (click || press) {
+            stopVictoryMusic();
+            goToMenu();
+        }
+    }
 }
 
 function finishDeathSequence() {
@@ -309,6 +462,8 @@ function handleDeath() {
 }
 
 function goToMenu() {
+    resetBossSequence();
+    stopMusic();
     consumeJustPressed();
     consumeClick();
     drainPointerDown(); drainPointerMove(); drainPointerUp();
@@ -444,15 +599,14 @@ function update(dt) {
         for (const p of drainPointerMove()) onShopPointerMove(p.x, p.y);
         for (const p of drainPointerUp()) onShopPointerUp(p.x, p.y);
 
-        const click = consumeClick();
+        consumeClick();
         consumeJustPressed();
-        if (click) {
-            const action = getShopAction(click.x, click.y);
-            if (action === 'back') {
-                goToMenu();
-            } else if (action === 'recenter') {
-                onShopRecenter();
-            }
+
+        const action = consumeShopAction();
+        if (action === 'back') {
+            goToMenu();
+        } else if (action === 'recenter') {
+            onShopRecenter();
         }
         if (consumeEscapePressed()) goToMenu();
         return;
@@ -490,7 +644,7 @@ function update(dt) {
         }
 
         // Check for pause (Escape key or pause button click)
-        if (consumeEscapePressed()) {
+        if (!isBossSequenceActive() && consumeEscapePressed()) {
             consumeClick();
             pauseMusic();
             gameState = PAUSED;
@@ -501,28 +655,43 @@ function update(dt) {
             toggleMute();
             return;
         }
-        if (click && isPauseButtonClick(click.x, click.y)) {
+        if (!isBossSequenceActive() && click && isPauseButtonClick(click.x, click.y)) {
             pauseMusic();
             gameState = PAUSED;
             return;
         }
 
-        // Debug: keys 1-5 jump to section starts (natural progression state).
+        // Debug: keys 1-5 jump to biome starts, 6 jumps to boss test setup.
         const dbg = consumeDebugBiome();
-        if (dbg > 0) jumpToDebugSection(dbg);
+        if (dbg === DEBUG_BOSS_SECTION) {
+            jumpToBossDebugSequence();
+        } else if (dbg > 0) {
+            jumpToDebugSection(dbg);
+        }
 
-        applyPhysics(turkey, dt, isPressed());
-        updateTurkeyAnimation(turkey, dt, isPressed());
+        const allowPlayerControl = !isBossSequenceActive() || bossPhase === BOSS_PHASE_APPROACH;
+        if (allowPlayerControl) {
+            applyPhysics(turkey, dt, isPressed());
+            updateTurkeyAnimation(turkey, dt, isPressed());
+        }
         updateWorld(dt);
         const hitbox = getTurkeyHitbox(turkey);
         const turkeyCX = hitbox.x + PLAYER_WIDTH / 2;
         const turkeyCY = hitbox.y + PLAYER_HEIGHT / 2;
-        updateSpawner(dt, getDistancePixels(), turkeyCX, turkeyCY);
+        if (!isBossSequenceActive()) {
+            updateSpawner(dt, getDistancePixels(), turkeyCX, turkeyCY);
+        }
 
         setPlayerPos(turkey.x, turkey.y);
-        updateCollectibles(dt, hitbox);
+        if (!isBossSequenceActive()) {
+            updateCollectibles(dt, hitbox);
+        }
         updateGadgetTimers(dt);
         updateEffects(dt);
+
+        if (!isBossSequenceActive() && getDistanceMeters() >= ENDGAME_BOSS_TRIGGER_METERS) {
+            startBossSequence();
+        }
 
         // Money Grubber: passive coin generation (tracked in passives.js)
         const grubberEarned = updateMoneyGrubber(dt, isTurkeyOnGround(turkey));
@@ -571,7 +740,9 @@ function update(dt) {
         const isInvuln = secondChanceInvulnTimer > 0 || isFlashInvulnerable() || isShieldInvulnerable();
         updateInvulnEffect(dt, isInvuln);
 
-        if (checkCollisions()) {
+        if (isBossSequenceActive()) {
+            updateBossSequence(dt);
+        } else if (checkCollisions()) {
             if (isInvuln) {
                 // Invulnerable -- skip death (i-frames active)
             } else if (hasShieldHit()) {
@@ -776,6 +947,61 @@ function renderLaserTestHud(ctx) {
     }
 }
 
+function renderBoss(ctx) {
+    if (!isBossSequenceActive()) return;
+    drawAnimationFrame(
+        ctx,
+        bossAnim,
+        0,
+        Math.round(bossX),
+        Math.round(bossY),
+        ENDGAME_BOSS_SIZE,
+        ENDGAME_BOSS_SIZE
+    );
+}
+
+function renderVictoryCredits(ctx) {
+    if (bossPhase !== BOSS_PHASE_VICTORY_IDLE) return;
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+    ctx.fillRect(0, 0, CANVAS_WIDTH, GROUND_Y);
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+
+    ctx.font = 'bold 40px monospace';
+    ctx.fillStyle = '#000000';
+    ctx.fillText('YOU WIN', CANVAS_WIDTH / 2 + 2, 22);
+    ctx.fillStyle = '#FFD700';
+    ctx.fillText('YOU WIN', CANVAS_WIDTH / 2, 20);
+
+    drawAnimationFrame(ctx, 'specialThanksArt', 0, Math.round((CANVAS_WIDTH - 232) / 2), 86, 232, 81);
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 24px monospace';
+    ctx.fillText('Credits', CANVAS_WIDTH / 2, 186);
+
+    ctx.font = '16px monospace';
+    ctx.fillStyle = '#CCCCCC';
+    ctx.fillText('Art/Music/Sound', CANVAS_WIDTH / 2, 220);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText('Raptor G', CANVAS_WIDTH / 2, 242);
+
+    ctx.fillStyle = '#CCCCCC';
+    ctx.fillText('Code', CANVAS_WIDTH / 2, 270);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText('Eric Tams', CANVAS_WIDTH / 2, 292);
+
+    ctx.fillStyle = '#CCCCCC';
+    ctx.fillText('Design', CANVAS_WIDTH / 2, 320);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillText('Raptor / Eric / John', CANVAS_WIDTH / 2, 342);
+
+    ctx.fillStyle = '#AAAACC';
+    ctx.font = '14px monospace';
+    ctx.fillText('Tap or press Space to return to menu', CANVAS_WIDTH / 2, 372);
+}
+
 function render() {
     const ctx = getCtx();
     clear();
@@ -810,11 +1036,20 @@ function render() {
         return;
     }
 
+    const shouldShake = gameState === PLAYING && bossShakeTimer > 0 && isBossSequenceActive();
+    const shakeX = shouldShake ? (Math.random() * 2 - 1) * ENDGAME_BOSS_SHAKE_PX : 0;
+    const shakeY = shouldShake ? (Math.random() * 2 - 1) * ENDGAME_BOSS_SHAKE_PX : 0;
+
+    ctx.save();
+    ctx.translate(shakeX, shakeY);
+
     // All gameplay states show the world scene
     renderWorld(ctx);
 
-    if (gameState === PLAYING || gameState === PAUSED ||
-        gameState === DYING || gameState === DEAD) {
+    const suppressPatterns = gameState === PLAYING && isBossSequenceActive();
+
+    if (!suppressPatterns && (gameState === PLAYING || gameState === PAUSED ||
+        gameState === DYING || gameState === DEAD)) {
         // Pool noodle zappers draw behind terrain
         for (const zapper of getZappers()) {
             renderZapper(ctx, zapper);
@@ -823,8 +1058,8 @@ function render() {
 
     renderWorldTerrain(ctx);
 
-    if (gameState === PLAYING || gameState === PAUSED ||
-        gameState === DYING || gameState === DEAD) {
+    if (!suppressPatterns && (gameState === PLAYING || gameState === PAUSED ||
+        gameState === DYING || gameState === DEAD)) {
         const canPunch = hasIguanaPunch();
         for (const hazard of getHazards()) {
             renderGroundHazard(ctx, hazard, canPunch);
@@ -848,6 +1083,7 @@ function render() {
     }
 
     renderTurkey(ctx, turkey);
+    renderBoss(ctx);
 
     // Hit flash overlay in laser test mode (invincible but shows collision)
     if (DEBUG_LASER_TEST && turkey._laserHitFlash > 0) {
@@ -856,11 +1092,14 @@ function render() {
         ctx.fillRect(hitbox.x, hitbox.y, hitbox.w, hitbox.h);
     }
 
+    ctx.restore();
+
     if (gameState === PLAYING && DEBUG_LASER_TEST) {
         renderLaserTestHud(ctx);
     } else if (gameState === PLAYING) {
         renderHud(ctx, getDistanceMeters(), getCoins(), true);
         renderEffects(ctx);
+        renderVictoryCredits(ctx);
     }
 
     if (gameState === PAUSED) {
@@ -883,6 +1122,7 @@ function render() {
 
 function onVisibilityChange() {
     if (document.hidden && gameState === PLAYING) {
+        if (isBossSequenceActive()) return;
         pauseMusic();
         gameState = PAUSED;
     }
@@ -894,7 +1134,8 @@ function onVisibilityChange() {
 
 function loadWithProgress() {
     loadProgress.total = TURKEY_ANIM_COUNT + BIRD_ANIM_COUNT + FOOD_ANIM_COUNT
-        + LASER_ANIM_COUNT + BLOCKER_ANIM_COUNT + BACKGROUND_DECOR_ANIM_COUNT + 4;
+        + LASER_ANIM_COUNT + BLOCKER_ANIM_COUNT + BACKGROUND_DECOR_ANIM_COUNT
+        + BOSS_ANIM_COUNT + 4;
     loadProgress.loaded = 0;
 
     const spritePromise = loadAll().then(() => { loadProgress.loaded++; });
@@ -905,6 +1146,7 @@ function loadWithProgress() {
     const laserAnimPromise = loadLaserAnimations(() => { loadProgress.loaded++; });
     const blockerAnimPromise = loadBlockerAnimations(() => { loadProgress.loaded++; });
     const decorAnimPromise = loadBackgroundDecorAnimations(() => { loadProgress.loaded++; });
+    const bossAnimPromise = loadBossAnimations(() => { loadProgress.loaded++; });
     const musicPromise = loadMusic().then(() => { loadProgress.loaded++; });
     const terrainPromise = loadTerrainTiles().then(() => { loadProgress.loaded++; });
 
@@ -917,6 +1159,7 @@ function loadWithProgress() {
         laserAnimPromise,
         blockerAnimPromise,
         decorAnimPromise,
+        bossAnimPromise,
         musicPromise,
         terrainPromise
     ]);

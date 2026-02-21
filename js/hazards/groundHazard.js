@@ -11,6 +11,7 @@ import {
     VOID_CRYSTAL_WIDTH, VOID_CRYSTAL_HEIGHT,
     WEIRD_PILLAR_WIDTH, WEIRD_PILLAR_HEIGHT,
     OLD_IGUANA_WIDTH, OLD_IGUANA_HEIGHT,
+    ICE_IGUANA_WIDTH, ICE_IGUANA_HEIGHT,
     TIE_DYE_IGUANA_WIDTH, TIE_DYE_IGUANA_HEIGHT,
     POOL_TUBE_SIZE, POOL_TUBE_GRAVITY,
     POOL_TUBE_BOUNCE_RATIO, POOL_TUBE_SQUISH_DURATION,
@@ -88,6 +89,12 @@ const HAZARD_DEFS = {
         animKey: 'oldIguanaIdle',
         w: OLD_IGUANA_WIDTH, h: OLD_IGUANA_HEIGHT,
         fallbackColor: '#3A7D44', hitShape: 'rect',
+        flipX: true, drawScale: 1.5
+    },
+    iceIguana: {
+        animKey: 'iceIguanaIdle',
+        w: ICE_IGUANA_WIDTH, h: ICE_IGUANA_HEIGHT,
+        fallbackColor: '#ADD8E6', hitShape: 'rect',
         flipX: true, drawScale: 1.5
     },
     tieDyeIguana: {
@@ -219,7 +226,9 @@ export function getGroundHazardHitCircle(hazard) {
 }
 
 export function isIguana(hazard) {
-    return hazard.typeKey === 'oldIguana' || hazard.typeKey === 'tieDyeIguana';
+    return hazard.typeKey === 'oldIguana' ||
+        hazard.typeKey === 'iceIguana' ||
+        hazard.typeKey === 'tieDyeIguana';
 }
 
 export function punchHazard(hazard) {

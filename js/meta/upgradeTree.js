@@ -45,6 +45,18 @@ export const GADGETS = {
         { desc: 'Every 500m: 24s invulnerability',         cost: 450  },
         { desc: 'Every 500m: 32s invulnerability',         cost: 810  },
     ]},
+    startGrass:   { name: 'Start at Grass',    category: 'utility', levels: [
+        { desc: 'Run starts at the Grass biome',           cost: 3000 },
+    ]},
+    startMountain:{ name: 'Start at Mountain', category: 'utility', levels: [
+        { desc: 'Run starts at the Mountain biome',        cost: 5000 },
+    ]},
+    startSpace:   { name: 'Start at Space',    category: 'utility', levels: [
+        { desc: 'Run starts at the Space biome',           cost: 7000 },
+    ]},
+    startRealm:   { name: 'Start at Realm',    category: 'utility', levels: [
+        { desc: 'Run starts at the Spiritual Realm biome', cost: 9000 },
+    ]},
 };
 
 // --- Passive definitions ---
@@ -281,6 +293,10 @@ export const TREE_NODES = [
     // Branch right from jackpot_1: 3rd/4th slot milestones (row 6)
     milestoneNode('thirdSlot',  'thirdSlot',  1, 6),
     milestoneNode('fourthSlot', 'fourthSlot', 2, 6),
+    gadgetNode('startGrass_1', 'startGrass', 0, 2, 7),
+    gadgetNode('startMtn_1', 'startMountain', 0, 2, 8),
+    gadgetNode('startSpace_1', 'startSpace', 0, 2, 9),
+    gadgetNode('startRealm_1', 'startRealm', 0, 2, 10),
 
     // Branch left from jackpot_3: Token Gift (row 8)
     passiveNode('token_1',      'tokenGift', 0, -1, 8),

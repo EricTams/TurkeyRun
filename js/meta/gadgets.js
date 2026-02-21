@@ -3,6 +3,12 @@
 
 import { announce } from './gadgetEffects.js';
 import { getCoinDoublerMult, getCompoundMult } from './passives.js';
+import {
+    BIOME_GRASS_START,
+    BIOME_MOUNTAIN_START,
+    BIOME_MOON_START,
+    BIOME_SPIRITUAL_START
+} from '../config.js';
 
 let equippedGadgets = []; // array of gadgetId strings
 let gadgetLevels = {};    // gadgetId -> 0-based level (0=Lv1, 1=Lv2, 2=Lv3)
@@ -28,6 +34,14 @@ export function setGadgetLevels(levels) {
 
 export function isEquipped(gadgetId) {
     return equippedGadgets.includes(gadgetId);
+}
+
+export function getRunStartDistanceMeters() {
+    if (isEquipped('startRealm')) return BIOME_SPIRITUAL_START;
+    if (isEquipped('startSpace')) return BIOME_MOON_START;
+    if (isEquipped('startMountain')) return BIOME_MOUNTAIN_START;
+    if (isEquipped('startGrass')) return BIOME_GRASS_START;
+    return 0;
 }
 
 function getLevel(gadgetId) {
