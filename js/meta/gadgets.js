@@ -96,7 +96,7 @@ export function isShieldInvulnerable() {
 export function getSecondChanceDuration() {
     const lv = equippedLevel('secondChance');
     if (lv < 0) return 0;
-    return [16, 24, 32][lv];
+    return [8, 12, 16][lv];
 }
 
 export function isSecondChanceEquipped() {

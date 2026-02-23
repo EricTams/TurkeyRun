@@ -19,7 +19,8 @@ import {
     ENDGAME_BOSS_START_X, ENDGAME_BOSS_START_Y,
     ENDGAME_BOSS_APPROACH_SPEED, ENDGAME_BOSS_EXIT_SPEED_X, ENDGAME_BOSS_EXIT_SPEED_Y,
     ENDGAME_BOSS_BITE_HOLD_SECONDS, ENDGAME_BOSS_SHAKE_SECONDS,
-    ENDGAME_BOSS_SHAKE_PX, ENDGAME_BOSS_HITBOX_INSET_X, ENDGAME_BOSS_HITBOX_INSET_Y,
+    ENDGAME_BOSS_SHAKE_PX,
+    ENDGAME_BOSS_TIP_BOX_X, ENDGAME_BOSS_TIP_BOX_Y, ENDGAME_BOSS_TIP_BOX_W, ENDGAME_BOSS_TIP_BOX_H,
     ENDGAME_VICTORY_SETTLE_SECONDS
 } from './config.js';
 import { initRenderer, clear, getCtx, getCanvas } from './renderer.js';
@@ -153,7 +154,7 @@ const BOSS_PHASE_BITE = 'bite';
 const BOSS_PHASE_EXIT = 'exit';
 const BOSS_PHASE_VICTORY_FALL = 'victoryFall';
 const BOSS_PHASE_VICTORY_IDLE = 'victoryIdle';
-const BOSS_APPROACH_MIN_SCREEN_X = 50;
+const BOSS_APPROACH_MIN_SCREEN_X = -20;
 
 let bossPhase = BOSS_PHASE_NONE;
 let bossX = ENDGAME_BOSS_START_X;
@@ -270,15 +271,21 @@ function isBossSequenceActive() {
     return bossPhase !== BOSS_PHASE_NONE;
 }
 
+function getDisplayDistanceMeters() {
+    const meters = getDistanceMeters();
+    if (isBossSequenceActive() && bossDistanceCapMeters > 0) {
+        return Math.min(meters, bossDistanceCapMeters);
+    }
+    return meters;
+}
+
 function getBossRect() {
     const drawSize = ENDGAME_BOSS_SIZE * BOSS_RENDER_SCALE;
-    const insetX = ENDGAME_BOSS_HITBOX_INSET_X * BOSS_RENDER_SCALE;
-    const insetY = ENDGAME_BOSS_HITBOX_INSET_Y * BOSS_RENDER_SCALE;
     return {
-        x: bossX + insetX,
-        y: bossY + insetY,
-        w: drawSize - insetX * 2,
-        h: drawSize - insetY * 2
+        x: bossX + drawSize * ENDGAME_BOSS_TIP_BOX_X,
+        y: bossY + drawSize * ENDGAME_BOSS_TIP_BOX_Y,
+        w: drawSize * ENDGAME_BOSS_TIP_BOX_W,
+        h: drawSize * ENDGAME_BOSS_TIP_BOX_H
     };
 }
 
@@ -687,10 +694,7 @@ function update(dt) {
             applyPhysics(turkey, dt, isPressed());
             updateTurkeyAnimation(turkey, dt, isPressed());
         }
-        const shouldAdvanceWorld = !isBossSequenceActive() || getDistanceMeters() < bossDistanceCapMeters;
-        if (shouldAdvanceWorld) {
-            updateWorld(dt);
-        }
+        updateWorld(dt);
         const hitbox = getTurkeyHitbox(turkey);
         const turkeyCX = hitbox.x + PLAYER_WIDTH / 2;
         const turkeyCY = hitbox.y + PLAYER_HEIGHT / 2;
@@ -1128,7 +1132,7 @@ function render() {
     if (gameState === PLAYING && DEBUG_LASER_TEST) {
         renderLaserTestHud(ctx);
     } else if (gameState === PLAYING) {
-        renderHud(ctx, getDistanceMeters(), getCoins(), true);
+        renderHud(ctx, getDisplayDistanceMeters(), getCoins(), true);
         renderEffects(ctx);
         renderVictoryCredits(ctx);
     }

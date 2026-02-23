@@ -9,6 +9,7 @@ import {
     CANVAS_WIDTH, GROUND_Y,
     BIRD_WIDTH, BIRD_HEIGHT, BIRD_SPEED, BIRD_X_SPEED, GRACKLE_TURN_RATE,
     BIRD_WARNING_DURATION, BIRD_TRACKING_DURATION, GRACKLE_TRACKING_DURATION,
+    BOAR_WARNING_DURATION,
     DEBUG_SHOW_HITBOX,
     BOAR_VERTICAL_TRACK_SPEED, BOAR_DASH_X_SPEED
 } from '../config.js';
@@ -20,6 +21,9 @@ const WARNING_COLOR = '#FF0000';
 const WARNING_FLASH_RATE = 6;          // full cycles per second
 const WARNING_ARROW_SIZE = 10;
 const WARNING_ARROW_X = 12;            // inset from right edge
+const BIRD_GLOW_GRACKLE = 'rgba(255, 154, 102, 0.9)';
+const BIRD_GLOW_BOAR = 'rgba(255, 122, 61, 0.9)';
+const BIRD_GLOW_BLUR = 10;
 
 const STATE_WARNING = 'warning';
 const STATE_ACTIVE = 'active';
@@ -94,13 +98,16 @@ export function resetPunchedBirds() {
 // -----------------------------------------------------------------------
 
 export function createBird(targetY, type = BIRD_TYPE_GRACKLE) {
+    const warningDuration = type === BIRD_TYPE_BOAR
+        ? BOAR_WARNING_DURATION
+        : BIRD_WARNING_DURATION;
     const bird = {
         type,
         x: CANVAS_WIDTH + BIRD_WIDTH,
         y: targetY,
         angle: Math.PI,   // facing left (toward the player)
         state: STATE_WARNING,
-        warningTimer: BIRD_WARNING_DURATION,
+        warningTimer: warningDuration,
         trackingTimer: 0,  // time spent actively tracking (stops at BIRD_TRACKING_DURATION)
         animator: createAnimator()
     };
@@ -229,6 +236,7 @@ export function renderBird(ctx, bird, punchable) {
             ctx.save();
             ctx.translate(peekX + BIRD_WIDTH / 2, peekY + BIRD_HEIGHT / 2);
             ctx.scale(-1, 1);
+            applyBirdGlow(ctx, bird);
             drawAnimator(ctx, bird.animator, -BIRD_WIDTH / 2, -BIRD_HEIGHT / 2, BIRD_WIDTH, BIRD_HEIGHT);
             ctx.restore();
         }
@@ -246,6 +254,7 @@ export function renderBird(ctx, bird, punchable) {
         if (bird.type !== BIRD_TYPE_BOAR) {
             ctx.rotate(-(bird.angle - Math.PI));
         }
+        applyBirdGlow(ctx, bird);
         drawAnimator(ctx, bird.animator, -BIRD_WIDTH / 2, -BIRD_HEIGHT / 2, BIRD_WIDTH, BIRD_HEIGHT);
         ctx.restore();
     } else {
@@ -296,4 +305,10 @@ function renderWarningIndicator(ctx, bird, punchable) {
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
     ctx.fillText(punchable ? '*' : '!', arrowTipX - WARNING_ARROW_SIZE - 4, centerY);
+}
+
+function applyBirdGlow(ctx, bird) {
+    // drawImage shadow follows transparent sprite edges, producing a clean silhouette glow.
+    ctx.shadowBlur = BIRD_GLOW_BLUR;
+    ctx.shadowColor = bird.type === BIRD_TYPE_BOAR ? BIRD_GLOW_BOAR : BIRD_GLOW_GRACKLE;
 }

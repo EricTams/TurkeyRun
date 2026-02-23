@@ -41,9 +41,9 @@ export const GADGETS = {
         { desc: 'Unlimited iguana punches',                cost: 1050 },
     ]},
     secondChance: { name: '2nd Chance',  category: 'survival', levels: [
-        { desc: 'Every 500m: 16s invulnerability',         cost: 250  },
-        { desc: 'Every 500m: 24s invulnerability',         cost: 450  },
-        { desc: 'Every 500m: 32s invulnerability',         cost: 810  },
+        { desc: 'Every 500m: 8s invulnerability',          cost: 250  },
+        { desc: 'Every 500m: 12s invulnerability',         cost: 450  },
+        { desc: 'Every 500m: 16s invulnerability',         cost: 810  },
     ]},
     startGrass:   { name: 'Start at Grass',    category: 'utility', levels: [
         { desc: 'Run starts at the Grass biome',           cost: 3000 },

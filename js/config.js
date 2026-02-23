@@ -21,8 +21,10 @@ export const PLAYER_HEIGHT = 40;
 export const PLAYER_HITBOX_OFFSET_X = 14;  // px from left edge of sprite to hitbox
 export const PLAYER_HITBOX_OFFSET_Y = 16;  // px from top edge of sprite to hitbox
 
-// Set to true to render a wireframe box around the player hitbox
-export const DEBUG_SHOW_HITBOX = true;
+// Master toggle for collision debug visualization (hitboxes, collision lines).
+export const DEBUG_DRAW_COLLISIONS = false;
+// Backward-compatible alias used across modules.
+export const DEBUG_SHOW_HITBOX = DEBUG_DRAW_COLLISIONS;
 
 export const PLAYER_START_X = 100;
 
@@ -170,6 +172,7 @@ export const GRACKLE_TURN_RATE = 1.0;       // radians/s for shorter grackle aim
 export const GRACKLE_TRACKING_DURATION = 0.667; // seconds of grackle homing after warning
 export const BIRD_TRACKING_DURATION = 2.0;  // seconds of homing after entering, then fly straight
 export const BIRD_WARNING_DURATION = 1.0;   // seconds of flashing indicator before bird enters
+export const BOAR_WARNING_DURATION = 1.5;   // longer telegraph for fast boar dash patterns
 export const BOAR_VERTICAL_TRACK_SPEED = 100; // px/s vertical-only aiming speed toward player
 export const BOAR_POST_AIM_ARRIVAL_SEC = 0.75; // seconds from aim end to player column (aggressive)
 export const BOAR_DASH_X_SPEED = (CANVAS_WIDTH + BIRD_WIDTH - PLAYER_START_X) / BOAR_POST_AIM_ARRIVAL_SEC;
@@ -193,8 +196,12 @@ export const ENDGAME_BOSS_EXIT_SPEED_Y = -220;
 export const ENDGAME_BOSS_BITE_HOLD_SECONDS = 0.22;
 export const ENDGAME_BOSS_SHAKE_SECONDS = 0.65;
 export const ENDGAME_BOSS_SHAKE_PX = 8;
-export const ENDGAME_BOSS_HITBOX_INSET_X = 20;
-export const ENDGAME_BOSS_HITBOX_INSET_Y = 40;
+// Tip-focused collision box in normalized sprite space (0-1), tuned so
+// collision only happens when the turkey is close to the fingertip.
+export const ENDGAME_BOSS_TIP_BOX_X = 0.27;
+export const ENDGAME_BOSS_TIP_BOX_Y = 0.50;
+export const ENDGAME_BOSS_TIP_BOX_W = 0.22;
+export const ENDGAME_BOSS_TIP_BOX_H = 0.22;
 export const ENDGAME_VICTORY_SETTLE_SECONDS = 0.5;
 
 // Lasers (telegraphed beams)

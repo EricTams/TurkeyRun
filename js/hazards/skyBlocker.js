@@ -40,6 +40,7 @@ const SKY_BLOCKER_DEFS = {
         size: UFO_SIZE,
         fallbackColor: '#8B5CF6',
         rotateSpeed: 0,
+        initialAngle: 0,
     },
     thoughtBubble: {
         animKey: 'thoughtBubbleSpin',
@@ -60,7 +61,7 @@ export function createSkyBlocker(typeKey, y) {
         animKey: def.animKey,
         fallbackColor: def.fallbackColor,
         rotateSpeed: def.rotateSpeed * (0.8 + Math.random() * 0.4),
-        angle: Math.random() * Math.PI * 2,
+        angle: def.initialAngle ?? (Math.random() * Math.PI * 2),
         animator: createAnimator()
     };
     setAnimation(blocker.animator, def.animKey, { loop: true });

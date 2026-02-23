@@ -10,6 +10,8 @@ import { getGroundYAt } from './terrain.js';
 
 // Fallback color used when animation frames aren't loaded
 const TURKEY_COLOR = '#8B4513';
+const INVULN_GLOW_COLOR = 'rgba(68, 255, 255, 0.95)';
+const INVULN_GLOW_BLUR = 12;
 
 // Distance from sprite top to feet (excluding transparent bottom padding)
 const FEET_Y = PLAYER_RENDER_HEIGHT - PLAYER_SPRITE_BOTTOM_PAD;
@@ -168,9 +170,13 @@ export function updateInvulnEffect(dt, isInvuln) {
 
 export function renderTurkey(ctx, turkey) {
     const invuln = invulnTime > 0;
+    let invulnBlink = 1;
     if (invuln) {
-        const blink = Math.sin(invulnTime * 16) * 0.5 + 0.5;
-        ctx.globalAlpha = 0.4 + blink * 0.6;
+        invulnBlink = Math.sin(invulnTime * 16) * 0.5 + 0.5;
+        ctx.globalAlpha = 0.4 + invulnBlink * 0.6;
+        // Shadow glow on drawImage/fillRect follows the sprite silhouette.
+        ctx.shadowColor = INVULN_GLOW_COLOR;
+        ctx.shadowBlur = INVULN_GLOW_BLUR + invulnBlink * 8;
     }
 
     if (turkey.animator.currentAnim) {
@@ -183,11 +189,21 @@ export function renderTurkey(ctx, turkey) {
     }
 
     if (invuln) {
-        const pulse = Math.sin(invulnTime * 8) * 0.3 + 0.3;
+        // Soft additive pass keeps the glow vivid without boxy overlays.
+        const pulse = 0.12 + invulnBlink * 0.22;
         ctx.globalAlpha = pulse;
-        ctx.fillStyle = '#44FFFF';
-        ctx.fillRect(turkey.x, turkey.y, PLAYER_RENDER_WIDTH, PLAYER_RENDER_HEIGHT);
+        ctx.shadowColor = INVULN_GLOW_COLOR;
+        ctx.shadowBlur = INVULN_GLOW_BLUR + invulnBlink * 10;
+        if (turkey.animator.currentAnim) {
+            drawAnimator(ctx, turkey.animator,
+                turkey.x, turkey.y,
+                PLAYER_RENDER_WIDTH, PLAYER_RENDER_HEIGHT);
+        } else {
+            ctx.fillStyle = '#44FFFF';
+            ctx.fillRect(turkey.x, turkey.y, PLAYER_RENDER_WIDTH, PLAYER_RENDER_HEIGHT);
+        }
         ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
     }
 
     if (DEBUG_SHOW_HITBOX) {
